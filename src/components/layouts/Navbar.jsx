@@ -17,7 +17,7 @@ const Navbar = () => {
                         <ul className="hidden md:flex space-x-8 items-center">
                             <li><Link to="/store" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Shop</Link></li>
                             <li><Link to="#" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Sell</Link></li>
-                            <li><Link to="#" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">About</Link></li>
+                            <li><Link to="/about" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">About</Link></li>
                         </ul>
                     </div>
                     
