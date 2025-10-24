@@ -1,37 +1,22 @@
-import { useState } from 'react'
-import Home from './components/Home'
-import About from './components/About'
-import { Link, Route, Routes } from 'react-router-dom'
-
-
+import React from 'react';
+import { Routes, Route } from 'react-router-dom';
+import MainLayout from './components/layouts/MainLayout';
+import HomePage from './components/pages/HomePage';
+import ProductPage from './components/pages/ProductPage';
+import StorePage from './components/pages/StorePage';
+import CartPage from './components/pages/CartPage'; // Import the new CartPage
 
 function App() {
- 
-  return (
-    <div className=""> {/* Added full height and white background */}
-    <nav>
-        <ul>
-          <li className='text-black'>
-            <Link to="/">Home</Link>
-          </li>
-          <li className='text-black'>
-            <Link to="/about">About</Link>
-          </li>
-          <li>
-           
-          </li>
-        </ul>
-      </nav>
-
-      <hr />
-    <Routes>
-        {/* A Route defines a path and the component to render */}
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-       
-      </Routes>
-    </div>   
-  )
+    return (
+        <MainLayout>
+            <Routes>
+                <Route path="/" element={<HomePage />} />
+                <Route path="/store" element={<StorePage />} />
+                <Route path="/product/:id" element={<ProductPage />} />
+                <Route path="/cart" element={<CartPage />} /> {/* Add the cart route */}
+            </Routes>
+        </MainLayout>
+    );
 }
 
-export default App
+export default App;

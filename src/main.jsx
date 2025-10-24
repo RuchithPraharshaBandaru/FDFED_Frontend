@@ -1,13 +1,16 @@
-import { StrictMode } from 'react'
-import { createRoot } from 'react-dom/client'
-import './index.css'
-import App from './App.jsx'
-import { BrowserRouter } from 'react-router-dom'
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+import App from './App';
+import './index.css';
+import { CartProvider } from './context/CartContext'; // Import CartProvider
 
-createRoot(document.getElementById('root')).render(
-  <StrictMode>
-    <BrowserRouter> {/* 2. Wrap your App component */}
-      <App />
-    </BrowserRouter>
-  </StrictMode>,
-)
+ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+        <BrowserRouter>
+            <CartProvider> {/* Wrap the App */}
+                <App />
+            </CartProvider>
+        </BrowserRouter>
+    </React.StrictMode>
+);
