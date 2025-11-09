@@ -64,7 +64,9 @@ const ProductPage = () => {
                         </div>
                     </div>
                     <div>
-                        <p className="font-semibold text-gray-500">Brand Name</p>
+                        <p className="font-semibold text-gray-500">
+                            {product.sellerId && product.sellerId.storeName ? product.sellerId.storeName : 'Brand Name'}
+                        </p>
                         <h1 className="text-4xl font-extrabold text-gray-900 mt-1">{product.title}</h1>
                         <p className="text-3xl font-bold text-gray-800 mt-4">Rs.{product.price}</p>
                         <div className="mt-6">

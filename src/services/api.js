@@ -53,7 +53,7 @@ export const fetchFilteredProducts = async (filters) => {
         params.append('maxPrice', filters.maxPrice);
     }
 
-    // Add cache-busting parameter
+   
     params.append('t', new Date().getTime());
 
     const response = await fetch(`http://localhost:8000/api/v1/user/products/filter?${params.toString()}`);
@@ -63,4 +63,30 @@ export const fetchFilteredProducts = async (filters) => {
     }
     const data = await response.json();
     return data.products || []; // Your backend returns { success, products }
+};  
+
+// ... (keep all existing functions like fetchProducts, fetchProductById, etc.)
+
+/**
+ * Submits the sell/donation form.
+ * @param {FormData} formData - The form data object including text fields and the file.
+ * @returns {Promise<Object>} A promise that resolves on successful submission.
+ */
+export const submitDonation = async (formData) => {
+    
+    const response = await fetch('http://localhost:8000/api/v1/user/sell', {
+        method: 'POST',
+        body: formData,
+        // credentials: 'include' // <-- REMOVED THIS LINE
+    });
+
+    if (!response.ok) {
+        // Try to parse an error message from the backend
+        const errorData = await response.json().catch(() => ({ message: 'Submission failed. Please try again.' }));
+        throw new Error(errorData.message || 'Submission failed.');
+    }
+    
+    // The backend redirects on success, which fetch handles.
+    // We'll return a simple success object.
+    return { success: true };
 };

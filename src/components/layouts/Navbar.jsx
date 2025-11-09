@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Search, Heart, ShoppingBag } from 'lucide-react';
-import { useCart } from '../../context/CartContext'; // Import the cart hook
+import { useCart } from '../../context/CartContext'; 
 
 const Navbar = () => {
-    const { cartCount } = useCart(); // Get the number of items in the cart
+    const { cartCount } = useCart(); 
 
     return (
         <header className="bg-white sticky top-0 z-50 border-b border-gray-200">
@@ -16,7 +16,8 @@ const Navbar = () => {
                         </Link>
                         <ul className="hidden md:flex space-x-8 items-center">
                             <li><Link to="/store" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Shop</Link></li>
-                            <li><Link to="#" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Sell</Link></li>
+                            {/* Update this link */}
+                            <li><Link to="/sell" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Sell</Link></li>
                             <li><Link to="/about" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">About</Link></li>
                         </ul>
                     </div>
@@ -28,7 +29,6 @@ const Navbar = () => {
                         </div>
                         
                         
-                        {/* Updated Shopping Bag Link */}
                         <Link to="/cart" className="relative text-gray-600 hover:text-gray-900">
                             <ShoppingBag className="h-6 w-6" />
                             {cartCount > 0 && (
