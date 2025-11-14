@@ -1,10 +1,18 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { Search, Heart, ShoppingBag } from 'lucide-react';
-import { useCart } from '../../context/CartContext'; 
+import { Link, useNavigate } from 'react-router-dom';
+import { Search, Heart, ShoppingBag, User } from 'lucide-react'; // 1. Import User icon
+import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext'; // 2. Import useAuth hook
 
 const Navbar = () => {
-    const { cartCount } = useCart(); 
+    const { cartCount } = useCart();
+    const { isAuthenticated, user, logout } = useAuth(); // 3. Get auth state and functions
+    const navigate = useNavigate();
+
+    const handleLogout = async () => {
+        await logout();
+        navigate('/'); // Redirect to homepage after logout
+    };
 
     return (
         <header className="bg-white sticky top-0 z-50 border-b border-gray-200">
@@ -16,7 +24,6 @@ const Navbar = () => {
                         </Link>
                         <ul className="hidden md:flex space-x-8 items-center">
                             <li><Link to="/store" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Shop</Link></li>
-                            {/* Update this link */}
                             <li><Link to="/sell" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">Sell</Link></li>
                             <li><Link to="/about" className="text-gray-600 hover:text-gray-900 font-medium transition-colors">About</Link></li>
                         </ul>
@@ -37,6 +44,39 @@ const Navbar = () => {
                                 </span>
                             )}
                         </Link>
+
+                        {/* --- 4. Add Conditional Auth Links --- */}
+                        {isAuthenticated ? (
+                            // --- Show if Logged In ---
+                            <>
+                                <Link to="/account" className="text-gray-600 hover:text-gray-900">
+                                    <User className="h-6 w-6" />
+                                </Link>
+                                <button
+                                    onClick={handleLogout}
+                                    className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700"
+                                >
+                                    Logout
+                                </button>
+                            </>
+                        ) : (
+                            // --- Show if Logged Out ---
+                            <>
+                                <Link
+                                    to="/login"
+                                    className="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                                >
+                                    Login
+                                </Link>
+                                <Link
+                                    to="/signup"
+                                    className="bg-green-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-green-700"
+                                >
+                                    Sign Up
+                                </Link>
+                            </>
+                        )}
+                        {/* --- End Auth Links --- */}
                     </div>
                 </div>
             </nav>
