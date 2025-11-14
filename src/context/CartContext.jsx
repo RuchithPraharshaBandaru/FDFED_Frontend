@@ -1,83 +1,104 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+// src/context/CartContext.jsx
+import React, { createContext, useState, useContext, useEffect, useCallback } from 'react';
+import { apiGetCart, apiAddToCart, apiDecreaseQuantity, apiRemoveFromCart } from '../services/api';
+import { useAuth } from './AuthContext';
 
-// Create the context
 const CartContext = createContext();
 
-// Custom hook to use the cart context
-export const useCart = () => {
-    return useContext(CartContext);
-};
+export const useCart = () => useContext(CartContext);
 
-// Provider component
 export const CartProvider = ({ children }) => {
-    const [cartItems, setCartItems] = useState(() => {
-        // Load cart from local storage on initial render
-        try {
-            const localData = localStorage.getItem('cartItems');
-            return localData ? JSON.parse(localData) : [];
-        } catch (error) {
-            console.error("Could not parse cart items from localStorage", error);
-            return [];
+    const [cartItems, setCartItems] = useState([]);
+    const [cartCount, setCartCount] = useState(0);
+    const [cartTotal, setCartTotal] = useState(0); // This was missing
+    const [loading, setLoading] = useState(false);
+    const { isAuthenticated } = useAuth();
+
+    // Helper function to calculate totals from cart items
+    const calculateCartTotals = (items) => {
+        // Filter out items where productId is null (deleted product)
+        const validItems = items.filter(item => item.productId);
+        const totalItems = validItems.reduce((sum, item) => sum + item.quantity, 0);
+        const totalPrice = validItems.reduce((sum, item) => sum + item.productId.price * item.quantity, 0);
+        
+        setCartItems(validItems);
+        setCartCount(totalItems);
+        setCartTotal(totalPrice); // This fixes the .toFixed crash
+    };
+
+    // Fetches the full cart data from the API
+    const fetchCart = useCallback(async () => {
+        if (!isAuthenticated) {
+            setCartItems([]);
+            setCartCount(0);
+            setCartTotal(0);
+            return;
         }
-    });
+        setLoading(true);
+        try {
+            const data = await apiGetCart(); // This returns { cart: [...] }
+            calculateCartTotals(data.cart);
+        } catch (error) {
+            console.error("Failed to get cart:", error);
+            setCartItems([]);
+            setCartCount(0);
+            setCartTotal(0);
+        }
+        setLoading(false);
+    }, [isAuthenticated]);
 
-    // Save cart to local storage whenever it changes
+    // Load cart on auth change
     useEffect(() => {
-        localStorage.setItem('cartItems', JSON.stringify(cartItems));
-    }, [cartItems]);
+        fetchCart();
+    }, [fetchCart]);
 
-    const addToCart = (product) => {
-        setCartItems(prevItems => {
-            // Check if item already exists
-            const existingItem = prevItems.find(item => item._id === product._id);
-            if (existingItem) {
-                // If it exists, map over the array and update the quantity of the matching item
-                return prevItems.map(item =>
-                    item._id === product._id
-                        ? { ...item, quantity: item.quantity + 1 }
-                        : item
-                );
-            }
-            // If it's a new item, add it to the array with a quantity of 1
-            return [...prevItems, { ...product, quantity: 1 }];
-        });
+    // --- Public Functions (These fix the "Add to Cart" bug) ---
+
+    const addToCart = async (product) => {
+        try {
+            await apiAddToCart(product._id);
+            await fetchCart(); // Refresh cart from server
+        } catch (error) {
+            console.error("Failed to add to cart:", error);
+        }
     };
 
-    const decreaseQuantity = (productId) => {
-        setCartItems(prevItems => {
-            const existingItem = prevItems.find(item => item._id === productId);
-
-            // If item quantity is 1, filtering it out is the same as decreasing quantity
-            if (existingItem && existingItem.quantity === 1) {
-                return prevItems.filter(item => item._id !== productId);
-            }
-
-            // Otherwise, decrease the quantity by 1
-            return prevItems.map(item =>
-                item._id === productId
-                    ? { ...item, quantity: item.quantity - 1 }
-                    : item
-            );
-        });
+    const decreaseQuantity = async (productId) => {
+        try {
+            await apiDecreaseQuantity(productId);
+            await fetchCart(); // Refresh cart from server
+        } catch (error) {
+            console.error("Failed to decrease quantity:", error);
+        }
     };
 
-    const removeFromCart = (productId) => {
-        setCartItems(prevItems => prevItems.filter(item => item._id !== productId));
+    const removeFromCart = async (productId) => {
+        try {
+            await apiRemoveFromCart(productId);
+            await fetchCart(); // Refresh cart from server
+        } catch (error) {
+            console.error("Failed to remove from cart:", error);
+        }
     };
 
-    // Total number of individual items in the cart (e.g., 2 shirts + 1 jean = 3 items)
-    const cartCount = cartItems.reduce((count, item) => count + item.quantity, 0);
+    // This is for the checkout page
+    const clearCartCount = () => {
+        setCartItems([]);
+        setCartCount(0);
+        setCartTotal(0);
+    };
 
-    // Total price of all items in the cart, accounting for quantity
-    const cartTotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-
+    // All the values your app needs
     const value = {
         cartItems,
-        addToCart,
-        decreaseQuantity, // Function to decrement quantity
-        removeFromCart,
         cartCount,
-        cartTotal
+        cartTotal,
+        loading,
+        fetchCart,
+        addToCart,
+        decreaseQuantity,
+        removeFromCart,
+        clearCartCount,
     };
 
     return (
