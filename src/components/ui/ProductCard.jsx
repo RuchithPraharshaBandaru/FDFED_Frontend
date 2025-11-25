@@ -1,39 +1,62 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { ShoppingCart, Star } from 'lucide-react';
+import Card from './Card';
+import Button from './Button';
+import Badge from './Badge';
 
-const ProductCard = ({ _id, image, title, category, price }) => {
+const ProductCard = ({ _id, image, title, category, price, rating = 4 }) => {
     return (
-        <Link to={`/product/${_id}`} className="group block h-full">
-            {/* - Removed 'border'
-              - Added 'shadow-sm' for a very subtle default shadow to create distinction.
-              - Kept 'hover:shadow-xl' to make it pop on hover.
-            */}
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm hover:shadow-xl transition-shadow overflow-hidden flex flex-col h-full">
-                <div className="relative h-64 overflow-hidden">
-                    <img src={image} alt={title} className="w-full h-full object-cover transition-transform group-hover:scale-105" />
+        <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg border-border/50 bg-card hover:-translate-y-1 p-0 flex flex-col h-full">
+            <Link to={`/product/${_id}`} className="flex flex-col h-full">
+                {/* Image Container with Overlay */}
+                <div className="relative aspect-[4/5] overflow-hidden bg-muted">
+                    <img 
+                        src={image} 
+                        alt={title} 
+                        className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                    />
                     
+                    {/* Floating Badges */}
+                    <div className="absolute left-3 top-3 flex flex-col gap-2">
+                        {price < 1000 && <Badge variant="secondary" className="backdrop-blur-md bg-white/80 dark:bg-black/50">Great Value</Badge>}
+                        <Badge className="bg-primary/90 text-white">Eco-Friendly</Badge>
+                    </div>
                 </div>
-                <div className="p-4 flex-grow flex flex-col">
-                    <div>
-                        <p className="text-sm text-gray-500 dark:text-gray-400">{category}</p>
-                        <h3 className="font-semibold text-gray-800 dark:text-white tracking-tight mt-1">{title}</h3>
-                        <div className="flex items-center my-2 text-yellow-400">
-                            <i className="fas fa-star"></i>
-                            <i className="fas fa-star"></i>
-                            <i className="fas fa-star"></i>
-                            <i className="fas fa-star"></i>
-                            <i className="far fa-star text-gray-300"></i>
+
+                {/* Content */}
+                <div className="flex flex-1 flex-col p-4">
+                    <div className="flex justify-between items-start mb-2">
+                        <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{category}</span>
+                        <div className="flex items-center gap-1 text-amber-400 text-xs">
+                            <Star className="h-3 w-3 fill-current" />
+                            <span className="text-foreground">{rating}.0</span>
                         </div>
                     </div>
-                    <div className="mt-auto pt-4">
-                        <span className="text-xl font-bold text-gray-900 dark:text-white">Rs.{price}</span>
-                        <button className="w-full mt-2 bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors font-semibold">
-                            View Details
-                        </button>
+
+                    <h3 className="font-semibold text-base leading-tight text-card-foreground group-hover:text-primary transition-colors line-clamp-2 mb-3">
+                        {title}
+                    </h3>
+
+                    <div className="mt-auto pt-3 flex items-center justify-between border-t border-border/50">
+                        <div className="flex flex-col">
+                            <span className="text-xs text-muted-foreground">Price</span>
+                            <span className="text-lg font-bold text-primary">₹{price.toLocaleString()}</span>
+                        </div>
+                        {/* Button is now STATIC (always visible) instead of hover-only */}
+                        <Button 
+                            size="sm" 
+                            className="h-8 text-xs gap-1.5"
+                            onClick={(e) => {
+                                e.preventDefault(); // Prevent navigation if adding to cart logic exists
+                            }}
+                        >
+                            <ShoppingCart className="h-3.5 w-3.5" /> Add
+                        </Button>
                     </div>
                 </div>
-            </div>
-        </Link>
+            </Link>
+        </Card>
     );
 };
 

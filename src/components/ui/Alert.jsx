@@ -1,4 +1,3 @@
-// src/components/ui/Alert.jsx
 import React from 'react';
 import { CheckCircle, AlertCircle, Info, XCircle } from 'lucide-react';
 
@@ -12,41 +11,36 @@ const Alert = ({
     
     const styles = {
         success: {
-            bg: 'bg-green-100 dark:bg-green-900',
-            text: 'text-green-700 dark:text-green-300',
-            border: 'border-green-200 dark:border-green-800',
+            container: 'border-green-500/50 text-green-600 dark:text-green-400 [&>svg]:text-green-600 dark:[&>svg]:text-green-400',
             icon: CheckCircle
         },
         error: {
-            bg: 'bg-red-100 dark:bg-red-900',
-            text: 'text-red-700 dark:text-red-300',
-            border: 'border-red-200 dark:border-red-800',
+            container: 'border-destructive/50 text-destructive dark:border-destructive [&>svg]:text-destructive',
             icon: XCircle
         },
         warning: {
-            bg: 'bg-yellow-100 dark:bg-yellow-900',
-            text: 'text-yellow-700 dark:text-yellow-300',
-            border: 'border-yellow-200 dark:border-yellow-800',
+            container: 'border-yellow-500/50 text-yellow-600 dark:text-yellow-400 [&>svg]:text-yellow-600 dark:[&>svg]:text-yellow-400',
             icon: AlertCircle
         },
         info: {
-            bg: 'bg-blue-100 dark:bg-blue-900',
-            text: 'text-blue-700 dark:text-blue-300',
-            border: 'border-blue-200 dark:border-blue-800',
+            container: 'bg-background text-foreground border-border [&>svg]:text-foreground',
             icon: Info
         }
     };
     
-    const style = styles[type];
+    const style = styles[type] || styles.info;
     const Icon = style.icon;
     
     return (
         <div 
-            className={`flex items-center gap-3 p-4 rounded-md border ${style.bg} ${style.text} ${style.border} ${className}`}
+            role="alert"
+            className={`relative w-full rounded-lg border p-4 [&>svg]:absolute [&>svg]:left-4 [&>svg]:top-4 [&>svg+div]:translate-y-[-3px] [&:has(svg)]:pl-11 ${style.container} ${className}`}
             {...props}
         >
-            <Icon className="h-5 w-5 flex-shrink-0" />
-            <p className="text-sm">{message}</p>
+            <Icon className="h-4 w-4" />
+            <div className="text-sm font-medium leading-relaxed">
+                {message}
+            </div>
         </div>
     );
 };
