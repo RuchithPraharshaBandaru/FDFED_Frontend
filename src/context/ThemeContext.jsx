@@ -14,8 +14,8 @@ export const useTheme = () => {
 export const ThemeProvider = ({ children }) => {
     // Check localStorage for saved theme preference, default to 'light'
     const [theme, setTheme] = useState(() => {
-        const savedTheme = localStorage.getItem('theme');
-        return savedTheme || 'light';
+        
+        return 'light';
     });
 
     useEffect(() => {
@@ -28,7 +28,11 @@ export const ThemeProvider = ({ children }) => {
             root.classList.remove('dark');
         }
         // Save to localStorage
-        localStorage.setItem('theme', theme);
+        try {
+            localStorage.setItem('theme', theme);
+        } catch (e) {
+            console.warn("Could not save theme preference:", e);
+        }
     }, [theme]);
 
     const toggleTheme = () => {
