@@ -1,48 +1,64 @@
 // src/components/pages/CartPage.jsx
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { useCart } from '../../context/CartContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { 
+    selectCartItems, 
+    selectCartTotalQuantity, 
+    selectCartTotalAmount,
+    addToCartAsync,
+    decrementQuantityAsync,
+    removeFromCartAsync 
+} from '../../store/slices/cartSlice';
 import { Leaf, Plus, Minus } from 'lucide-react';
 
-// Updated component for individual cart items
-// No changes needed in this sub-component, but the props passed to it are now correct.
 const CartItem = ({ item, onAdd, onDecrease, onRemove }) => (
     <div className="flex gap-4 p-4 border-b dark:border-gray-700">
-        {/* 1. FIX: Use item.productId.image */}
-        <img src={item.productId.image} alt={item.productId.title} className="w-24 h-19 object-cover rounded-md" />
+        <img src={item.image || item.productId?.image} alt={item.title || item.productId?.title} className="w-24 h-19 object-cover rounded-md" />
         <div className="flex-grow flex flex-col">
             <div>
-                {/* 2. FIX: Use item.productId.title */}
-                <h3 className="font-semibold text-gray-800 dark:text-white">{item.productId.title}</h3>
+                <h3 className="font-semibold text-gray-800 dark:text-white">{item.title || item.productId?.title}</h3>
             </div>
             <div className="mt-auto flex justify-between items-center">
-                {/* Quantity Controls */}
                 <div className="flex items-center gap-2 border dark:border-gray-600 rounded-md">
-                    {/* 3. FIX: Pass item.productId._id */}
-                    <button onClick={() => onDecrease(item.productId._id)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-l-md">
+                    <button onClick={() => onDecrease(item._id || item.productId?._id)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-l-md">
                         <Minus size={16} />
                     </button>
                     <span className="px-3 font-semibold dark:text-white">{item.quantity}</span>
-                    {/* 4. FIX: Pass item.productId */}
-                    <button onClick={() => onAdd(item.productId)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-r-md">
+                    <button onClick={() => onAdd(item._id || item.productId?._id)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-r-md">
                         <Plus size={16} />
                     </button>
                 </div>
-                {/* 5. FIX: Pass item.productId._id */}
-                <button onClick={() => onRemove(item.productId._id)} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Remove</button>
+                <button onClick={() => onRemove(item._id || item.productId?._id)} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Remove</button>
             </div>
         </div>
-        {/* 6. FIX: Use item.productId.price */}
-        <p className="text-lg font-bold text-gray-800 dark:text-white">Rs.{(item.productId.price * item.quantity).toFixed(2)}</p>
+        <p className="text-lg font-bold text-gray-800 dark:text-white">Rs.{((item.price || item.productId?.price) * item.quantity).toFixed(2)}</p>
     </div>
 );
 
-
 const CartPage = () => {
-    // These values (cartItems, cartCount, cartTotal) now come correctly from the CartContext
-    const { cartItems, cartCount, cartTotal, addToCart, decreaseQuantity, removeFromCart } = useCart();
+    const dispatch = useDispatch();
+    const cartItems = useSelector(selectCartItems);
+    const cartCount = useSelector(selectCartTotalQuantity);
+    const cartTotal = useSelector(selectCartTotalAmount);
+    
     const estimatedShipping = cartCount > 0 ? 5.00 : 0.00;
     const finalTotal = cartTotal + estimatedShipping;
+    
+    const handleAddToCart = (id) => {
+        const item = cartItems.find(i => i._id === id);
+        if (item) {
+            dispatch(addToCartAsync(item));
+        }
+    };
+    
+    const handleDecreaseQuantity = (id) => {
+        dispatch(decrementQuantityAsync(id));
+    };
+    
+    const handleRemoveFromCart = (id) => {
+        dispatch(removeFromCartAsync(id));
+    };
 
     return (
         <div className="bg-gray-50 dark:bg-gray-900 min-h-screen py-12">
@@ -55,11 +71,11 @@ const CartPage = () => {
                         {cartCount > 0 ? (
                             cartItems.map(item => (
                                 <CartItem 
-                                    key={item.productId._id} // Use productId as key
+                                    key={item._id || item.productId?._id}
                                     item={item} 
-                                    onAdd={addToCart}
-                                    onDecrease={decreaseQuantity}
-                                    onRemove={removeFromCart} 
+                                    onAdd={handleAddToCart}
+                                    onDecrease={handleDecreaseQuantity}
+                                    onRemove={handleRemoveFromCart} 
                                 />
                             ))
                         ) : (
@@ -88,11 +104,9 @@ const CartPage = () => {
                             <span>Rs.{finalTotal.toFixed(2)}</span>
                         </div>
                         
-                        {/* 7. FIX: Changed <button> to <Link> */}
                         <Link 
                             to="/checkout" 
                             className={`w-full block text-center mt-6 bg-green-500 text-white py-3 rounded-lg text-lg hover:bg-green-600 font-semibold transition ${cartCount === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            // Prevent click if cart is empty
                             onClick={(e) => cartCount === 0 && e.preventDefault()}
                         >
                             Proceed to Checkout

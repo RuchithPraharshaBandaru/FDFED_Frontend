@@ -1,18 +1,34 @@
 // src/components/pages/AccountPage.jsx
 import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectUser, updateUser } from '../../store/slices/authSlice';
 import { apiUpdateAccountDetails } from '../../services/api';
+import Input from '../ui/Input';
+import Button from '../ui/Button';
+import Alert from '../ui/Alert';
 
 const AccountPage = () => {
-    const { user, setUser } = useAuth(); // Get user and setUser from context
+    const dispatch = useDispatch();
+    const user = useSelector(selectUser);
     
     const [formData, setFormData] = useState({
-        firstname: user?.firstname || '',
-        lastname: user?.lastname || '',
-        email: user?.email || '',
+        firstname: '',
+        lastname: '',
+        email: '',
     });
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+
+    // Update form when user data loads
+    React.useEffect(() => {
+        if (user) {
+            setFormData({
+                firstname: user.firstname || '',
+                lastname: user.lastname || '',
+                email: user.email || '',
+            });
+        }
+    }, [user]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -25,7 +41,7 @@ const AccountPage = () => {
         try {
             const data = await apiUpdateAccountDetails(formData);
             if (data.success) {
-                setUser(data.user); // <-- This updates the global context!
+                dispatch(updateUser(data.user));
                 setMessage('Profile updated successfully!');
             }
         } catch (err) {
@@ -36,48 +52,38 @@ const AccountPage = () => {
     return (
         <div>
             <h2 className="text-2xl font-semibold mb-6 dark:text-white">Profile Details</h2>
-            {message && <p className="text-green-600 dark:text-green-400 mb-4">{message}</p>}
-            {error && <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>}
+            
+            <Alert type="success" message={message} className="mb-4" />
+            <Alert type="error" message={error} className="mb-4" />
             
             <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                    <label htmlFor="firstname" className="block text-sm font-medium text-gray-700 dark:text-gray-300">First Name</label>
-                    <input
-                        type="text"
-                        name="firstname"
-                        id="firstname"
-                        value={formData.firstname}
-                        onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="lastname" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Last Name</label>
-                    <input
-                        type="text"
-                        name="lastname"
-                        id="lastname"
-                        value={formData.lastname}
-                        onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        id="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
-                    />
-                </div>
-                <div>
-                    <button type="submit" className="w-full sm:w-auto bg-green-500 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-green-600">
-                        Save Changes
-                    </button>
-                </div>
+                <Input
+                    label="First Name"
+                    type="text"
+                    name="firstname"
+                    value={formData.firstname}
+                    onChange={handleChange}
+                />
+                
+                <Input
+                    label="Last Name"
+                    type="text"
+                    name="lastname"
+                    value={formData.lastname}
+                    onChange={handleChange}
+                />
+                
+                <Input
+                    label="Email"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                />
+                
+                <Button type="submit" variant="primary">
+                    Save Changes
+                </Button>
             </form>
         </div>
     );

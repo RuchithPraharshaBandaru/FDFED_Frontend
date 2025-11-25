@@ -4,17 +4,26 @@ const API_BASE_URL = 'http://localhost:8000/api/v1/user';
 
 // --- AUTH FUNCTIONS ---
 
-export const apiLogin = async (email, password) => {
+export const apiLogin = async (credentials) => {
     const response = await fetch(`${API_BASE_URL}/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(credentials),
         credentials: 'include',
     });
-    if (!response.ok) throw new Error('Login failed');
-    return { success: true };
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Login failed' }));
+        throw new Error(errorData.message || 'Login failed');
+    }
+    const data = await response.json();
+    console.log('Login response:', data);
+    return {
+        success: true,
+        user: data.user || data.data?.user || data,
+        token: data.token || data.data?.token
+    };
 };
 
 export const apiLogout = async () => {
@@ -30,7 +39,13 @@ export const apiCheckAuth = async () => {
         credentials: 'include',
     });
     if (!response.ok) throw new Error('Not authenticated');
-    return response.json();
+    const data = await response.json();
+    console.log('Check auth response:', data);
+    return {
+        success: true,
+        user: data.user || data.data?.user || data,
+        token: data.token || data.data?.token
+    };
 };
 
 export const apiSignup = async (userData) => {
@@ -40,13 +55,20 @@ export const apiSignup = async (userData) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify(userData),
+        credentials: 'include',
     });
     
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Signup failed' }));
         throw new Error(errorData.message || 'Signup failed');
     }
-    return { success: true };
+    const data = await response.json();
+    console.log('Signup response:', data);
+    return {
+        success: true,
+        user: data.user || data.data?.user || data,
+        token: data.token || data.data?.token
+    };
 };
 
 
@@ -220,10 +242,33 @@ export const apiSubmitPayment = async (paymentData) => {
     });
     if (!response.ok) {
         const err = await response.json();
-        throw new Error(err.error || 'Payment failed');
+        console.error('Payment API error:', err);
+        throw new Error(err.error || err.message || 'Payment failed');
     }
     return response.json();
 };
+
+/**
+ * Syncs the Redux cart with the backend before checkout
+ * @param {Array} cartItems - Array of cart items from Redux
+ * @returns {Promise<Object>}
+ */
+export const apiSyncCart = async (cartItems) => {
+    const response = await fetch(`${API_BASE_URL}/cart/sync`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cart: cartItems }),
+        credentials: 'include',
+    });
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || 'Failed to sync cart');
+    }
+    return response.json();
+};
+
 export const apiAddToCart = async (productId) => {
     const response = await fetch(`${API_BASE_URL}/cart/add/${productId}`, {
         method: 'POST',

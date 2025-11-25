@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { submitDonation } from '../../services/api'; // We will create this function next
+import { submitDonation } from '../../services/api';
+import Input from '../ui/Input';
+import Select from '../ui/Select';
+import Button from '../ui/Button';
+import Textarea from '../ui/Textarea';
+import Alert from '../ui/Alert';
 
 const SellPage = () => {
     const [formData, setFormData] = useState({
@@ -115,48 +120,60 @@ const SellPage = () => {
                         <form id="clothesForm" className="space-y-6" autoComplete="off" onSubmit={handleSubmit}>
 
                             {/* Form Messages */}
-                            {success && <div className="p-4 rounded-md bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300">{success}</div>}
-                            {error && <div className="p-4 rounded-md bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300">{error}</div>}
+                            <Alert type="success" message={success} />
+                            <Alert type="error" message={error} />
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Type of Clothing Item</label>
-                                <select name="items" value={formData.items} onChange={handleChange} required className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500">
-                                    <option value="">Select Item</option>
-                                    <option value="t-shirts">T-shirts</option>
-                                    <option value="shirts">Shirts</option>
-                                    <option value="pants-jeans">Pants/Jeans</option>
-                                    <option value="dresses">Dresses</option>
-                                    <option value="skirts">Skirts</option>
-                                    <option value="jackets-coats">Jackets/Coats</option>
-                                    <option value="sweaters">Sweaters</option>
-                                </select>
-                            </div>
+                            <Select
+                                label="Type of Clothing Item"
+                                name="items"
+                                value={formData.items}
+                                onChange={handleChange}
+                                required
+                                options={[
+                                    { value: '', label: 'Select Item' },
+                                    { value: 't-shirts', label: 'T-shirts' },
+                                    { value: 'shirts', label: 'Shirts' },
+                                    { value: 'pants-jeans', label: 'Pants/Jeans' },
+                                    { value: 'dresses', label: 'Dresses' },
+                                    { value: 'skirts', label: 'Skirts' },
+                                    { value: 'jackets-coats', label: 'Jackets/Coats' },
+                                    { value: 'sweaters', label: 'Sweaters' }
+                                ]}
+                            />
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Clothing Material</label>
-                                <select name="fabric" value={formData.fabric} onChange={handleChange} required className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500">
-                                    <option value="">Select material type</option>
-                                    <option value="Cotton">Cotton</option>
-                                    <option value="Silk">Silk</option>
-                                    <option value="Leather">Leather</option>
-                                    <option value="Linen">Linen</option>
-                                    <option value="Cashmere">Cashmere</option>
-                                    <option value="Synthetic">Synthetic</option>
-                                    <option value="Wool">Wool</option>
-                                    <option value="Denim">Denim</option>
-                                    <option value="Polyester">Polyester</option>
-                                </select>
-                            </div>
+                            <Select
+                                label="Clothing Material"
+                                name="fabric"
+                                value={formData.fabric}
+                                onChange={handleChange}
+                                required
+                                options={[
+                                    { value: '', label: 'Select material type' },
+                                    { value: 'Cotton', label: 'Cotton' },
+                                    { value: 'Silk', label: 'Silk' },
+                                    { value: 'Leather', label: 'Leather' },
+                                    { value: 'Linen', label: 'Linen' },
+                                    { value: 'Cashmere', label: 'Cashmere' },
+                                    { value: 'Synthetic', label: 'Synthetic' },
+                                    { value: 'Wool', label: 'Wool' },
+                                    { value: 'Denim', label: 'Denim' },
+                                    { value: 'Polyester', label: 'Polyester' }
+                                ]}
+                            />
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Gender</label>
-                                <select name="gender" value={formData.gender} onChange={handleChange} required className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500">
-                                    <option value="">Select Size</option>
-                                    <option value="S">S</option>
-                                    <option value="M">M</option>
-                                    <option value="L">L</option>
-                                </select>
-                            </div>
+                            <Select
+                                label="Size"
+                                name="size"
+                                value={formData.size}
+                                onChange={handleChange}
+                                required
+                                options={[
+                                    { value: '', label: 'Select Size' },
+                                    { value: 'S', label: 'S' },
+                                    { value: 'M', label: 'M' },
+                                    { value: 'L', label: 'L' }
+                                ]}
+                            />
 
                             <div>
                                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gender</label>
@@ -177,45 +194,66 @@ const SellPage = () => {
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Usage Duration</label>
-                                <select name="age" value={formData.age} onChange={handleChange} required className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500">
-                                    <option value="">Select Usage Duration</option>
-                                    <option value="6">Less than 6 months</option>
-                                    <option value="1">More than 1 year</option>
-                                </select>
+                                <Select
+                                    label="Usage Duration"
+                                    name="age"
+                                    value={formData.age}
+                                    onChange={handleChange}
+                                    required
+                                    options={[
+                                        { value: '', label: 'Select Usage Duration' },
+                                        { value: '6', label: 'Less than 6 months' },
+                                        { value: '1', label: 'More than 1 year' }
+                                    ]}
+                                />
                                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Choose "6" for less than 6 months, "1" for more than 1 year.</p>
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Preferred Date</label>
-                                <input type="date" name="clothesDate" value={formData.clothesDate} onChange={handleChange} required className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500" />
-                            </div>
+                            <Input
+                                label="Preferred Date"
+                                type="date"
+                                name="clothesDate"
+                                value={formData.clothesDate}
+                                onChange={handleChange}
+                                required
+                            />
+
+                            <Select
+                                label="Preferred Time Slot"
+                                name="timeSlot"
+                                value={formData.timeSlot}
+                                onChange={handleChange}
+                                required
+                                options={[
+                                    { value: '', label: 'Select a time slot' },
+                                    { value: 'morning', label: 'Morning (9 AM - 12 PM)' },
+                                    { value: 'afternoon', label: 'Afternoon (12 PM - 5 PM)' },
+                                    { value: 'evening', label: 'Evening (5 PM - 8 PM)' }
+                                ]}
+                            />
+
+                            <Textarea
+                                label="Description (optional)"
+                                name="description"
+                                value={formData.description}
+                                onChange={handleChange}
+                                rows={3}
+                                placeholder="Describe your item (brand, condition, etc.)"
+                            />
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Preferred Time Slot</label>
-                                <select name="timeSlot" value={formData.timeSlot} onChange={handleChange} required className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500">
-                                    <option value="">Select a time slot</option>
-                                    <option value="morning">Morning (9 AM - 12 PM)</option>
-                                    <option value="afternoon">Afternoon (12 PM - 5 PM)</option>
-                                    <option value="evening">Evening (5 PM - 8 PM)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description (optional)</label>
-                                <textarea name="description" value={formData.description} onChange={handleChange} rows="3" className="mt-1 block w-full rounded-md border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 px-3 py-2 shadow-sm focus:border-green-500 focus:ring-green-500" placeholder="Describe your item (brand, condition, etc.)"></textarea>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Photo Upload (required)</label>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Photo Upload (required)</label>
                                 <input type="file" name="photos" onChange={handleFileChange} accept="image/*" required className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 dark:file:bg-gray-700 file:text-green-700 dark:file:text-green-400 hover:file:bg-green-100 dark:hover:file:bg-gray-600" />
                             </div>
 
-                            <div>
-                                <button type="submit" disabled={loading} className="w-full py-3 px-6 bg-green-500 text-white rounded-lg font-semibold hover:bg-green-600 transition disabled:opacity-50">
-                                    {loading ? 'Submitting...' : 'Submit'}
-                                </button>
-                            </div>
+                            <Button 
+                                type="submit" 
+                                variant="primary" 
+                                className="w-full"
+                                disabled={loading}
+                            >
+                                {loading ? 'Submitting...' : 'Submit'}
+                            </Button>
                         </form>
                     </div>
 
