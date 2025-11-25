@@ -1,90 +1,93 @@
 import React from 'react';
+import Button from './Button';
+
+const FilterSection = ({ title, children }) => (
+    <div className="py-5 border-b border-border last:border-0">
+        <h3 className="font-semibold text-sm mb-3 text-foreground">{title}</h3>
+        <div className="space-y-2.5">
+            {children}
+        </div>
+    </div>
+);
+
+const CheckboxItem = ({ label, name, value, onChange }) => (
+    <label className="flex items-center gap-3 cursor-pointer group">
+        <div className="relative flex items-center">
+            <input 
+                type="checkbox" 
+                name={name} 
+                value={value} 
+                className="peer h-4 w-4 rounded border-input text-primary focus:ring-primary/20"
+                onChange={onChange}
+            />
+        </div>
+        <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors select-none">
+            {label}
+        </span>
+    </label>
+);
 
 const FilterSidebar = ({ filters, onFilterChange }) => {
-
-    const handleCategoryChange = (e) => {
-        // This logic remains for single-select radio for now
-        onFilterChange('category', e.target.value);
-    };
-
+    const handleCategoryChange = (e) => onFilterChange('category', e.target.value);
+    
     const handlePriceChange = (e) => {
         const [min, max] = e.target.value.split('-');
-        onFilterChange('price', {
-            minPrice: min || null,
-            maxPrice: max || null
-        });
+        onFilterChange('price', { minPrice: min || null, maxPrice: max || null });
     };
 
-    const categories = ['silk', 'fabric', 'cotton', 'wool', 'linen', 'cashmere'];
-    const priceRanges = [
-        { label: 'Under Rs. 500', value: '0-500' },
-        { label: 'Rs. 500 to Rs. 1000', value: '500-1000' },
-        { label: 'Over Rs. 1000', value: '1000-' }
-    ];
-
-    const sizes = ['XS', 'S', 'M', 'L', 'XL'];
-    const conditions = ['New w/ Tags', 'Like New', 'Gently Used'];
-
     return (
-        <aside className="w-72 pr-8">
-            <div className="flex justify-between items-center mb-4">
-                 <h2 className="text-xl font-bold text-gray-800 dark:text-white">Filters</h2>
-                 <button className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200">Clear all</button>
-            </div>
-           
-            {/* Category Filters */}
-            <div className="py-4 border-b dark:border-gray-700">
-                <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">Category</h3>
-                <div className="space-y-2">
-                    {categories.map(cat => (
-                        <label key={cat} className="flex items-center gap-3 cursor-pointer dark:text-gray-300">
-                            <input type="checkbox" name="category" value={cat} className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"/>
-                            <span className="capitalize">{cat}</span>
-                        </label>
-                    ))}
+        <aside className="w-64 flex-shrink-0 hidden lg:block">
+            <div className="sticky top-24 space-y-1">
+                <div className="flex justify-between items-center mb-2 px-1">
+                     <h2 className="text-lg font-bold tracking-tight">Filters</h2>
+                     <Button variant="link" size="sm" className="h-auto p-0 text-muted-foreground">Reset</Button>
                 </div>
-            </div>
+               
+                <div className="rounded-lg border bg-card text-card-foreground px-4 shadow-sm">
+                    <FilterSection title="Category">
+                        {['Silk', 'Fabric', 'Cotton', 'Wool', 'Linen', 'Cashmere'].map(cat => (
+                            <CheckboxItem 
+                                key={cat} 
+                                label={cat} 
+                                name="category" 
+                                value={cat.toLowerCase()} 
+                                onChange={handleCategoryChange} 
+                            />
+                        ))}
+                    </FilterSection>
 
-            {/* Price Filters */}
-            <div className="py-4 border-b dark:border-gray-700">
-                <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">Price</h3>
-                <div className="space-y-2">
-                     {priceRanges.map(range => (
-                         <label key={range.value} className="flex items-center gap-3 cursor-pointer dark:text-gray-300">
-                            <input type="radio" name="price" value={range.value} onChange={handlePriceChange} className="h-4 w-4 border-gray-300 text-green-600 focus:ring-green-500" />
-                            <span>{range.label}</span>
-                        </label>
-                    ))}
-                </div>
-            </div>
-            
-            {/* Size & Condition (Static UI) */}
-             <div className="py-4 border-b dark:border-gray-700">
-                <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">Size</h3>
-                <div className="space-y-2">
-                    {sizes.map(size => (
-                        <label key={size} className="flex items-center gap-3 cursor-pointer dark:text-gray-300">
-                            <input type="checkbox" name="size" value={size} className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"/>
-                            <span>{size}</span>
-                        </label>
-                    ))}
-                </div>
-            </div>
-             <div className="py-4">
-                <h3 className="font-semibold text-gray-700 dark:text-gray-300 mb-2">Condition</h3>
-                <div className="space-y-2">
-                    {conditions.map(c => (
-                        <label key={c} className="flex items-center gap-3 cursor-pointer dark:text-gray-300">
-                            <input type="checkbox" name="condition" value={c} className="h-4 w-4 rounded border-gray-300 text-green-600 focus:ring-green-500"/>
-                            <span>{c}</span>
-                        </label>
-                    ))}
-                </div>
-            </div>
+                    <FilterSection title="Price Range">
+                        {[
+                            { label: 'Under ₹500', value: '0-500' },
+                            { label: '₹500 - ₹1000', value: '500-1000' },
+                            { label: 'Over ₹1000', value: '1000-' }
+                        ].map(range => (
+                            <label key={range.value} className="flex items-center gap-3 cursor-pointer group">
+                                <input 
+                                    type="radio" 
+                                    name="price" 
+                                    value={range.value} 
+                                    onChange={handlePriceChange}
+                                    className="h-4 w-4 border-input text-primary focus:ring-primary/20" 
+                                />
+                                <span className="text-sm text-muted-foreground group-hover:text-foreground transition-colors">
+                                    {range.label}
+                                </span>
+                            </label>
+                        ))}
+                    </FilterSection>
+                    
+                    <FilterSection title="Condition">
+                        {['New w/ Tags', 'Like New', 'Gently Used'].map(c => (
+                            <CheckboxItem key={c} label={c} name="condition" value={c} onChange={()=>{}} />
+                        ))}
+                    </FilterSection>
 
-            <button className="w-full mt-6 bg-green-500 text-white py-2 rounded-lg hover:bg-green-600 transition-colors font-semibold">
-                Apply Filters
-            </button>
+                    <div className="py-4">
+                        <Button className="w-full">Apply Filters</Button>
+                    </div>
+                </div>
+            </div>
         </aside>
     );
 };

@@ -1,4 +1,151 @@
 @import "tailwindcss";
 
-/* This forces Tailwind to look for the .dark class on the HTML tag */
+/* 1. Define the Dark Mode Variant (Your existing setup) */
 @variant dark (&:where(.dark, .dark *));
+
+/* 2. Configure the Theme directly here (Replaces tailwind.config.js) */
+@theme {
+  /* Map CSS variables to Tailwind Utility Classes */
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+/* 3. Define the Color Variables (The "Green" Theme) */
+@layer base {
+  :root {
+    /* Light Mode - Soft slate background for depth */
+    --background: 210 40% 98%;
+    --foreground: 222.2 84% 4.9%;
+
+    /* Cards remain pure white to pop against the background */
+    --card: 0 0% 100%;
+    --card-foreground: 222.2 84% 4.9%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222.2 84% 4.9%;
+
+    /* Your Brand Green (Green-600) */
+    --primary: 142.1 76.2% 36.3%;
+    --primary-foreground: 355.7 100% 97.3%;
+
+    --secondary: 210 40% 96.1%;
+    --secondary-foreground: 222.2 47.4% 11.2%;
+
+    --muted: 210 40% 96.1%;
+    --muted-foreground: 215.4 16.3% 46.9%;
+
+    --accent: 210 40% 96.1%;
+    --accent-foreground: 222.2 47.4% 11.2%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 214.3 31.8% 91.4%;
+    --input: 214.3 31.8% 91.4%;
+    --ring: 142.1 76.2% 36.3%;
+
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    /* Dark Mode */
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    /* Green-500 for Dark Mode */
+    --primary: 142.1 70.6% 45.3%;
+    --primary-foreground: 144.9 80.4% 10%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 142.4 71.8% 29.2%;
+  }
+
+  /* Base Styles */
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Background Pattern Utilities for Visual Texture */
+@layer utilities {
+  .bg-grid-pattern {
+    background-size: 40px 40px;
+    background-image: linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px),
+                      linear-gradient(to bottom, hsl(var(--border)) 1px, transparent 1px);
+    mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+  }
+  
+  .bg-dot-pattern {
+    /* Using foreground opacity for dots so they are visible in both modes */
+    background-image: radial-gradient(hsl(var(--foreground)) 1px, transparent 1px);
+    background-size: 24px 24px;
+    mask-image: linear-gradient(to bottom, black, transparent);
+  }
+  
+  /* Soft Green Gradient Mesh */
+  .bg-mesh-gradient {
+      background-color: hsla(0, 0%, 100%, 0);
+      /* Made the Light Mode Green stops darker/richer (85% lightness instead of 96%) to show "lighting" */
+      background-image: radial-gradient(at 80% 0%, hsla(142, 70%, 85%, 0.6) 0px, transparent 50%),
+                        radial-gradient(at 0% 50%, hsla(142, 76%, 90%, 0.5) 0px, transparent 50%),
+                        radial-gradient(at 80% 100%, hsla(210, 40%, 96%, 1) 0px, transparent 50%),
+                        radial-gradient(at 0% 0%, hsla(210, 40%, 98%, 1) 0px, transparent 50%);
+  }
+  /* Dark mode mesh */
+  .dark .bg-mesh-gradient {
+      background-image: radial-gradient(at 80% 0%, hsla(142, 70%, 10%, 1) 0px, transparent 50%),
+                        radial-gradient(at 0% 50%, hsla(142, 76%, 5%, 1) 0px, transparent 50%),
+                        radial-gradient(at 80% 100%, hsla(222, 47%, 10%, 1) 0px, transparent 50%),
+                        radial-gradient(at 0% 0%, hsla(210, 40%, 5%, 1) 0px, transparent 50%);
+  }
+}
