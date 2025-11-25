@@ -1,22 +1,22 @@
 // src/components/layouts/ProtectedRoute.jsx
 import React from 'react';
-import { useAuth } from '../../context/AuthContext'; // <-- FIX: Was ../, now ../../
+import { useSelector } from 'react-redux';
+import { selectIsAuthenticated, selectAuthInitialized } from '../../store/slices/authSlice';
 import { Navigate, Outlet } from 'react-router-dom';
 
 const ProtectedRoute = () => {
-    const { isAuthenticated, isLoading } = useAuth();
+    const isAuthenticated = useSelector(selectIsAuthenticated);
+    const initialized = useSelector(selectAuthInitialized);
 
-    if (isLoading) {
-        // You can return a loading spinner here
+    // Wait for auth check to complete before deciding
+    if (!initialized) {
         return <div className="min-h-screen flex items-center justify-center dark:bg-gray-900 dark:text-white">Loading...</div>;
     }
 
     if (!isAuthenticated) {
-        // Redirect to login page if not logged in
         return <Navigate to="/login" replace />;
     }
 
-    // If authenticated, render the child route (e.g., <SellPage />)
     return <Outlet />;
 };
 

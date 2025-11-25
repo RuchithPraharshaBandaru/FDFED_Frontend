@@ -1,19 +1,27 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Heart, ShoppingBag, User, Moon, Sun } from 'lucide-react'; // 1. Import User icon and theme icons
-import { useCart } from '../../context/CartContext';
-import { useAuth } from '../../context/AuthContext'; // 2. Import useAuth hook
-import { useTheme } from '../../context/ThemeContext';
+import { useSelector, useDispatch } from 'react-redux';
+import { Search, Heart, ShoppingBag, User, Moon, Sun } from 'lucide-react';
+import { selectCartTotalQuantity } from '../../store/slices/cartSlice';
+import { selectIsAuthenticated, selectUser, logoutUser } from '../../store/slices/authSlice';
+import { selectTheme, toggleTheme } from '../../store/slices/themeSlice';
 
 const Navbar = () => {
-    const { cartCount } = useCart();
-    const { isAuthenticated, user, logout } = useAuth(); // 3. Get auth state and functions
-    const { theme, toggleTheme } = useTheme();
+    const dispatch = useDispatch();
     const navigate = useNavigate();
+    
+    const cartCount = useSelector(selectCartTotalQuantity);
+    const isAuthenticated = useSelector(selectIsAuthenticated);
+    const user = useSelector(selectUser);
+    const theme = useSelector(selectTheme);
 
     const handleLogout = async () => {
-        await logout();
-        navigate('/'); // Redirect to homepage after logout
+        await dispatch(logoutUser());
+        navigate('/');
+    };
+    
+    const handleThemeToggle = () => {
+        dispatch(toggleTheme());
     };
 
     return (
@@ -39,7 +47,7 @@ const Navbar = () => {
                         
                         {/* Dark Mode Toggle */}
                         <button 
-                            onClick={toggleTheme}
+                            onClick={handleThemeToggle}
                             className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
                             aria-label="Toggle dark mode"
                         >

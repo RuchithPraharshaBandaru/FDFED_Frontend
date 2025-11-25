@@ -1,10 +1,11 @@
 // src/components/layouts/AccountLayout.jsx
 import React from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import { useAuth } from '../../context/AuthContext';
+import { useSelector } from 'react-redux';
+import { selectUser } from '../../store/slices/authSlice';
 
 const AccountLayout = () => {
-    const { user } = useAuth();
+    const user = useSelector(selectUser);
 
     const activeStyle = {
         backgroundColor: '#f3f4f6', // gray-100

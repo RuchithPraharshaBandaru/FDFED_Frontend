@@ -1,17 +1,20 @@
 // src/components/pages/ProductPage.jsx
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { fetchProductById, apiDeleteReview } from '../../services/api.js'; // 1. Import apiDeleteReview
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchProductById, apiDeleteReview } from '../../services/api.js';
 import ProductCard from '../ui/ProductCard';
-import { Heart, ChevronDown, Check, Trash2 } from 'lucide-react'; // 2. Import Trash2 icon
-import { useCart } from '../../context/CartContext';
-import { useAuth } from '../../context/AuthContext';
+import { Heart, ChevronDown, Check, Trash2 } from 'lucide-react';
+import { addToCartAsync } from '../../store/slices/cartSlice';
+import { selectIsAuthenticated, selectUser } from '../../store/slices/authSlice';
 import ReviewForm from '../ui/ReviewForm';
 
 const ProductPage = () => {
     const { id } = useParams();
-    const { addToCart } = useCart();
-    const { isAuthenticated, user } = useAuth(); // 3. Get the full 'user' object
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const isAuthenticated = useSelector(selectIsAuthenticated);
+    const user = useSelector(selectUser);
     const [product, setProduct] = useState(null);
     const [relatedProducts, setRelatedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -39,8 +42,13 @@ const ProductPage = () => {
     }, [id]);
 
     const handleAddToCart = () => {
+        if (!isAuthenticated) {
+            navigate('/login');
+            return;
+        }
+        
         if (product) {
-            addToCart(product);
+            dispatch(addToCartAsync(product));
             setAdded(true);
             setTimeout(() => setAdded(false), 2000);
         }
