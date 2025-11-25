@@ -34,14 +34,14 @@ const ReviewForm = ({ productId, onReviewSubmitted }) => {
     };
 
     return (
-        <div className="bg-white p-6 rounded-lg shadow-sm border mt-8">
-            <h3 className="text-xl font-semibold mb-4">Write a Review</h3>
-            {message && <p className="text-green-600 mb-4">{message}</p>}
-            {error && <p className="text-red-600 mb-4">{error}</p>}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border dark:border-gray-700 mt-8">
+            <h3 className="text-xl font-semibold mb-4 dark:text-white">Write a Review</h3>
+            {message && <p className="text-green-600 dark:text-green-400 mb-4">{message}</p>}
+            {error && <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>}
             
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Rating</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rating</label>
                     <div className="flex space-x-1">
                         {[1, 2, 3, 4, 5].map((star) => (
                             <button
@@ -56,19 +56,19 @@ const ReviewForm = ({ productId, onReviewSubmitted }) => {
                     </div>
                 </div>
                 <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700">Review</label>
+                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Review</label>
                     <textarea
                         id="description"
                         name="description"
                         rows="4"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
+                        className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
                         placeholder="Share your thoughts about the product..."
                     ></textarea>
                 </div>
                 <div>
-                    <button type="submit" className="bg-green-600 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-green-700">
+                    <button type="submit" className="bg-green-500 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-green-600">
                         Submit Review
                     </button>
                 </div>

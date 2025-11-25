@@ -13,9 +13,9 @@ const AccountLayout = () => {
     };
 
     return (
-        <div className="container mx-auto px-6 py-8">
-            <h1 className="text-3xl font-bold mb-2">My Account</h1>
-            <p className="text-lg text-gray-600 mb-8">Welcome, {user?.firstname}!</p>
+        <div className="container mx-auto px-6 py-8 dark:bg-gray-900">
+            <h1 className="text-3xl font-bold mb-2 dark:text-white">My Account</h1>
+            <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">Welcome, {user?.firstname}!</p>
             
             <div className="flex flex-col md:flex-row gap-8">
                 {/* --- Sidebar Navigation --- */}
@@ -26,14 +26,14 @@ const AccountLayout = () => {
                         <NavLink
                             to="/account/orders"
                             style={({ isActive }) => isActive ? activeStyle : undefined}
-                            className="px-4 py-3 rounded-md text-gray-700 hover:bg-gray-50"
+                            className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                         >
                             Order History
                         </NavLink>
                         <NavLink
                             to="/account/donations"
                             style={({ isActive }) => isActive ? activeStyle : undefined}
-                            className="px-4 py-3 rounded-md text-gray-700 hover:bg-gray-50"
+                            className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                         >
                             My Donations
                         </NavLink>
@@ -43,14 +43,14 @@ const AccountLayout = () => {
                             to="/account"
                             end 
                             style={({ isActive }) => isActive ? activeStyle : undefined}
-                            className="px-4 py-3 rounded-md text-gray-700 hover:bg-gray-50"
+                            className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                         >
                             Profile Details
                         </NavLink>
                         <NavLink
                             to="/account/address"
                             style={({ isActive }) => isActive ? activeStyle : undefined}
-                            className="px-4 py-3 rounded-md text-gray-700 hover:bg-gray-50"
+                            className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                         >
                             Address
                         </NavLink>
@@ -59,7 +59,7 @@ const AccountLayout = () => {
 
                 {/* --- Page Content (Profile, Address, Orders, etc.) --- */}
                 <main className="w-full md:w-3/4">
-                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                         <Outlet /> 
                     </div>
                 </main>

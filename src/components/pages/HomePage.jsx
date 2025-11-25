@@ -23,16 +23,16 @@ const HomePage = () => {
     }, []);
 
     return (
-        <div className="bg-gray-50">
+        <div className="bg-gray-50 dark:bg-gray-900">
             {/* Hero Section - Matching the original EJS */}
-            <section className="relative bg-gradient-to-br from-emerald-50 via-green-100 to-emerald-200 font-sans">
+            <section className="relative bg-gradient-to-br from-emerald-50 via-green-100 to-emerald-200 dark:from-gray-800 dark:via-gray-900 dark:to-gray-800 font-sans">
                 <div className="container mx-auto px-4 py-16">
                     <div className="flex items-center">
                         <div className="w-1/2 relative z-10">
-                            <h1 className="text-5xl font-extrabold text-green-900 mb-4 leading-tight">
-                                Outpace the changing <br /> <span className="text-green-600">trend - Sustainably fast</span>
+                            <h1 className="text-5xl font-extrabold text-green-900 dark:text-white mb-4 leading-tight">
+                                Outpace the changing <br /> <span className="text-green-500">trend - Sustainably fast</span>
                             </h1>
-                            <p className="text-lg text-gray-600 mb-6">
+                            <p className="text-lg text-gray-600 dark:text-gray-300 mb-6">
                                 Stay ahead with sustainable, trend-driven fashion and essentials.<br />
                                 Shop stylishly, live sustainably.
                             </p>
@@ -49,13 +49,13 @@ const HomePage = () => {
             </section>
 
             {/* Featured Categories Section - Matching the original EJS */}
-            <section className="py-12 bg-white">
+            <section className="py-12 bg-white dark:bg-gray-800">
                 <div className="container mx-auto px-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="relative overflow-hidden rounded-lg bg-green-100 p-8 flex">
+                        <div className="relative overflow-hidden rounded-lg bg-green-100 dark:bg-gray-700 p-8 flex">
                             <div className="w-1/2">
-                                <h3 className="text-2xl font-bold text-gray-800 mb-2">Fashion & Clothing</h3>
-                                <p className="text-gray-600 mb-4">Get Upto 40% Off</p>
+                                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Fashion & Clothing</h3>
+                                <p className="text-gray-600 dark:text-gray-300 mb-4">Get Upto 40% Off</p>
                                 <Link to="/store" className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition-colors">
                                     Shop Now
                                 </Link>
@@ -66,10 +66,10 @@ const HomePage = () => {
                             </div>
                         </div>
 
-                        <div className="relative overflow-hidden rounded-lg bg-green-100 p-8 flex">
+                        <div className="relative overflow-hidden rounded-lg bg-green-100 dark:bg-gray-700 p-8 flex">
                             <div className="w-1/2">
-                                <h3 className="text-2xl font-bold text-gray-800 mb-2">Sell SecondHand Clothes</h3>
-                                <p className="text-gray-600 mb-4">Get Upto 5% Off</p>
+                                <h3 className="text-2xl font-bold text-gray-800 dark:text-white mb-2">Sell SecondHand Clothes</h3>
+                                <p className="text-gray-600 dark:text-gray-300 mb-4">Get Upto 5% Off</p>
                                 <Link to="/sell" className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition-colors">
                                     Shop Now
                                 </Link>
@@ -86,8 +86,8 @@ const HomePage = () => {
             {/* Popular Products Section */}
             <section className="py-16">
                 <div className="container mx-auto px-6">
-                    <h2 className="text-3xl font-bold mb-8 text-center tracking-tight">Popular Products</h2>
-                    {loading && <p className="text-center">Loading products...</p>}
+                    <h2 className="text-3xl font-bold mb-8 text-center tracking-tight dark:text-white">Popular Products</h2>
+                    {loading && <p className="text-center dark:text-gray-300">Loading products...</p>}
                     {error && <p className="text-center text-red-500">{error}</p>}
                     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
                         {products.map(product => (

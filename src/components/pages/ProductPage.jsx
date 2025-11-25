@@ -65,16 +65,16 @@ const ProductPage = () => {
     };
     // --- END OF NEW FUNCTION ---
 
-    if (loading) return <div className="text-center p-8">Loading...</div>;
-    if (error) return <div className="text-center text-red-500 p-8">{error}</div>;
+    if (loading) return <div className="text-center p-8 dark:bg-gray-900 dark:text-white">Loading...</div>;
+    if (error) return <div className="text-center text-red-500 dark:text-red-400 p-8 dark:bg-gray-900">{error}</div>;
     if (!product) return null;
 
     return (
-        <div className="bg-white">
+        <div className="bg-white dark:bg-gray-900">
             <div className="max-w-6xl mx-auto p-6">
                 {/* ... (keep all the product info JSX: nav, grid, images, details) ... */}
-                <nav className="text-sm text-gray-500 mb-6">
-                    <Link to="/" className="hover:underline">Home</Link> / <Link to="/store" className="hover:underline">Shop</Link> / <span className="text-gray-700">{product.title}</span>
+                <nav className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                    <Link to="/" className="hover:underline">Home</Link> / <Link to="/store" className="hover:underline">Shop</Link> / <span className="text-gray-700 dark:text-gray-300">{product.title}</span>
                 </nav>
                 <div className="grid md:grid-cols-2 gap-12">
                    <div className="flex flex-col-reverse md:flex-row gap-4">
@@ -89,19 +89,19 @@ const ProductPage = () => {
                        </div>
                    </div>
                    <div>
-                       <p className="font-semibold text-gray-500">
+                       <p className="font-semibold text-gray-500 dark:text-gray-400">
                            {product.sellerId && product.sellerId.storeName ? product.sellerId.storeName : 'Brand Name'}
                        </p>
-                       <h1 className="text-4xl font-extrabold text-gray-900 mt-1">{product.title}</h1>
-                       <p className="text-3xl font-bold text-gray-800 mt-4">Rs.{product.price}</p>
+                       <h1 className="text-4xl font-extrabold text-gray-900 dark:text-white mt-1">{product.title}</h1>
+                       <p className="text-3xl font-bold text-gray-800 dark:text-white mt-4">Rs.{product.price}</p>
                        <div className="mt-6">
                            <div className="flex justify-between items-center">
-                               <h3 className="font-semibold text-gray-700">Select Size</h3>
+                               <h3 className="font-semibold text-gray-700 dark:text-gray-300">Select Size</h3>
                                <a href="#" className="text-sm text-gray-500 hover:underline">Size Guide</a>
                            </div>
                            <div className="flex gap-2 mt-2">
                                {['XS', 'S', 'M', 'L', 'XL'].map(size => (
-                                   <button key={size} className="w-12 h-12 rounded border hover:border-gray-800 transition">{size}</button>
+                                   <button key={size} className="w-12 h-12 rounded border dark:border-gray-600 dark:text-white hover:border-gray-800 dark:hover:border-gray-400 transition">{size}</button>
                                ))}
                            </div>
                        </div>
@@ -111,8 +111,8 @@ const ProductPage = () => {
                                disabled={!product.stock || added}
                                className={`flex-1 py-3 rounded-lg font-semibold transition flex items-center justify-center
                                ${added
-                                   ? 'bg-green-700 text-white'
-                                   : 'bg-green-600 text-white hover:bg-green-700'
+                                   ? 'bg-green-600 text-white'
+                                   : 'bg-green-500 text-white hover:bg-green-600'
                                }
                                disabled:opacity-50`}
                            >
@@ -120,38 +120,38 @@ const ProductPage = () => {
                            </button>
                            <button className="border p-3 rounded-lg hover:border-gray-800"><Heart /></button>
                        </div>
-                       <div className="mt-8 border-t">
-                           <div className="py-4 border-b">
-                               <h4 className="flex justify-between items-center cursor-pointer font-semibold">Description <ChevronDown/></h4>
-                               <p className="text-gray-600 mt-2">{product.description}</p>
+                       <div className="mt-8 border-t dark:border-gray-700">
+                           <div className="py-4 border-b dark:border-gray-700">
+                               <h4 className="flex justify-between items-center cursor-pointer font-semibold dark:text-white">Description <ChevronDown/></h4>
+                               <p className="text-gray-600 dark:text-gray-300 mt-2">{product.description}</p>
                            </div>
-                            <div className="py-4 border-b">
-                               <h4 className="flex justify-between items-center cursor-pointer font-semibold">Materials & Care <ChevronDown/></h4>
+                            <div className="py-4 border-b dark:border-gray-700">
+                               <h4 className="flex justify-between items-center cursor-pointer font-semibold dark:text-white">Materials & Care <ChevronDown/></h4>
                            </div>
                        </div>
                    </div>
                 </div>
                 {/* ... (keep positive impact section) ... */}
-                <div className="mt-16 py-12 bg-green-50/50 rounded-lg">
-                     <h3 className="text-2xl font-bold text-center mb-8">Your Positive Impact</h3>
+                <div className="mt-16 py-12 bg-green-50/50 dark:bg-gray-800 rounded-lg">
+                     <h3 className="text-2xl font-bold text-center mb-8 dark:text-white">Your Positive Impact</h3>
                      <div className="grid grid-cols-3 gap-8 text-center max-w-3xl mx-auto">
-                        <div><p className="text-3xl font-bold">713 gal</p><span className="text-gray-600">of water saved</span></div>
-                        <div><p className="text-3xl font-bold">18 lbs</p><span className="text-gray-600">of CO₂ prevented</span></div>
-                        <div><p className="text-3xl font-bold">5.2 lbs</p><span className="text-gray-600">of textile waste diverted</span></div>
+                        <div><p className="text-3xl font-bold dark:text-white">713 gal</p><span className="text-gray-600 dark:text-gray-400">of water saved</span></div>
+                        <div><p className="text-3xl font-bold dark:text-white">18 lbs</p><span className="text-gray-600 dark:text-gray-400">of CO₂ prevented</span></div>
+                        <div><p className="text-3xl font-bold dark:text-white">5.2 lbs</p><span className="text-gray-600 dark:text-gray-400">of textile waste diverted</span></div>
                      </div>
                 </div>
 
                 {/* --- 5. REVIEW SECTION (UPDATED) --- */}
                 <div className="mt-16">
-                    <h3 className="text-2xl font-bold mb-6">Reviews</h3>
+                    <h3 className="text-2xl font-bold mb-6 dark:text-white">Reviews</h3>
                     
                     {product.reviews && product.reviews.length > 0 ? (
                         <div className="space-y-4 mb-6">
                             {product.reviews.map(review => (
-                                <div key={review._id} className="p-4 border rounded-md">
+                                <div key={review._id} className="p-4 border dark:border-gray-700 dark:bg-gray-800 rounded-md">
                                     <div className="flex justify-between items-center mb-1">
                                         <div className="flex items-center">
-                                            <span className="font-semibold">{review.user ? review.user.firstname : 'User'}</span>
+                                            <span className="font-semibold dark:text-white">{review.user ? review.user.firstname : 'User'}</span>
                                             <span className="text-yellow-400 ml-2">
                                                 {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
                                             </span>
@@ -162,7 +162,7 @@ const ProductPage = () => {
                                         {isAuthenticated && review.user && user && review.user._id === user._id && (
                                             <button
                                                 onClick={() => handleDeleteReview(review._id)}
-                                                className="p-1 text-red-500 hover:text-red-700 hover:bg-red-100 rounded-full"
+                                                className="p-1 text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900 rounded-full"
                                                 title="Delete review"
                                             >
                                                 <Trash2 size={16} />
@@ -170,12 +170,12 @@ const ProductPage = () => {
                                         )}
                                         {/* --- END OF DELETE BUTTON --- */}
                                     </div>
-                                    <p className="text-gray-700">{review.description}</p>
+                                    <p className="text-gray-700 dark:text-gray-300">{review.description}</p>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <p className="text-gray-500 mb-6">No reviews yet.</p>
+                        <p className="text-gray-500 dark:text-gray-400 mb-6">No reviews yet.</p>
                     )}
 
                     {isAuthenticated ? (
@@ -184,8 +184,8 @@ const ProductPage = () => {
                             onReviewSubmitted={handleReviewSubmitted} 
                         />
                     ) : (
-                        <div className="text-center p-6 bg-gray-50 rounded-md border">
-                            <p>You must be <Link to="/login" className="text-green-600 font-medium hover:underline">logged in</Link> to leave a review.</p>
+                        <div className="text-center p-6 bg-gray-50 dark:bg-gray-800 rounded-md border dark:border-gray-700">
+                            <p className="dark:text-gray-300">You must be <Link to="/login" className="text-green-500 font-medium hover:underline">logged in</Link> to leave a review.</p>
                         </div>
                     )}
                 </div>
@@ -193,12 +193,12 @@ const ProductPage = () => {
 
                 {/* ... (keep related products section) ... */}
                 <div className="mt-16">
-                    <h3 className="text-2xl font-bold mb-6">You Might Also Like</h3>
+                    <h3 className="text-2xl font-bold mb-6 dark:text-white">You Might Also Like</h3>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                         {relatedProducts && relatedProducts.length > 0 ? (
                             relatedProducts.map(p => <ProductCard key={p._id} {...p} />)
                         ) : (
-                            <p className="col-span-full text-gray-500">No related items found.</p>
+                            <p className="col-span-full text-gray-500 dark:text-gray-400">No related items found.</p>
                         )}
                     </div>
                 </div>
