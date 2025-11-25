@@ -3,7 +3,7 @@ import Navbar from './Navbar';
 
 const MainLayout = ({ children }) => {
     return (
-        <div>
+        <div className="min-h-screen bg-white dark:bg-gray-900">
             <Navbar />
             <main>{children}</main>
             {/* You can add a Footer component here later */}

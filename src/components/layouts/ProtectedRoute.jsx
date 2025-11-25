@@ -8,7 +8,7 @@ const ProtectedRoute = () => {
 
     if (isLoading) {
         // You can return a loading spinner here
-        return <div>Loading...</div>;
+        return <div className="min-h-screen flex items-center justify-center dark:bg-gray-900 dark:text-white">Loading...</div>;
     }
 
     if (!isAuthenticated) {

@@ -41,20 +41,20 @@ const StorePage = () => {
     };
 
     return (
-        <div className="bg-white min-h-screen">
+        <div className="bg-white dark:bg-gray-900 min-h-screen">
             <div className="container mx-auto py-10 px-6 flex">
                 <FilterSidebar filters={filters} onFilterChange={handleFilterChange} />
 
                 <main className="flex-1">
                     <div className="mb-6 flex justify-between items-center">
                         <div>
-                            <h1 className="text-3xl font-extrabold text-gray-800">Shop Sustainable Fashion</h1>
-                            <p className="text-gray-500 mt-1">
+                            <h1 className="text-3xl font-extrabold text-gray-800 dark:text-white">Shop Sustainable Fashion</h1>
+                            <p className="text-gray-500 dark:text-gray-400 mt-1">
                                 Discover unique, pre-loved pieces from our community.
                             </p>
                         </div>
                         <div className="relative">
-                            <select className="appearance-none bg-white border border-gray-300 rounded-md py-2 pl-3 pr-10 text-gray-700 focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <select className="appearance-none bg-white dark:bg-gray-800 dark:text-white border border-gray-300 dark:border-gray-600 rounded-md py-2 pl-3 pr-10 text-gray-700 dark:text-gray-300 focus:outline-none focus:ring-2 focus:ring-green-500">
                                 <option>Sort by: Newest</option>
                                 <option>Price: Low to High</option>
                                 <option>Price: High to Low</option>
@@ -72,7 +72,7 @@ const StorePage = () => {
                             products.length > 0 ? (
                                 products.map(product => <ProductCard key={product._id} {...product} />)
                             ) : (
-                                <p className="col-span-full text-center text-gray-500">No products found.</p>
+                                <p className="col-span-full text-center text-gray-500 dark:text-gray-400">No products found.</p>
                             )
                         )}
                         {error && <p className="col-span-full text-center text-red-500">{error}</p>}
@@ -80,13 +80,13 @@ const StorePage = () => {
 
                     {/* Pagination */}
                     <div className="mt-12 flex justify-center items-center space-x-2">
-                        <button className="p-2 rounded hover:bg-gray-100"><ChevronLeft className="h-5 w-5" /></button>
-                        <button className="px-4 py-2 rounded text-gray-700 hover:bg-gray-100">1</button>
-                        <button className="px-4 py-2 rounded text-white bg-green-600">2</button>
-                        <button className="px-4 py-2 rounded text-gray-700 hover:bg-gray-100">3</button>
-                        <span className="text-gray-500">...</span>
-                        <button className="px-4 py-2 rounded text-gray-700 hover:bg-gray-100">9</button>
-                        <button className="p-2 rounded hover:bg-gray-100"><ChevronRight className="h-5 w-5" /></button>
+                        <button className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white"><ChevronLeft className="h-5 w-5" /></button>
+                        <button className="px-4 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">1</button>
+                        <button className="px-4 py-2 rounded text-white bg-green-500">2</button>
+                        <button className="px-4 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">3</button>
+                        <span className="text-gray-500 dark:text-gray-400">...</span>
+                        <button className="px-4 py-2 rounded text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">9</button>
+                        <button className="p-2 rounded hover:bg-gray-100 dark:hover:bg-gray-700 dark:text-white"><ChevronRight className="h-5 w-5" /></button>
                     </div>
                 </main>
             </div>

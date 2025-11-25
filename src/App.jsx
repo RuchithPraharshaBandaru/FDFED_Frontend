@@ -19,37 +19,40 @@ import AccountAddressPage from './components/pages/AccountAddressPage';
 import OrderHistoryPage from './components/pages/OrderHistoryPage';
 import MyDonationsPage from './components/pages/MyDonationsPage';
 import CheckoutPage from './components/pages/CheckoutPage'; // <-- 1. Import
+import { ThemeProvider } from './context/ThemeContext';
 
 function App() {
     return (
-        <MainLayout>
-            <Routes>
-                {/* --- Public Routes --- */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/store" element={<StorePage />} />
-                <Route path="/product/:id" element={<ProductPage />} />
-                <Route path="/about" element={<AboutUsPage />} />
-                
-                {/* --- Auth Routes --- */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-
-                {/* --- Protected Routes --- */}
-                <Route element={<ProtectedRoute />}>
-                    <Route path="/cart" element={<CartPage />} />
-                    <Route path="/sell" element={<SellPage />} />
-                    <Route path="/checkout" element={<CheckoutPage />} /> {/* <-- 2. Add Checkout Route */}
+        <ThemeProvider>
+            <MainLayout>
+                <Routes>
+                    {/* --- Public Routes --- */}
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/store" element={<StorePage />} />
+                    <Route path="/product/:id" element={<ProductPage />} />
+                    <Route path="/about" element={<AboutUsPage />} />
                     
-                    {/* --- Account & Dashboard Routes --- */}
-                    <Route path="/account" element={<AccountLayout />}>
-                        <Route index element={<AccountPage />} />
-                        <Route path="address" element={<AccountAddressPage />} />
-                        <Route path="orders" element={<OrderHistoryPage />} />
-                        <Route path="donations" element={<MyDonationsPage />} />
+                    {/* --- Auth Routes --- */}
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignupPage />} />
+
+                    {/* --- Protected Routes --- */}
+                    <Route element={<ProtectedRoute />}>
+                        <Route path="/cart" element={<CartPage />} />
+                        <Route path="/sell" element={<SellPage />} />
+                        <Route path="/checkout" element={<CheckoutPage />} /> {/* <-- 2. Add Checkout Route */}
+                        
+                        {/* --- Account & Dashboard Routes --- */}
+                        <Route path="/account" element={<AccountLayout />}>
+                            <Route index element={<AccountPage />} />
+                            <Route path="address" element={<AccountAddressPage />} />
+                            <Route path="orders" element={<OrderHistoryPage />} />
+                            <Route path="donations" element={<MyDonationsPage />} />
+                        </Route>
                     </Route>
-                </Route>
-            </Routes>
-        </MainLayout>
+                </Routes>
+            </MainLayout>
+        </ThemeProvider>
     );
 }
 

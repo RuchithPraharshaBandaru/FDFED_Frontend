@@ -24,27 +24,27 @@ const OrderHistoryPage = () => {
         fetchOrders();
     }, []);
 
-    if (loading) return <div>Loading order history...</div>;
-    if (error) return <div className="text-red-600">{error}</div>;
+    if (loading) return <div className="dark:text-white">Loading order history...</div>;
+    if (error) return <div className="text-red-600 dark:text-red-400">{error}</div>;
 
     return (
         <div>
-            <h2 className="text-2xl font-semibold mb-6">Order History</h2>
+            <h2 className="text-2xl font-semibold mb-6 dark:text-white">Order History</h2>
             {orders.length === 0 ? (
-                <p>You have not placed any orders yet.</p>
+                <p className="dark:text-gray-300">You have not placed any orders yet.</p>
             ) : (
                 <div className="space-y-6">
                     {orders.map((order) => (
-                        <div key={order.orderId} className="border rounded-lg p-4">
+                        <div key={order.orderId} className="border dark:border-gray-700 rounded-lg p-4 dark:bg-gray-700">
                             <div className="flex justify-between items-center mb-2">
-                                <h3 className="font-semibold">Order ID: {order.orderId}</h3>
-                                <span className="text-sm text-gray-600">{new Date(order.orderDate).toLocaleDateString()}</span>
+                                <h3 className="font-semibold dark:text-white">Order ID: {order.orderId}</h3>
+                                <span className="text-sm text-gray-600 dark:text-gray-400">{new Date(order.orderDate).toLocaleDateString()}</span>
                             </div>
-                            <p>Status: <span className="font-medium text-blue-600">{order.status}</span></p>
-                            <p>Total: <span className="font-medium">${order.totalAmount.toFixed(2)}</span></p>
+                            <p className="dark:text-gray-300">Status: <span className="font-medium text-green-500">{order.status}</span></p>
+                            <p className="dark:text-gray-300">Total: <span className="font-medium">${order.totalAmount.toFixed(2)}</span></p>
                             
                             <div className="mt-4">
-                                <h4 className="font-medium mb-2">Items:</h4>
+                                <h4 className="font-medium mb-2 dark:text-white">Items:</h4>
                                 <ul className="list-disc pl-5 space-y-2">
                                     {order.products.map((item) => (
                                         // --- THIS IS THE FIX ---
@@ -52,7 +52,7 @@ const OrderHistoryPage = () => {
                                         item.productId ? (
                                             <li key={item.productId._id} className="flex items-center justify-between">
                                                 <div>
-                                                    <Link to={`/product/${item.productId._id}`} className="text-green-600 hover:underline">
+                                                    <Link to={`/product/${item.productId._id}`} className="text-green-500 hover:underline">
                                                         {item.productId.title}
                                                     </Link>
                                                     <span className="text-gray-500 ml-2"> (x {item.quantity})</span>
