@@ -4,10 +4,13 @@ import { ShoppingCart, Star } from 'lucide-react';
 import Card from './Card';
 import Button from './Button';
 import Badge from './Badge';
+import { calculateAverageRating, getReviewCount } from '../../utils/ratingHelpers';
 
-const ProductCard = ({ _id, image, title, category, price, rating = 4 }) => {
+const ProductCard = ({ _id, image, title, category, price, reviews = [] }) => {
+    const averageRating = calculateAverageRating(reviews);
+    const reviewCount = getReviewCount(reviews);
     return (
-        <Card className="group relative overflow-hidden transition-all duration-300 hover:shadow-lg border-border/50 bg-card hover:-translate-y-1 p-0 flex flex-col h-full">
+        <Card className="group relative overflow-hidden transition-all duration-300 shadow-md hover:shadow-2xl hover:shadow-green-700/30 border-2 border-border bg-card hover:border-green-700/40 hover:-translate-y-2 p-0 flex flex-col h-full">
             <Link to={`/product/${_id}`} className="flex flex-col h-full">
                 {/* Image Container with Overlay */}
                 <div className="relative aspect-[4/5] overflow-hidden bg-muted">
@@ -29,8 +32,11 @@ const ProductCard = ({ _id, image, title, category, price, rating = 4 }) => {
                     <div className="flex justify-between items-start mb-2">
                         <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">{category}</span>
                         <div className="flex items-center gap-1 text-amber-400 text-xs">
-                            <Star className="h-3 w-3 fill-current" />
-                            <span className="text-foreground">{rating}.0</span>
+                            <Star className={`h-3 w-3 ${averageRating ? 'fill-current' : ''}`} />
+                            <span className="text-foreground font-semibold">
+                                {averageRating || '~'}
+                                {reviewCount > 0 && <span className="text-muted-foreground ml-0.5">({reviewCount})</span>}
+                            </span>
                         </div>
                     </div>
 

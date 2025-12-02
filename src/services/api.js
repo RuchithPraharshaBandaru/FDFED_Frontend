@@ -101,7 +101,12 @@ export const fetchProductById = async (productId) => {
 
 export const fetchFilteredProducts = async (filters) => {
     const params = new URLSearchParams();
-    if (filters.category) params.append('category', filters.category);
+    
+    // Handle multiple categories as array
+    if (filters.categories && filters.categories.length > 0) {
+        filters.categories.forEach(cat => params.append('category', cat));
+    }
+    
     if (filters.minPrice) params.append('minPrice', filters.minPrice);
     if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
     params.append('t', new Date().getTime());

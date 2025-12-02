@@ -10,13 +10,14 @@ const FilterSection = ({ title, children }) => (
     </div>
 );
 
-const CheckboxItem = ({ label, name, value, onChange }) => (
+const CheckboxItem = ({ label, name, value, onChange, checked }) => (
     <label className="flex items-center gap-3 cursor-pointer group">
         <div className="relative flex items-center">
             <input 
                 type="checkbox" 
                 name={name} 
                 value={value} 
+                checked={checked}
                 className="peer h-4 w-4 rounded border-input text-primary focus:ring-primary/20"
                 onChange={onChange}
             />
@@ -27,8 +28,10 @@ const CheckboxItem = ({ label, name, value, onChange }) => (
     </label>
 );
 
-const FilterSidebar = ({ filters, onFilterChange }) => {
-    const handleCategoryChange = (e) => onFilterChange('category', e.target.value);
+const FilterSidebar = ({ filters, onFilterChange, onResetFilters }) => {
+    const handleCategoryChange = (e) => {
+        onFilterChange('category', e.target.value, e.target.checked);
+    };
     
     const handlePriceChange = (e) => {
         const [min, max] = e.target.value.split('-');
@@ -36,14 +39,23 @@ const FilterSidebar = ({ filters, onFilterChange }) => {
     };
 
     return (
-        <aside className="w-64 flex-shrink-0 hidden lg:block">
-            <div className="sticky top-24 space-y-1">
-                <div className="flex justify-between items-center mb-2 px-1">
+        <aside className="w-64 flex-shrink-0 hidden lg:block mr-8">
+            <div className="sticky top-28 space-y-1">
+                <div className="flex justify-between items-center mb-3 px-1">
                      <h2 className="text-lg font-bold tracking-tight">Filters</h2>
-                     <Button variant="link" size="sm" className="h-auto p-0 text-muted-foreground">Reset</Button>
+                     <Button 
+                        variant="link" 
+                        size="sm" 
+                        className="h-auto p-0 text-muted-foreground hover:text-green-600 dark:hover:text-green-400"
+                        onClick={onResetFilters}
+                     >
+                        Reset
+                     </Button>
                 </div>
                
-                <div className="rounded-lg border bg-card text-card-foreground px-4 shadow-sm">
+                {/* Gradient border container */}
+                <div className="relative bg-gradient-to-br from-green-500 to-emerald-600 dark:from-green-500 dark:to-emerald-600 p-[2px] rounded-2xl shadow-xl shadow-green-500/15 dark:shadow-green-500/30">
+                    <div className="bg-white/95 dark:bg-gray-800/95 backdrop-blur-xl rounded-2xl px-4 overflow-hidden">
                     <FilterSection title="Category">
                         {['Silk', 'Fabric', 'Cotton', 'Wool', 'Linen', 'Cashmere'].map(cat => (
                             <CheckboxItem 
@@ -51,6 +63,7 @@ const FilterSidebar = ({ filters, onFilterChange }) => {
                                 label={cat} 
                                 name="category" 
                                 value={cat.toLowerCase()} 
+                                checked={filters.categories?.includes(cat.toLowerCase())}
                                 onChange={handleCategoryChange} 
                             />
                         ))}
@@ -84,7 +97,8 @@ const FilterSidebar = ({ filters, onFilterChange }) => {
                     </FilterSection>
 
                     <div className="py-4">
-                        <Button className="w-full">Apply Filters</Button>
+                        <Button className="w-full bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg shadow-green-500/30">Apply Filters</Button>
+                    </div>
                     </div>
                 </div>
             </div>

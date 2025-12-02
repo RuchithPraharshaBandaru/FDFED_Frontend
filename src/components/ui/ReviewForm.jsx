@@ -34,21 +34,29 @@ const ReviewForm = ({ productId, onReviewSubmitted }) => {
     };
 
     return (
-        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border dark:border-gray-700 mt-8">
-            <h3 className="text-xl font-semibold mb-4 dark:text-white">Write a Review</h3>
-            {message && <p className="text-green-600 dark:text-green-400 mb-4">{message}</p>}
-            {error && <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>}
+        <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl p-6 rounded-2xl shadow-xl border-2 border-gray-200/50 dark:border-gray-700/50 mt-8">
+            <h3 className="text-xl font-bold mb-6 bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-white bg-clip-text text-transparent">
+                Write a Review
+            </h3>
+            {message && <p className="text-green-600 dark:text-green-400 mb-4 font-semibold">{message}</p>}
+            {error && <p className="text-red-600 dark:text-red-400 mb-4 font-semibold">{error}</p>}
             
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rating</label>
-                    <div className="flex space-x-1">
+                    <label className="block text-sm font-semibold bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-white bg-clip-text text-transparent mb-3">
+                        Rating
+                    </label>
+                    <div className="flex space-x-2">
                         {[1, 2, 3, 4, 5].map((star) => (
                             <button
                                 type="button"
                                 key={star}
                                 onClick={() => setRating(star)}
-                                className={`text-2xl cursor-pointer ${star <= rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                                className={`text-3xl cursor-pointer transition-all hover:scale-110 ${
+                                    star <= rating 
+                                        ? 'text-yellow-400 drop-shadow-[0_0_8px_rgba(250,204,21,0.6)]' 
+                                        : 'text-gray-300 dark:text-gray-600 hover:text-yellow-300'
+                                }`}
                             >
                                 &#9733;
                             </button>
@@ -56,19 +64,24 @@ const ReviewForm = ({ productId, onReviewSubmitted }) => {
                     </div>
                 </div>
                 <div>
-                    <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Review</label>
+                    <label htmlFor="description" className="block text-sm font-semibold bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-white bg-clip-text text-transparent mb-2">
+                        Review
+                    </label>
                     <textarea
                         id="description"
                         name="description"
                         rows="4"
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        className="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 shadow-sm focus:border-green-500 focus:ring-green-500 sm:text-sm"
+                        className="mt-1 block w-full rounded-xl border-2 border-gray-200/50 dark:border-gray-700/50 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 shadow-sm focus:border-green-500/50 focus:ring-2 focus:ring-green-500/50 sm:text-sm px-4 py-3 resize-none transition-all"
                         placeholder="Share your thoughts about the product..."
                     ></textarea>
                 </div>
                 <div>
-                    <button type="submit" className="bg-green-500 text-white px-5 py-2 rounded-md text-sm font-medium hover:bg-green-600">
+                    <button 
+                        type="submit" 
+                        className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl text-sm font-bold hover:from-green-600 hover:to-emerald-700 shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 transition-all"
+                    >
                         Submit Review
                     </button>
                 </div>
