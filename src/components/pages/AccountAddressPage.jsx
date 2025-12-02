@@ -4,9 +4,10 @@ import { apiGetAccountAddress, apiUpdateAccountAddress } from '../../services/ap
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 import Alert from '../ui/Alert';
+import { useFormState } from '../../hooks';
 
 const AccountAddressPage = () => {
-    const [formData, setFormData] = useState({
+    const { formData, setFormData, handleChange } = useFormState({
         plotno: '',
         street: '',
         city: '',
@@ -32,11 +33,7 @@ const AccountAddressPage = () => {
             setLoading(false);
         };
         fetchAddress();
-    }, []);
-
-    const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
+    }, [setFormData]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -53,59 +50,61 @@ const AccountAddressPage = () => {
         }
     };
 
-    if (loading) return <div className="dark:text-white">Loading address...</div>;
+    if (loading) return <div className="text-center py-12 text-gray-700 dark:text-gray-300 font-semibold">Loading address...</div>;
 
     return (
-        <div>
-            <h2 className="text-2xl font-semibold mb-6 dark:text-white">My Address</h2>
+        <div className="space-y-6">
+            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-100 dark:to-white bg-clip-text text-transparent">My Address</h2>
             
-            <Alert type="success" message={message} className="mb-4" />
-            <Alert type="error" message={error} className="mb-4" />
+            {message && <Alert type="success" message={message} className="mb-4" />}
+            {error && <Alert type="error" message={error} className="mb-4" />}
             
-            <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <Input
-                        label="Plot No. / House No."
-                        name="plotno"
-                        value={formData.plotno}
-                        onChange={handleChange}
-                    />
-                    <Input
-                        label="Street / Area"
-                        name="street"
-                        value={formData.street}
-                        onChange={handleChange}
-                    />
-                    <Input
-                        label="City"
-                        name="city"
-                        value={formData.city}
-                        onChange={handleChange}
-                    />
-                    <Input
-                        label="State"
-                        name="state"
-                        value={formData.state}
-                        onChange={handleChange}
-                    />
-                    <Input
-                        label="Pincode"
-                        name="pincode"
-                        value={formData.pincode}
-                        onChange={handleChange}
-                    />
-                    <Input
-                        label="Phone Number"
-                        name="phone"
-                        value={formData.phone}
-                        onChange={handleChange}
-                    />
-                </div>
-                
-                <Button type="submit" variant="primary">
-                    Save Address
-                </Button>
-            </form>
+            <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl p-8 rounded-2xl shadow-xl border-2 border-gray-200/50 dark:border-gray-700/50">
+                <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <Input
+                            label="Plot No. / House No."
+                            name="plotno"
+                            value={formData.plotno}
+                            onChange={handleChange}
+                        />
+                        <Input
+                            label="Street / Area"
+                            name="street"
+                            value={formData.street}
+                            onChange={handleChange}
+                        />
+                        <Input
+                            label="City"
+                            name="city"
+                            value={formData.city}
+                            onChange={handleChange}
+                        />
+                        <Input
+                            label="State"
+                            name="state"
+                            value={formData.state}
+                            onChange={handleChange}
+                        />
+                        <Input
+                            label="Pincode"
+                            name="pincode"
+                            value={formData.pincode}
+                            onChange={handleChange}
+                        />
+                        <Input
+                            label="Phone Number"
+                            name="phone"
+                            value={formData.phone}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    
+                    <Button type="submit" variant="primary" fullWidth>
+                        Save Address
+                    </Button>
+                </form>
+            </div>
         </div>
     );
 };

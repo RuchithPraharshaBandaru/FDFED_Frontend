@@ -34,13 +34,31 @@ function SignupPage() {
     };
 
     return (
-        <div className="flex items-center justify-center min-h-[calc(100vh-200px)] bg-gray-50 dark:bg-gray-900 py-12 px-6">
-            <div className="bg-white dark:bg-gray-800 max-w-md w-full p-8 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                <h2 className="text-3xl font-bold text-center text-gray-800 dark:text-white mb-6">Create Account</h2>
+        <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/20 to-green-50/30 dark:from-gray-950 dark:via-emerald-900/30 dark:to-green-900/25 flex items-center justify-center py-12 px-6 overflow-hidden">
+            {/* Futuristic background elements */}
+            <div className="absolute inset-0 bg-dot-pattern opacity-[0.03] dark:opacity-[0.08] pointer-events-none" />
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-gradient-to-br from-emerald-400/15 to-green-500/15 dark:from-emerald-500/25 dark:to-green-600/25 blur-3xl rounded-full" />
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-gradient-to-tr from-green-400/10 to-emerald-500/10 dark:from-green-600/20 dark:to-emerald-700/20 blur-3xl rounded-full" />
+            
+            {/* Main Card */}
+            <div className="relative max-w-md w-full">
+                {/* Glassmorphism container */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/40 dark:from-gray-800/90 dark:to-gray-900/80 backdrop-blur-xl rounded-2xl" />
+                <div className="relative bg-white/60 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-emerald-500/30 shadow-2xl shadow-emerald-500/10 dark:shadow-emerald-500/20 p-8">
+                    {/* Header with icon */}
+                    <div className="text-center mb-8">
+                        <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 to-green-600 mb-4 shadow-lg shadow-emerald-500/30">
+                            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                            </svg>
+                        </div>
+                        <h2 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-2">Create Account</h2>
+                        <p className="text-gray-600 dark:text-gray-400">Join our sustainable fashion community</p>
+                    </div>
                 
                 {error && <Alert type="error">{error}</Alert>}
                 
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid grid-cols-2 gap-4">
                         <Input
                             label="First Name"
@@ -81,7 +99,7 @@ function SignupPage() {
                     <Button 
                         type="submit" 
                         variant="primary"
-                        className="w-full"
+                        className="w-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 shadow-lg shadow-emerald-500/30"
                         disabled={isLoading}
                     >
                         {isLoading ? 'Signing up...' : 'Sign Up'}
@@ -90,10 +108,11 @@ function SignupPage() {
                 
                 <p className="text-sm text-center text-gray-600 dark:text-gray-400 mt-6">
                     Already have an account?{' '}
-                    <Link to="/login" className="font-medium text-green-500 hover:text-green-600">
+                    <Link to="/login" className="font-semibold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 transition-colors">
                         Log in
                     </Link>
                 </p>
+                </div>
             </div>
         </div>
     );

@@ -6,14 +6,15 @@ import Select from '../ui/Select';
 import Button from '../ui/Button';
 import Textarea from '../ui/Textarea';
 import Alert from '../ui/Alert';
+import { useFormState } from '../../hooks';
 
 const SellPage = () => {
-    const [formData, setFormData] = useState({
+    const { formData, handleChange, resetForm } = useFormState({
         items: '',
         fabric: '',
         size: '',
         gender: '',
-        age: '', // This corresponds to 'usageDuration'
+        age: '',
         clothesDate: '',
         timeSlot: '',
         description: ''
@@ -23,14 +24,6 @@ const SellPage = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const navigate = useNavigate();
-
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
 
     const handleFileChange = (e) => {
         setFile(e.target.files[0]);
@@ -62,11 +55,8 @@ const SellPage = () => {
         try {
             await submitDonation(data);
             setSuccess('Submission successful! You can submit another item or browse the store.');
-            // Reset form
-            setFormData({
-                items: '', fabric: '', size: '', gender: '',
-                age: '', clothesDate: '', timeSlot: '', description: ''
-            });
+            // Reset form using custom hook
+            resetForm();
             setFile(null);
             e.target.reset(); // Resets the file input
         } catch (err) {
@@ -111,13 +101,46 @@ const SellPage = () => {
     ];
 
     return (
-        <div className="bg-gray-100 dark:bg-gray-900 min-h-screen py-8 mt-6">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h1 className="text-3xl font-bold text-center mb-8 text-green-500">Sell/Donate Your Clothes</h1>
+        <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-green-50 dark:from-gray-950 dark:via-emerald-900/35 dark:to-green-900/30 overflow-hidden">
+            {/* Futuristic background elements */}
+            <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] dark:opacity-[0.08] pointer-events-none" />
+            <div className="absolute top-0 right-0 w-96 h-96 bg-gradient-to-br from-green-400/20 to-emerald-500/20 dark:from-green-500/25 dark:to-emerald-600/25 blur-3xl rounded-full" />
+            <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-emerald-400/15 to-green-500/15 dark:from-emerald-600/20 dark:to-green-700/20 blur-3xl rounded-full" />
+            
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                {/* Hero Header */}
+                <div className="text-center mb-12 space-y-4">
+                    <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 dark:from-green-500/20 dark:to-emerald-500/20 border border-green-500/20 backdrop-blur-sm mb-4">
+                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        <span className="text-sm font-medium text-green-700 dark:text-green-400">Earn While You Sustain</span>
+                    </div>
+                    <h1 className="text-4xl md:text-6xl font-extrabold tracking-tight">
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-green-600 via-emerald-500 to-green-600 dark:from-green-400 dark:via-emerald-400 dark:to-green-400">Transform</span>
+                        <br />
+                        <span className="text-gray-900 dark:text-white">Your Wardrobe</span>
+                    </h1>
+                    <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                        Turn pre-loved fashion into rewards. Every piece you share helps build a sustainable future.
+                    </p>
+                </div>
                 
                 <div className="flex flex-col lg:flex-row lg:gap-8">
-                    <div className="lg:w-2/3 bg-white dark:bg-gray-800 rounded-lg shadow-md p-8 mb-8 lg:mb-0">
-                        <form id="clothesForm" className="space-y-6" autoComplete="off" onSubmit={handleSubmit}>
+                    {/* Main Form - Glassmorphism Card */}
+                    <div className="lg:w-2/3 relative">
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/80 to-white/40 dark:from-gray-800/85 dark:to-gray-900/75 backdrop-blur-xl rounded-2xl" />
+                        <div className="relative bg-white/60 dark:bg-gray-800/65 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-green-500/30 shadow-2xl shadow-green-500/10 dark:shadow-green-500/20 p-8 mb-8 lg:mb-0">
+                            <div className="flex items-center gap-3 mb-6 pb-6 border-b border-gray-200/50 dark:border-gray-700/50">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                                    <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Submit Your Item</h2>
+                                    <p className="text-sm text-gray-600 dark:text-gray-400">Fill in the details to get started</p>
+                                </div>
+                            </div>
+                            <form id="clothesForm" className="space-y-6" autoComplete="off" onSubmit={handleSubmit}>
 
                             {/* Form Messages */}
                             <Alert type="success" message={success} />
@@ -176,19 +199,25 @@ const SellPage = () => {
                             />
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Gender</label>
-                                <div className="flex gap-4">
-                                    <label className="flex items-center space-x-2 dark:text-gray-300">
-                                        <input type="radio" name="gender" value="mens" checked={formData.gender === 'mens'} onChange={handleChange} required className="rounded-full border-gray-300 text-green-500 focus:ring-green-500" />
-                                        <span>Men's</span>
+                                <label className="block text-sm font-semibold bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-white bg-clip-text text-transparent mb-2">Gender</label>
+                                <div className="flex gap-3">
+                                    <label className="flex-1 cursor-pointer">
+                                        <input type="radio" name="gender" value="mens" checked={formData.gender === 'mens'} onChange={handleChange} required className="peer sr-only" />
+                                        <div className="flex items-center justify-center h-11 px-4 rounded-xl border-2 border-gray-200/50 dark:border-gray-700/50 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm text-sm font-medium transition-all peer-checked:border-green-500 peer-checked:bg-green-500/10 peer-checked:text-green-600 dark:peer-checked:text-green-400 hover:border-green-500/30">
+                                            Men's
+                                        </div>
                                     </label>
-                                    <label className="flex items-center space-x-2 dark:text-gray-300">
-                                        <input type="radio" name="gender" value="womens" checked={formData.gender === 'womens'} onChange={handleChange} className="rounded-full border-gray-300 text-green-500 focus:ring-green-500" />
-                                        <span>Women's</span>
+                                    <label className="flex-1 cursor-pointer">
+                                        <input type="radio" name="gender" value="womens" checked={formData.gender === 'womens'} onChange={handleChange} className="peer sr-only" />
+                                        <div className="flex items-center justify-center h-11 px-4 rounded-xl border-2 border-gray-200/50 dark:border-gray-700/50 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm text-sm font-medium transition-all peer-checked:border-green-500 peer-checked:bg-green-500/10 peer-checked:text-green-600 dark:peer-checked:text-green-400 hover:border-green-500/30">
+                                            Women's
+                                        </div>
                                     </label>
-                                    <label className="flex items-center space-x-2 dark:text-gray-300">
-                                        <input type="radio" name="gender" value="unisex" checked={formData.gender === 'unisex'} onChange={handleChange} className="rounded-full border-gray-300 text-green-500 focus:ring-green-500" />
-                                        <span>Unisex</span>
+                                    <label className="flex-1 cursor-pointer">
+                                        <input type="radio" name="gender" value="unisex" checked={formData.gender === 'unisex'} onChange={handleChange} className="peer sr-only" />
+                                        <div className="flex items-center justify-center h-11 px-4 rounded-xl border-2 border-gray-200/50 dark:border-gray-700/50 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm text-sm font-medium transition-all peer-checked:border-green-500 peer-checked:bg-green-500/10 peer-checked:text-green-600 dark:peer-checked:text-green-400 hover:border-green-500/30">
+                                            Unisex
+                                        </div>
                                     </label>
                                 </div>
                             </div>
@@ -242,8 +271,17 @@ const SellPage = () => {
                             />
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Photo Upload (required)</label>
-                                <input type="file" name="photos" onChange={handleFileChange} accept="image/*" required className="mt-1 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-green-50 dark:file:bg-gray-700 file:text-green-700 dark:file:text-green-400 hover:file:bg-green-100 dark:hover:file:bg-gray-600" />
+                                <label className="block text-sm font-semibold bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-white bg-clip-text text-transparent mb-2">Photo Upload (required)</label>
+                                <div className="relative">
+                                    <input 
+                                        type="file" 
+                                        name="photos" 
+                                        onChange={handleFileChange} 
+                                        accept="image/*" 
+                                        required 
+                                        className="block w-full text-sm text-gray-600 dark:text-gray-400 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-green-500 file:to-emerald-600 file:text-white hover:file:from-green-600 hover:file:to-emerald-700 file:shadow-lg file:shadow-green-500/30 file:transition-all cursor-pointer rounded-xl border-2 border-dashed border-gray-200/50 dark:border-gray-700/50 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-3 hover:border-green-500/30 transition-all" 
+                                    />
+                                </div>
                             </div>
 
                             <Button 
@@ -255,43 +293,64 @@ const SellPage = () => {
                                 {loading ? 'Submitting...' : 'Submit'}
                             </Button>
                         </form>
+                        </div>
                     </div>
 
-                    <div className="lg:w-1/3 lg:sticky lg:top-8 self-start">
-                        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-                            <h4 className="text-md font-semibold mb-2 text-green-500">How Your Points Are Calculated</h4>
-                            <p className="text-gray-700 dark:text-gray-300 mb-2 text-sm">
-                                Points are determined by the <strong>size</strong>, <strong>fabric</strong>, and <strong>usage duration</strong>.
-                            </p>
-                            <div className="overflow-x-auto max-h-[40rem] overflow-y-auto mb-2">
-                                <table className="min-w-full border dark:border-gray-600 text-sm text-left text-gray-700 dark:text-gray-300">
-                                    <thead className="bg-gray-100 dark:bg-gray-700 sticky top-0">
-                                        <tr>
-                                            <th className="px-3 py-2 border dark:border-gray-600">Size</th>
-                                            <th className="px-3 py-2 border dark:border-gray-600">Fabric</th>
-                                            <th className="px-3 py-2 border dark:border-gray-600">Usage</th>
-                                            <th className="px-3 py-2 border dark:border-gray-600">Points (₹)</th>
+                    {/* Points Calculator - Futuristic Card */}
+                    <div className="lg:w-1/3 flex flex-col">
+                        <div className="relative h-full bg-gradient-to-br from-green-500 to-emerald-600 dark:from-green-500 dark:to-emerald-600 p-[2px] rounded-2xl shadow-2xl shadow-green-500/20 dark:shadow-green-500/40">
+                            <div className="bg-white/95 h-full dark:bg-gray-800/95 backdrop-blur-xl p-6 rounded-2xl">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                                        <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                        </svg>
+                                    </div>
+                                    <h4 className="text-lg font-bold bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">Points Calculator</h4>
+                                </div>
+                                <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm leading-relaxed">
+                                    Earn points based on <span className="font-semibold text-green-600 dark:text-green-400">size</span>, <span className="font-semibold text-green-600 dark:text-green-400">fabric</span>, and <span className="font-semibold text-green-600 dark:text-green-400">usage duration</span>.
+                                </p>
+                                <div className="overflow-x-auto max-h-[60.5rem] overflow-y-auto mb-2 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
+                                    <table className="min-w-full text-sm text-left">
+                                        <thead className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50 sticky top-0 backdrop-blur-sm">
+                                            <tr>
+                                                <th className="px-3 py-3 font-semibold text-green-700 dark:text-green-400">Size</th>
+                                                <th className="px-3 py-3 font-semibold text-green-700 dark:text-green-400">Fabric</th>
+                                                <th className="px-3 py-3 font-semibold text-green-700 dark:text-green-400">Usage</th>
+                                                <th className="px-3 py-3 font-semibold text-green-700 dark:text-green-400">Points (₹)</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        {pointsData.map((item, index) => (
-                                            <tr key={index}>
-                                                <td className="px-3 py-2 border dark:border-gray-600">{item.s}</td>
-                                                <td className="px-3 py-2 border dark:border-gray-600">{item.f}</td>
-                                                <td className="px-3 py-2 border dark:border-gray-600">{item.u}</td>
-                                                <td className="px-3 py-2 border dark:border-gray-600">{item.p}</td>
+                                        <tbody>
+                                            {pointsData.map((item, index) => (
+                                                <tr key={index} className="border-b border-gray-100 dark:border-gray-800 hover:bg-green-50/50 dark:hover:bg-green-950/20 transition-colors">
+                                                    <td className="px-3 py-3 text-gray-700 dark:text-gray-300">{item.s}</td>
+                                                    <td className="px-3 py-3 text-gray-700 dark:text-gray-300">{item.f}</td>
+                                                    <td className="px-3 py-3 text-gray-600 dark:text-gray-400 text-xs">{item.u}</td>
+                                                    <td className="px-3 py-3 font-bold text-green-600 dark:text-green-400">{item.p}</td>
                                             </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
 
                 </div>
-                <div className="mt-8 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md">
-                    <h3 className="text-lg font-semibold mb-4 dark:text-white">Terms and Conditions</h3>
-                    <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
+                {/* Terms Section - Modern Card */}
+                <div className="mt-8 relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 dark:from-green-500/20 dark:to-emerald-500/20 rounded-2xl" />
+                    <div className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl p-8 rounded-2xl border border-gray-200/50 dark:border-green-500/30 shadow-xl dark:shadow-green-500/15">
+                        <div className="flex items-center gap-3 mb-6">
+                            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gray-500 to-gray-700 dark:from-gray-600 dark:to-gray-800 flex items-center justify-center">
+                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-900 dark:text-white">Terms & Conditions</h3>
+                        </div>
+                        <div className="space-y-4 text-sm text-gray-600 dark:text-gray-300">
                         <p>1. <strong>Eligibility:</strong> Clothes must be clean and in acceptable condition. We reserve the right to refuse items that do not meet our standards.</p>
                         <p>2. <strong>Item Limitations:</strong> We do not accept items that are heavily soiled or damaged beyond repair.</p>
                         <p>3. <strong>Privacy Policy:</strong> All personal information collected will be kept confidential and used solely for the purpose of processing donations.</p>
@@ -300,6 +359,7 @@ const SellPage = () => {
                         <p>6. <strong>Scheduling:</strong> Please select a preferred donation date and time slot; we will do our best to accommodate your request.</p>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
     );

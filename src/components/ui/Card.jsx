@@ -15,7 +15,7 @@ const Card = ({
     
     return (
         <div 
-            className={`rounded-xl border bg-card text-card-foreground shadow ${paddingClasses[padding]} ${className}`}
+            className={`rounded-2xl border-2 border-gray-200/50 dark:border-gray-700/50 bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl text-card-foreground shadow-xl ${paddingClasses[padding]} ${className}`}
             {...props}
         >
             {children}

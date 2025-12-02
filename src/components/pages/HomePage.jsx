@@ -1,29 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Leaf, TrendingUp, Sparkles } from 'lucide-react';
 import ProductCard from '../ui/ProductCard';
 import Button from '../ui/Button';
 import Badge from '../ui/Badge';
 import { fetchProducts } from '../../services/api.js';
+import { useFetchData } from '../../hooks';
 
 const HomePage = () => {
-    const [products, setProducts] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    useEffect(() => {
-        const loadProducts = async () => {
-            try {
-                const productData = await fetchProducts();
-                setProducts(productData);
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
-            }
-        };
-        loadProducts();
-    }, []);
+    const { data, loading, error } = useFetchData(fetchProducts, []);
+    const products = data || []; // Handle null/undefined data
 
     return (
         <div className="flex flex-col min-h-screen bg-background font-sans">
@@ -109,15 +95,17 @@ const HomePage = () => {
                             </div>
                             
                             {/* Decorative Background Blob - Green Lighting Effect */}
-                            <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-gradient-to-tr from-green-300/40 to-emerald-300/40 dark:from-green-900/30 dark:to-emerald-900/30 blur-2xl rounded-full pointer-events-none" />
+                            <div className="absolute -z-10 top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[110%] h-[110%] bg-gradient-to-tr from-green-600/30 via-emerald-400/35 to-green-300/40 dark:from-green-900/30 dark:via-emerald-800/35 dark:to-green-700/30 blur-2xl rounded-full pointer-events-none" />
                         </div>
                     </div>
                 </div>
             </section>
 
             {/* Categories Section */}
-            <section className="py-8 bg-background border-b">
-                <div className="container mx-auto px-4 md:px-6">
+            <section className="relative py-8 bg-background border-b overflow-hidden">
+                {/* Subtle gradient with lighter green tones */}
+                <div className="absolute top-0 right-1/4 w-96 h-96 bg-gradient-to-bl from-green-300/12 via-emerald-200/10 to-transparent dark:from-green-800/12 dark:via-emerald-900/8 blur-3xl rounded-full pointer-events-none" />
+                <div className="container relative mx-auto px-4 md:px-6">
                     <div className="flex justify-between items-end mb-5">
                         <div>
                             <h2 className="text-2xl font-bold tracking-tight">Shop by Category</h2>
@@ -133,11 +121,11 @@ const HomePage = () => {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Fashion Card */}
-                        <Link to="/store?category=fashion" className="group relative overflow-hidden rounded-2xl border bg-background shadow-sm hover:shadow-lg transition-all h-64 md:h-72">
-                            <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/80 via-black/40 to-transparent flex flex-col justify-center p-8 transition-colors group-hover:from-black/90">
+                        <Link to="/store?category=fashion" className="group relative overflow-hidden rounded-2xl border-1 border-green-200 dark:border-green-900 bg-background shadow-sm hover:shadow-lg hover:shadow-green-500/20 transition-all h-64 md:h-72">
+                            <div className="absolute inset-0 z-10 bg-gradient-to-r from-black/85 via-black/50 to-transparent flex flex-col justify-center p-8 transition-colors group-hover:from-black/90">
                                 <h3 className="text-3xl font-bold text-white mb-2 transform translate-y-0 transition-transform group-hover:-translate-y-1">Fashion & Clothing</h3>
                                 <p className="text-gray-200 mb-6 opacity-90 font-medium max-w-xs text-sm md:text-base">Up to 40% off on premium brands. Verified quality.</p>
-                                <Button size="sm" className="w-fit bg-white text-black hover:bg-gray-100 border-none font-semibold">Browse Collection</Button>
+                                <Button size="sm" className="w-fit bg-white text-black hover:bg-gray-100 border-none font-semibold shadow-md">Browse Collection</Button>
                             </div>
                             <img 
                                 src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1170&q=80" 
@@ -147,14 +135,14 @@ const HomePage = () => {
                         </Link>
 
                         {/* Sell Card */}
-                        <Link to="/sell" className="group relative overflow-hidden rounded-2xl border bg-background shadow-sm hover:shadow-lg transition-all h-64 md:h-72">
-                            <div className="absolute inset-0 z-10 bg-gradient-to-r from-emerald-950/90 via-emerald-900/50 to-transparent flex flex-col justify-center p-8 transition-colors group-hover:from-emerald-950">
+                        <Link to="/sell" className="group relative overflow-hidden rounded-2xl border-1 border-emerald-200 dark:border-emerald-900 bg-background shadow-sm hover:shadow-lg hover:shadow-emerald-500/20 transition-all h-64 md:h-72">
+                            <div className="absolute inset-0 z-10 bg-gradient-to-r from-emerald-950/92 via-emerald-900/55 to-transparent flex flex-col justify-center p-8 transition-colors group-hover:from-emerald-950">
                                 <div className="flex items-center gap-2 mb-2 transform translate-y-0 transition-transform group-hover:-translate-y-1">
                                     <Sparkles className="text-yellow-400 h-5 w-5" />
                                     <h3 className="text-3xl font-bold text-white">Sell & Earn</h3>
                                 </div>
                                 <p className="text-gray-200 mb-6 opacity-90 font-medium max-w-xs text-sm md:text-base">Give your clothes a second life and earn rewards.</p>
-                                <Button size="sm" className="w-fit bg-white text-emerald-900 hover:bg-gray-100 border-none font-semibold">Start Selling</Button>
+                                <Button size="sm" className="w-fit bg-white text-emerald-900 hover:bg-gray-100 border-none font-semibold shadow-md">Start Selling</Button>
                             </div>
                             <img 
                                 src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=600&q=80" 
@@ -167,8 +155,11 @@ const HomePage = () => {
             </section>
 
             {/* --- 3. POPULAR PRODUCTS --- */}
-            <section className="py-16 bg-muted/30 border-y">
-                <div className="container mx-auto px-4 md:px-6">
+            <section className="relative py-16 bg-muted/30 border-y overflow-hidden">
+                {/* Gradient variations with darker/lighter greens */}
+                <div className="absolute bottom-0 left-0 w-96 h-96 bg-gradient-to-tr from-green-600/10 via-emerald-500/8 to-transparent dark:from-green-900/15 dark:via-emerald-800/10 blur-3xl rounded-full pointer-events-none" />
+                <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-green-400/8 to-transparent dark:from-green-700/10 blur-3xl rounded-full pointer-events-none" />
+                <div className="container relative mx-auto px-4 md:px-6">
                     <div className="flex flex-col md:flex-row justify-between items-end mb-8 gap-4">
                         <div>
                             <Badge className="mb-2 bg-green-500 hover:bg-green-600 border-none text-white">Trending</Badge>
@@ -217,7 +208,7 @@ const HomePage = () => {
                                 Turn your unused clothes into cash or donate them to support sustainable fashion. It takes less than 2 minutes.
                             </p>
                             <Link to="/sell" className="inline-block pt-2">
-                                <Button size="lg" className="bg-white text-emerald-950 hover:bg-gray-100 h-12 px-8 text-base font-bold rounded-full border-none shadow-lg">
+                                <Button size="lg" className="bg-white text-emerald-950 hover:bg-gray-100 h-12 px-8 text-base font-bold rounded-full border-1 border-white shadow-xl hover:shadow-2xl">
                                     Start Selling Now
                                 </Button>
                             </Link>
