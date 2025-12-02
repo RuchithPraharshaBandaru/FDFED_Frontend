@@ -31,13 +31,18 @@ const OrderHistoryPage = () => {
                             
                             <div className="mt-4 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-xl p-4 border border-gray-200/30 dark:border-gray-600/30">
                                 <h4 className="font-bold mb-3 text-gray-700 dark:text-gray-200">Items:</h4>
-                                <ul className="space-y-2">
+                                <ul className="space-y-3">
                                     {order.products.map((item) => (
-                                        // --- THIS IS THE FIX ---
-                                        // We must check if item.productId exists (it could be null if deleted)
                                         item.productId ? (
-                                            <li key={item.productId._id} className="flex items-center justify-between py-2 border-b border-gray-200/30 dark:border-gray-600/30 last:border-0">
-                                                <div>
+                                            <li key={item.productId._id} className="flex items-center gap-4 py-3 border-b border-gray-200/30 dark:border-gray-600/30 last:border-0">
+                                                {item.productId.imageSrc && (
+                                                    <img 
+                                                        src={item.productId.imageSrc} 
+                                                        alt={item.productId.title} 
+                                                        className="w-16 h-16 object-cover rounded-lg shadow-sm"
+                                                    />
+                                                )}
+                                                <div className="flex-1">
                                                     <Link to={`/product/${item.productId._id}`} className="text-green-600 dark:text-green-400 hover:underline font-semibold">
                                                         {item.productId.title}
                                                     </Link>
@@ -46,14 +51,11 @@ const OrderHistoryPage = () => {
                                                 <span className="font-bold dark:text-white">${(item.price * item.quantity).toFixed(2)}</span>
                                             </li>
                                         ) : (
-                                            // This fallback renders if the product was deleted
-                                            // We use item._id (from the order schema) as the key
-                                            <li key={item._id} className="flex items-center justify-between py-2 border-b border-gray-200/30 dark:border-gray-600/30 last:border-0">
+                                            <li key={item._id} className="flex items-center justify-between py-3 border-b border-gray-200/30 dark:border-gray-600/30 last:border-0">
                                                 <span className="text-gray-500 italic">Product no longer available</span>
                                                 <span className="font-bold dark:text-white">${(item.price * item.quantity).toFixed(2)}</span>
                                             </li>
                                         )
-                                        // --- END OF FIX ---
                                     ))}
                                 </ul>
                             </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useLocation } from 'react-router-dom';
 import { fetchFilteredProducts } from '../../services/api.js';
 import ProductCard from '../ui/ProductCard';
 import FilterSidebar from '../ui/FilterSidebar';
@@ -7,6 +8,7 @@ import { usePagination } from '../../hooks';
 import { sortProducts } from '../../utils/sortHelpers';
 
 const StorePage = () => {
+    const location = useLocation();
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -14,7 +16,8 @@ const StorePage = () => {
     const [filters, setFilters] = useState({
         categories: [],
         minPrice: null,
-        maxPrice: null
+        maxPrice: null,
+        search: ''
     });
 
     // Sort products using utility function
@@ -32,6 +35,15 @@ const StorePage = () => {
         handleNextPage,
         resetPage
     } = usePagination(sortedProducts, 9);
+
+    // Handle search query from URL
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const searchQuery = searchParams.get('search');
+        if (searchQuery) {
+            setFilters(prev => ({ ...prev, search: searchQuery }));
+        }
+    }, [location.search]);
 
     useEffect(() => {
         const loadProducts = async () => {
@@ -70,7 +82,8 @@ const StorePage = () => {
         setFilters({
             categories: [],
             minPrice: null,
-            maxPrice: null
+            maxPrice: null,
+            search: ''
         });
         setSortBy('newest');
         resetPage();

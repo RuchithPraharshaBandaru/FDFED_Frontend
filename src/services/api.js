@@ -109,6 +109,7 @@ export const fetchFilteredProducts = async (filters) => {
     
     if (filters.minPrice) params.append('minPrice', filters.minPrice);
     if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
+    if (filters.search) params.append('search', filters.search);
     params.append('t', new Date().getTime());
 
     const response = await fetch(`${API_BASE_URL}/products/filter?${params.toString()}`, {
@@ -117,6 +118,24 @@ export const fetchFilteredProducts = async (filters) => {
     
     if (!response.ok) {
         throw new Error('Failed to fetch filtered products');
+    }
+    const data = await response.json();
+    return data.products || [];
+};
+
+export const searchProducts = async (query) => {
+    if (!query || query.trim().length === 0) return [];
+    
+    const params = new URLSearchParams();
+    params.append('search', query.trim());
+    params.append('t', new Date().getTime());
+
+    const response = await fetch(`${API_BASE_URL}/products/filter?${params.toString()}`, {
+        credentials: 'include'
+    });
+    
+    if (!response.ok) {
+        throw new Error('Failed to search products');
     }
     const data = await response.json();
     return data.products || [];
