@@ -7,18 +7,22 @@ import cartReducer from './slices/cartSlice';
 import authReducer from './slices/authSlice';
 import themeReducer from './slices/themeSlice';
 import sellerReducer from './slices/sellerSlice';
+import adminReducer from './slices/adminSlice';
+import adminAuthReducer from './slices/adminAuthSlice';
 
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['cart', 'auth', 'theme', 'seller'] // Only persist these reducers
+    whitelist: ['cart', 'auth', 'theme', 'seller','admin', 'adminAuth'] // Only persist these reducers
 };
 
 const rootReducer = combineReducers({
     cart: cartReducer,
     auth: authReducer,
     theme: themeReducer,
-    seller: sellerReducer
+    seller: sellerReducer,
+    admin: adminReducer,
+    adminAuth: adminAuthReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
