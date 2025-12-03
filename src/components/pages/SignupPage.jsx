@@ -6,6 +6,7 @@ import { signupUser, selectIsAuthenticated, selectAuthLoading, selectAuthError }
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 import Alert from '../ui/Alert';
+import { isValidEmail, validatePassword } from '../../utils/validators';
 
 function SignupPage() {
     const [firstname, setFirstname] = useState('');
@@ -14,6 +15,7 @@ function SignupPage() {
     const [password, setPassword] = useState('');
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [errors, setErrors] = useState({});
     
     const isAuthenticated = useSelector(selectIsAuthenticated);
     const isLoading = useSelector(selectAuthLoading);
@@ -26,7 +28,20 @@ function SignupPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+        const newErrors = {};
+
+        if (!firstname.trim()) newErrors.firstname = 'First name is required';
+        if (!lastname.trim()) newErrors.lastname = 'Last name is required';
+        if (!isValidEmail(email)) newErrors.email = 'Please enter a valid email address';
+        const pwdCheck = validatePassword(password);
+        if (!pwdCheck.isValid) newErrors.password = pwdCheck.message;
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+        setErrors({});
+
         const result = await dispatch(signupUser({ firstname, lastname, email, password }));
         if (result.type === 'auth/signup/fulfilled') {
             navigate('/');
@@ -68,6 +83,7 @@ function SignupPage() {
                             onChange={(e) => setFirstname(e.target.value)}
                             required
                         />
+                        {errors.firstname && <p className="text-sm text-red-600 mt-1">{errors.firstname}</p>}
                         <Input
                             label="Last Name"
                             type="text"
@@ -76,6 +92,7 @@ function SignupPage() {
                             onChange={(e) => setLastname(e.target.value)}
                             required
                         />
+                        {errors.lastname && <p className="text-sm text-red-600 mt-1">{errors.lastname}</p>}
                     </div>
 
                     <Input
@@ -86,6 +103,7 @@ function SignupPage() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     />
+                    {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
 
                     <Input
                         label="Password"
@@ -95,6 +113,7 @@ function SignupPage() {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
+                    {errors.password && <p className="text-sm text-red-600 mt-1">{errors.password}</p>}
 
                     <Button 
                         type="submit" 
