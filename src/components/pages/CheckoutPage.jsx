@@ -62,7 +62,8 @@ const CheckoutPage = () => {
                 address: formData,
                 useCoins: useCoins // Pass the toggle state to backend
             });
-            navigate('/order-history'); 
+            // FIX: Redirect to the correct route defined in App.jsx
+            navigate('/account/orders'); 
         } catch (err) {
             alert(err.message);
         } finally {
