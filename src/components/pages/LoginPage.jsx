@@ -6,10 +6,12 @@ import { loginUser, selectIsAuthenticated, selectAuthLoading, selectAuthError } 
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 import Alert from '../ui/Alert';
+import { isValidEmail } from '../../utils/validators';
 
 function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [errors, setErrors] = useState({});
     const dispatch = useDispatch();
     const navigate = useNavigate();
     
@@ -24,7 +26,16 @@ function LoginPage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        
+        const newErrors = {};
+        if (!isValidEmail(email)) newErrors.email = 'Please enter a valid email address';
+        if (!password || password.length === 0) newErrors.password = 'Password is required';
+
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+        setErrors({});
+
         const result = await dispatch(loginUser({ email, password }));
         if (result.type === 'auth/login/fulfilled') {
             navigate('/');
@@ -65,6 +76,7 @@ function LoginPage() {
                         onChange={(e) => setEmail(e.target.value)}
                         required
                     />
+                    {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
                     
                     <Input
                         label="Password"
@@ -74,6 +86,7 @@ function LoginPage() {
                         onChange={(e) => setPassword(e.target.value)}
                         required
                     />
+                    {errors.password && <p className="text-sm text-red-600 mt-1">{errors.password}</p>}
                     
                     <Button 
                         type="submit" 
