@@ -396,3 +396,42 @@ export const apiDeleteReview = async (reviewId) => {
     }
     return response.json();
 };
+
+// --- BLOG FUNCTIONS ---
+/**
+ * Fetches all blogs (public endpoint)
+ * @returns {Promise<Array>}
+ */
+export const fetchBlogs = async () => {
+    const response = await fetch(`http://localhost:8000/api/v1/admin/blogs`, {
+        credentials: 'include'
+    });
+    if (!response.ok) {
+        throw new Error('Failed to fetch blogs');
+    }
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        throw new Error('Backend server is not responding correctly. Please make sure the server is running.');
+    }
+    const data = await response.json();
+    console.log('Blogs API response:', data);
+    
+    // Handle multiple response formats
+    if (Array.isArray(data)) {
+        return data;
+    }
+    if (data.blogs) {
+        return data.blogs;
+    }
+    if (data.data?.blogs) {
+        return data.data.blogs;
+    }
+    if (data.data?.items) {
+        return data.data.items;
+    }
+    if (data.items) {
+        return data.items;
+    }
+    
+    return [];
+};

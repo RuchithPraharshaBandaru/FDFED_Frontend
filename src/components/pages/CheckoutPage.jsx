@@ -20,7 +20,7 @@ const CheckoutPage = () => {
         pincode: '',
         phone: ''
     });
-    const [paymentMethod, setPaymentMethod] = useState('card');
+    const [paymentMethod, setPaymentMethod] = useState('cod');
     
     // --- STATE FOR VIRTUAL COINS ---
     const [useCoins, setUseCoins] = useState(false);
@@ -136,22 +136,20 @@ const CheckoutPage = () => {
                                 <CreditCard className="mr-2 text-green-500" /> Payment Method
                             </h2>
                             <div className="space-y-3">
-                                {['card', 'upi', 'cod'].map(method => (
-                                    <label key={method} className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === method ? 'border-green-500 bg-green-50 dark:bg-green-900/20 ring-1 ring-green-500' : 'border-gray-200 dark:border-gray-600'} ${finalTotal === 0 ? 'opacity-50 pointer-events-none' : ''}`}>
-                                        <input 
-                                            type="radio" 
-                                            name="payment" 
-                                            value={method} 
-                                            checked={paymentMethod === method} 
-                                            onChange={(e) => setPaymentMethod(e.target.value)}
-                                            className="text-green-600 focus:ring-green-500"
-                                            disabled={finalTotal === 0} // Disable regular payment if coins cover everything
-                                        />
-                                        <span className="ml-3 font-medium capitalize dark:text-gray-200">
-                                            {method === 'cod' ? 'Cash on Delivery' : method.toUpperCase()}
-                                        </span>
-                                    </label>
-                                ))}
+                                <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-green-500 bg-green-50 dark:bg-green-900/20 ring-1 ring-green-500' : 'border-gray-200 dark:border-gray-600'} ${finalTotal === 0 ? 'opacity-50 pointer-events-none' : ''}`}>
+                                    <input 
+                                        type="radio" 
+                                        name="payment" 
+                                        value="cod" 
+                                        checked={paymentMethod === 'cod'} 
+                                        onChange={(e) => setPaymentMethod(e.target.value)}
+                                        className="text-green-600 focus:ring-green-500"
+                                        disabled={finalTotal === 0}
+                                    />
+                                    <span className="ml-3 font-medium dark:text-gray-200">
+                                        Cash on Delivery
+                                    </span>
+                                </label>
                             </div>
                             {finalTotal === 0 && (
                                 <p className="mt-2 text-sm text-green-600 dark:text-green-400 font-medium">

@@ -22,6 +22,7 @@ import AccountAddressPage from './components/pages/AccountAddressPage';
 import OrderHistoryPage from './components/pages/OrderHistoryPage';
 import MyDonationsPage from './components/pages/MyDonationsPage';
 import CheckoutPage from './components/pages/CheckoutPage';
+import BlogsPage from './components/pages/BlogsPage';
 // Seller imports
 import { SellerLayout } from './components/layouts/SellerLayout';
 import { SellerLoginPage } from './components/pages/SellerLoginPage';
@@ -36,7 +37,7 @@ import AdminLayout from './components/layouts/AdminLayout';
 import AdminProtectedRoute from './components/layouts/AdminProtectedRoute';
 import AdminLoginPage from './components/pages/admin/AdminLoginPage';
 import AdminDashboardPage from './components/pages/admin/AdminDashboardPage';
-import BlogsPage from './components/pages/admin/BlogsPage';
+import AdminBlogsPage from './components/pages/admin/BlogsPage';
 import BlogCreatePage from './components/pages/admin/BlogCreatePage';
 import CustomersPage from './components/pages/admin/CustomersPage';
 import ProductsPage from './components/pages/admin/ProductsPage';
@@ -97,10 +98,10 @@ function App() {
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLoginPage />} />
                 <Route element={<AdminProtectedRoute />}> 
-                    <Route path="/admin" element={<AdminLayout />}> 
+                    <Route path="admin" element={<AdminLayout />}> 
                         <Route index element={<AdminDashboardPage />} />
                         <Route path="dashboard" element={<AdminDashboardPage />} />
-                        <Route path="blogs" element={<BlogsPage />} />
+                        <Route path="blogs" element={<AdminBlogsPage />} />
                         <Route path="blogs/create" element={<BlogCreatePage />} />
                         <Route path="customers" element={<CustomersPage />} />
                         <Route path="products" element={<ProductsPage />} />
@@ -122,6 +123,7 @@ function App() {
                     <Route path="/store" element={<StorePage />} />
                     <Route path="/product/:id" element={<ProductPage />} />
                     <Route path="/about" element={<AboutUsPage />} />
+                    <Route path="/blogs" element={<BlogsPage />} />
                     <Route path="/auth" element={<AuthChoicePage />} />
                     
                     {/* --- Auth Routes --- */}
