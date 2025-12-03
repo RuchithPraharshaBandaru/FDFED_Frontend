@@ -5,6 +5,7 @@ import { Routes, Route } from 'react-router-dom';
 import { selectTheme } from './store/slices/themeSlice';
 import { checkAuth, selectIsAuthenticated } from './store/slices/authSlice'; // Added selectIsAuthenticated
 import { fetchCartItems } from './store/slices/cartSlice'; // Added fetchCartItems
+import { ToastProvider } from './context/ToastContext';
 import MainLayout from './components/layouts/MainLayout';
 import HomePage from './components/pages/HomePage';
 import ProductPage from './components/pages/ProductPage';
@@ -21,6 +22,16 @@ import AccountAddressPage from './components/pages/AccountAddressPage';
 import OrderHistoryPage from './components/pages/OrderHistoryPage';
 import MyDonationsPage from './components/pages/MyDonationsPage';
 import CheckoutPage from './components/pages/CheckoutPage';
+// Seller imports
+import { SellerLayout } from './components/layouts/SellerLayout';
+import { SellerLoginPage } from './components/pages/SellerLoginPage';
+import { SellerSignupPage } from './components/pages/SellerSignupPage';
+import { SellerDashboardPage } from './components/pages/SellerDashboardPage';
+import { SellerProductsPage } from './components/pages/SellerProductsPage';
+import { SellerCreateProductPage } from './components/pages/SellerCreateProductPage';
+import { SellerEditProductPage } from './components/pages/SellerEditProductPage';
+import { SellerOrdersPage } from './components/pages/SellerOrdersPage';
+import { SellerProfilePage } from './components/pages/SellerProfilePage';
 
 function App() {
     const dispatch = useDispatch();
@@ -50,34 +61,51 @@ function App() {
     }, [theme]);
     
     return (
-        <MainLayout>
+        <ToastProvider>
             <Routes>
-                {/* --- Public Routes --- */}
-                <Route path="/" element={<HomePage />} />
-                <Route path="/store" element={<StorePage />} />
-                <Route path="/product/:id" element={<ProductPage />} />
-                <Route path="/about" element={<AboutUsPage />} />
+                {/* --- Seller Public Routes --- */}
+                <Route path="/seller/login" element={<SellerLoginPage />} />
+                <Route path="/seller/signup" element={<SellerSignupPage />} />
                 
-                {/* --- Auth Routes --- */}
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/signup" element={<SignupPage />} />
-
-                {/* --- Protected Routes --- */}
-                <Route element={<ProtectedRoute />}>
-                    <Route path="/cart" element={<CartPage />} />
-                    <Route path="/sell" element={<SellPage />} />
-                    <Route path="/checkout" element={<CheckoutPage />} />
+                {/* --- Protected Seller Routes --- */}
+                <Route path="/seller" element={<SellerLayout />}>
+                    <Route path="dashboard" element={<SellerDashboardPage />} />
+                    <Route path="products" element={<SellerProductsPage />} />
+                    <Route path="products/create" element={<SellerCreateProductPage />} />
+                    <Route path="products/edit/:id" element={<SellerEditProductPage />} />
+                    <Route path="orders" element={<SellerOrdersPage />} />
+                    <Route path="profile" element={<SellerProfilePage />} />
+                </Route>
+                
+                {/* --- Regular App Routes with MainLayout --- */}
+                <Route element={<MainLayout />}>
+                    {/* --- Public Routes --- */}
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/store" element={<StorePage />} />
+                    <Route path="/product/:id" element={<ProductPage />} />
+                    <Route path="/about" element={<AboutUsPage />} />
                     
-                    {/* --- Account & Dashboard Routes --- */}
-                    <Route path="/account" element={<AccountLayout />}>
-                        <Route index element={<AccountPage />} />
-                        <Route path="address" element={<AccountAddressPage />} />
-                        <Route path="orders" element={<OrderHistoryPage />} />
-                        <Route path="donations" element={<MyDonationsPage />} />
+                    {/* --- Auth Routes --- */}
+                    <Route path="/login" element={<LoginPage />} />
+                    <Route path="/signup" element={<SignupPage />} />
+
+                    {/* --- Protected Routes --- */}
+                    <Route element={<ProtectedRoute />}>
+                        <Route path="/cart" element={<CartPage />} />
+                        <Route path="/sell" element={<SellPage />} />
+                        <Route path="/checkout" element={<CheckoutPage />} />
+                        
+                        {/* --- Account & Dashboard Routes --- */}
+                        <Route path="/account" element={<AccountLayout />}>
+                            <Route index element={<AccountPage />} />
+                            <Route path="address" element={<AccountAddressPage />} />
+                            <Route path="orders" element={<OrderHistoryPage />} />
+                            <Route path="donations" element={<MyDonationsPage />} />
+                        </Route>
                     </Route>
                 </Route>
             </Routes>
-        </MainLayout>
+        </ToastProvider>
     );
 }
 

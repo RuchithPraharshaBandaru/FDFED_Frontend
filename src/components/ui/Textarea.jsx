@@ -40,3 +40,4 @@ const Textarea = ({
 };
 
 export default Textarea;
+export { Textarea };

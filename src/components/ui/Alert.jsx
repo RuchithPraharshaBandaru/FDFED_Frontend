@@ -2,12 +2,29 @@ import React from 'react';
 import { CheckCircle, AlertCircle, Info, XCircle } from 'lucide-react';
 
 const Alert = ({ 
-    type = 'info', 
+    variant = 'info', 
+    type,
     message, 
+    children,
     className = '',
     ...props 
 }) => {
-    if (!message) return null;
+    // Support both 'type' and 'variant' props for backward compatibility
+    const alertType = variant || type || 'info';
+    
+    // Map variant names to internal type names
+    const variantMap = {
+        'destructive': 'error',
+        'success': 'success',
+        'warning': 'warning',
+        'info': 'info',
+        'error': 'error'
+    };
+    
+    const finalType = variantMap[alertType] || 'info';
+    const displayMessage = message || children;
+    
+    if (!displayMessage) return null;
     
     const styles = {
         success: {
@@ -28,7 +45,7 @@ const Alert = ({
         }
     };
     
-    const style = styles[type] || styles.info;
+    const style = styles[finalType] || styles.info;
     const Icon = style.icon;
     
     return (
@@ -39,10 +56,11 @@ const Alert = ({
         >
             <Icon className="h-4 w-4" />
             <div className="text-sm font-semibold leading-relaxed">
-                {message}
+                {displayMessage}
             </div>
         </div>
     );
 };
 
 export default Alert;
+export { Alert };
