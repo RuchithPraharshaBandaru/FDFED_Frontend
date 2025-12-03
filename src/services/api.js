@@ -39,7 +39,19 @@ export const apiCheckAuth = async () => {
         credentials: 'include',
     });
     if (!response.ok) throw new Error('Not authenticated');
-    const data = await response.json();
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        // Received HTML or another content type, treat as unauthenticated
+        // Read and discard to free the stream
+        await response.text().catch(() => '');
+        throw new Error('Not authenticated');
+    }
+    let data;
+    try {
+        data = await response.json();
+    } catch (e) {
+        throw new Error('Not authenticated');
+    }
     console.log('Check auth response:', data);
     return {
         success: true,

@@ -74,7 +74,7 @@ const Navbar = () => {
     };
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-backdrop-filter:bg-background/60">
             <nav className="container mx-auto px-6 h-16 flex items-center justify-between">
                 {/* Logo & Links */}
                 <div className="flex items-center space-x-8">
@@ -174,6 +174,9 @@ const Navbar = () => {
                         </>
                     ) : (
                         <div className="flex gap-2">
+                            <Link to="/auth">
+                                <Button variant="outline" size="sm">Choose Role</Button>
+                            </Link>
                             <Link to="/login">
                                 <Button variant="ghost" size="sm">Login</Button>
                             </Link>

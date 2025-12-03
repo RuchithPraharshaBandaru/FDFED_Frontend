@@ -88,6 +88,7 @@ const ProductPage = () => {
 
     return (
         <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-green-50/12 to-emerald-50/15 dark:from-gray-950 dark:via-green-900/22 dark:to-emerald-900/18 overflow-hidden">
+            {/* Futuristic background elements */}
             <div className="absolute inset-0 bg-dot-pattern opacity-[0.02] dark:opacity-[0.06] pointer-events-none" />
             <div className="absolute top-20 right-0 w-[500px] h-[500px] bg-gradient-to-br from-green-400/8 to-emerald-500/8 dark:from-green-500/18 dark:to-emerald-600/18 blur-3xl rounded-full" />
             <div className="absolute bottom-20 left-0 w-[400px] h-[400px] bg-gradient-to-tr from-emerald-400/6 to-green-500/6 dark:from-emerald-600/14 dark:to-green-700/14 blur-3xl rounded-full" />
@@ -98,7 +99,7 @@ const ProductPage = () => {
                 </nav>
                 
                 <div className="relative mb-12">
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/60 to-white/30 dark:from-gray-800/75 dark:to-gray-900/65 backdrop-blur-xl rounded-3xl" />
+                    <div className="absolute inset-0 bg-linear-to-br from-white/60 to-white/30 dark:from-gray-800/75 dark:to-gray-900/65 backdrop-blur-xl rounded-3xl" />
                     <div className="relative bg-white/40 dark:bg-gray-800/55 backdrop-blur-xl rounded-3xl border border-white/20 dark:border-green-500/25 shadow-2xl dark:shadow-green-500/15 p-8">
                         <div className="grid md:grid-cols-2 gap-12">
                    <div className="flex flex-col-reverse md:flex-row gap-4">
@@ -107,7 +108,7 @@ const ProductPage = () => {
                                <img key={i} src={product.image} className="w-16 h-16 object-cover cursor-pointer rounded-xl border-2 border-gray-200 dark:border-gray-700 hover:border-green-500 dark:hover:border-green-500 transition-all shadow-sm" />
                           ))}
                        </div>
-                       <div className="flex-grow">
+                           <div className="grow">
                             <img src={product.image} alt={product.title}
                                className="w-full h-full object-cover rounded-2xl shadow-lg" />
                        </div>
@@ -152,7 +153,7 @@ const ProductPage = () => {
                                className={`flex-1 py-3.5 rounded-xl font-bold transition-all flex items-center justify-center shadow-lg
                                ${added
                                    ? 'bg-green-600 text-white shadow-green-500/30'
-                                   : 'bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 shadow-green-500/30'
+                                   : 'bg-linear-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700 shadow-green-500/30'
                                }
                                disabled:opacity-50`}
                            >
@@ -175,20 +176,20 @@ const ProductPage = () => {
                 </div>
                 
                 <div className="mt-12 relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-green-500/5 to-emerald-500/5 dark:from-green-500/20 dark:to-emerald-500/20 rounded-2xl" />
+                    <div className="absolute inset-0 bg-linear-to-r from-green-500/5 to-emerald-500/5 dark:from-green-500/20 dark:to-emerald-500/20 rounded-2xl" />
                     <div className="relative py-12 bg-white/50 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-green-200/30 dark:border-green-500/40">
                      <h3 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">Your Positive Impact</h3>
                      <div className="grid grid-cols-3 gap-8 text-center max-w-3xl mx-auto">
                         <div className="p-4">
-                            <p className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">713 gal</p>
+                            <p className="text-4xl font-bold bg-linear-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">713 gal</p>
                             <span className="text-gray-600 dark:text-gray-400 font-medium">of water saved</span>
                         </div>
                         <div className="p-4">
-                            <p className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">18 lbs</p>
+                            <p className="text-4xl font-bold bg-linear-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">18 lbs</p>
                             <span className="text-gray-600 dark:text-gray-400 font-medium">of CO₂ prevented</span>
                         </div>
                         <div className="p-4">
-                            <p className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">5.2 lbs</p>
+                            <p className="text-4xl font-bold bg-linear-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">5.2 lbs</p>
                             <span className="text-gray-600 dark:text-gray-400 font-medium">of textile waste diverted</span>
                         </div>
                      </div>
