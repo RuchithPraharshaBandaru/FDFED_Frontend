@@ -105,7 +105,13 @@ const StorePage = () => {
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-emerald-400/8 to-green-500/8 dark:from-emerald-600/15 dark:to-green-700/15 blur-3xl rounded-full" />
             
             <div className="relative container mx-auto py-10 px-6 flex">
-                <FilterSidebar filters={filters} onFilterChange={handleFilterChange} onResetFilters={handleResetFilters} />
+                <FilterSidebar 
+                    filters={filters} 
+                    onFilterChange={handleFilterChange} 
+                    onResetFilters={handleResetFilters}
+                    sortBy={sortBy}
+                    onSortChange={handleSortChange} 
+                />
 
                 <main className="flex-1">
                     <div className="mb-8 flex justify-between items-center">
