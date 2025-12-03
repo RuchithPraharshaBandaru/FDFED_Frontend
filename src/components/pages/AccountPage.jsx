@@ -7,6 +7,7 @@ import Input from '../ui/Input';
 import Button from '../ui/Button';
 import Alert from '../ui/Alert';
 import { useFormState } from '../../hooks';
+import { isValidEmail } from '../../utils/validators';
 
 const AccountPage = () => {
     const dispatch = useDispatch();
@@ -20,6 +21,7 @@ const AccountPage = () => {
     });
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [errors, setErrors] = useState({});
 
     // Update form when user data loads
     useEffect(() => {
@@ -37,6 +39,15 @@ const AccountPage = () => {
         e.preventDefault();
         setError('');
         setMessage('');
+        const newErrors = {};
+        if (!formData.firstname || !formData.firstname.trim()) newErrors.firstname = 'First name is required';
+        if (!formData.lastname || !formData.lastname.trim()) newErrors.lastname = 'Last name is required';
+        if (!isValidEmail(formData.email)) newErrors.email = 'Please enter a valid email address';
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+        setErrors({});
         try {
             const data = await apiUpdateAccountDetails(formData);
             if (data.success) {
@@ -80,6 +91,7 @@ const AccountPage = () => {
                         value={formData.firstname}
                         onChange={handleChange}
                     />
+                    {errors.firstname && <p className="text-sm text-red-600 mt-1">{errors.firstname}</p>}
                     
                     <Input
                         label="Last Name"
@@ -88,6 +100,7 @@ const AccountPage = () => {
                         value={formData.lastname}
                         onChange={handleChange}
                     />
+                    {errors.lastname && <p className="text-sm text-red-600 mt-1">{errors.lastname}</p>}
                     
                     <Input
                         label="Email"
@@ -96,6 +109,7 @@ const AccountPage = () => {
                         value={formData.email}
                         onChange={handleChange}
                     />
+                    {errors.email && <p className="text-sm text-red-600 mt-1">{errors.email}</p>}
                     
                     <Button type="submit" variant="primary" fullWidth>
                         Save Changes

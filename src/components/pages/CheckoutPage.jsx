@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiGetCheckoutDetails, apiSubmitPayment } from '../../services/api';
 import { CreditCard, Wallet, Truck, Coins } from 'lucide-react'; 
+import { isValidPhone, isValidPincode } from '../../utils/validators';
 
 const CheckoutPage = () => {
     const navigate = useNavigate();
@@ -10,6 +11,7 @@ const CheckoutPage = () => {
     const [submitting, setSubmitting] = useState(false);
     const [checkoutData, setCheckoutData] = useState(null);
     const [error, setError] = useState(null);
+    const [errors, setErrors] = useState({});
     
     // Form States
     const [formData, setFormData] = useState({
@@ -56,6 +58,20 @@ const CheckoutPage = () => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setSubmitting(true);
+        setError(null);
+        const newErrors = {};
+        if (!formData.plotno || !formData.plotno.trim()) newErrors.plotno = 'Plot/House number is required';
+        if (!formData.street || !formData.street.trim()) newErrors.street = 'Street/Area is required';
+        if (!formData.city || !formData.city.trim()) newErrors.city = 'City is required';
+        if (!formData.state || !formData.state.trim()) newErrors.state = 'State is required';
+        if (!isValidPincode(String(formData.pincode))) newErrors.pincode = 'Please enter a valid 6-digit pincode';
+        if (!isValidPhone(String(formData.phone))) newErrors.phone = 'Please enter a valid 10-digit phone number';
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            setSubmitting(false);
+            return;
+        }
+        setErrors({});
         try {
             await apiSubmitPayment({
                 paymentMethod,
@@ -107,26 +123,32 @@ const CheckoutPage = () => {
                                 <div className="col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Plot No / Flat</label>
                                     <input required name="plotno" value={formData.plotno} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" />
+                                    {errors.plotno && <p className="text-sm text-red-600 mt-1">{errors.plotno}</p>}
                                 </div>
                                 <div className="col-span-2">
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Street Area</label>
                                     <input required name="street" value={formData.street} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" />
+                                    {errors.street && <p className="text-sm text-red-600 mt-1">{errors.street}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">City</label>
                                     <input required name="city" value={formData.city} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" />
+                                    {errors.city && <p className="text-sm text-red-600 mt-1">{errors.city}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">State</label>
                                     <input required name="state" value={formData.state} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" />
+                                    {errors.state && <p className="text-sm text-red-600 mt-1">{errors.state}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Pincode</label>
                                     <input required name="pincode" type="number" value={formData.pincode} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" />
+                                    {errors.pincode && <p className="text-sm text-red-600 mt-1">{errors.pincode}</p>}
                                 </div>
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
                                     <input required name="phone" type="tel" value={formData.phone} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" />
+                                    {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
                                 </div>
                             </form>
                         </div>
