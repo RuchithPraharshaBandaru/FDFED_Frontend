@@ -6,19 +6,21 @@ import { combineReducers } from '@reduxjs/toolkit';
 import cartReducer from './slices/cartSlice';
 import authReducer from './slices/authSlice';
 import themeReducer from './slices/themeSlice';
+import sellerReducer from './slices/sellerSlice';
 import adminReducer from './slices/adminSlice';
 import adminAuthReducer from './slices/adminAuthSlice';
 
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['cart', 'auth', 'theme', 'admin', 'adminAuth'] // Persist admin state
+    whitelist: ['cart', 'auth', 'theme', 'seller','admin', 'adminAuth'] // Only persist these reducers
 };
 
 const rootReducer = combineReducers({
     cart: cartReducer,
     auth: authReducer,
     theme: themeReducer,
+    seller: sellerReducer,
     admin: adminReducer,
     adminAuth: adminAuthReducer
 });

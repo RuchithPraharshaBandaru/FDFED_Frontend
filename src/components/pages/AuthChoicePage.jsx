@@ -58,8 +58,8 @@ const AuthChoicePage = () => {
           description="Manage your store and products"
           actions={
             <>
-              <Button variant="secondary" onClick={() => navigate('/login?seller=true')}>Login</Button>
-              <Button onClick={() => navigate('/signup?seller=true')}>Sign Up</Button>
+              <Button variant="secondary" onClick={() => navigate('/seller/login')}>Login</Button>
+              <Button onClick={() => navigate('/seller/signup')}>Sign Up</Button>
             </>
           }
         />
