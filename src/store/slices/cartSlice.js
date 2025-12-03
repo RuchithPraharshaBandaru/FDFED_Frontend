@@ -51,10 +51,11 @@ export const addToCartAsync = createAsyncThunk(
 
 export const removeFromCartAsync = createAsyncThunk(
     'cart/removeFromCartAsync',
-    async (productId, { rejectWithValue }) => {
+    async ({ id, size }, { rejectWithValue }) => {
         try {
-            await apiRemoveFromCart(productId);
-            return productId;
+            // Pass ID and Size to API
+            await apiRemoveFromCart(id, size);
+            return { id, size };
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -63,10 +64,11 @@ export const removeFromCartAsync = createAsyncThunk(
 
 export const decrementQuantityAsync = createAsyncThunk(
     'cart/decrementQuantityAsync',
-    async (productId, { rejectWithValue }) => {
+    async ({ id, size }, { rejectWithValue }) => {
         try {
-            await apiDecreaseQuantity(productId);
-            return productId;
+            // Pass ID and Size to API
+            await apiDecreaseQuantity(id, size);
+            return { id, size };
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -195,19 +197,19 @@ const cartSlice = createSlice({
             })
             // Remove from cart async
             .addCase(removeFromCartAsync.fulfilled, (state, action) => {
-                const id = action.payload;
-                const existingItem = state.items.find(item => item._id === id);
+                const { id, size } = action.payload;
+                const existingItem = state.items.find(item => item._id === id && item.size === size);
                 
                 if (existingItem) {
                     state.totalQuantity -= existingItem.quantity;
                     state.totalAmount -= existingItem.totalPrice;
-                    state.items = state.items.filter(item => item._id !== id);
+                    state.items = state.items.filter(item => !(item._id === id && item.size === size));
                 }
             })
             // Decrement quantity async
             .addCase(decrementQuantityAsync.fulfilled, (state, action) => {
-                const id = action.payload;
-                const item = state.items.find(item => item._id === id);
+                const { id, size } = action.payload;
+                const item = state.items.find(item => item._id === id && item.size === size);
                 
                 if (item && item.quantity > 1) {
                     item.quantity--;
@@ -218,7 +220,7 @@ const cartSlice = createSlice({
                     // Remove item if quantity becomes 0
                     state.totalQuantity--;
                     state.totalAmount -= item.price;
-                    state.items = state.items.filter(i => i._id !== id);
+                    state.items = state.items.filter(i => !(i._id === id && i.size === size));
                 }
             })
             // Clear cart on logout

@@ -306,18 +306,26 @@ export const apiAddToCart = async (productId, size) => { // Accept size param
     return response.json();
 };
 
-export const apiDecreaseQuantity = async (productId) => {
+export const apiDecreaseQuantity = async (productId, size) => {
     const response = await fetch(`${API_BASE_URL}/cart/remove/${productId}`, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ size }),
         credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to decrease quantity');
     return response.json();
 };
 
-export const apiRemoveFromCart = async (productId) => {
+export const apiRemoveFromCart = async (productId, size) => {
     const response = await fetch(`${API_BASE_URL}/cart/remove/${productId}`, {
         method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ size }),
         credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to remove from cart');
