@@ -93,6 +93,10 @@ export const fetchProducts = async () => {
     if (!response.ok) {
         throw new Error('Failed to fetch products');
     }
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        throw new Error('Backend server is not responding correctly. Please make sure the server is running.');
+    }
     const data = await response.json();
     return data;
 };
@@ -131,6 +135,10 @@ export const fetchFilteredProducts = async (filters) => {
     if (!response.ok) {
         throw new Error('Failed to fetch filtered products');
     }
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        throw new Error('Backend server is not responding correctly. Please make sure the server is running.');
+    }
     const data = await response.json();
     return data.products || [];
 };
@@ -148,6 +156,10 @@ export const searchProducts = async (query) => {
     
     if (!response.ok) {
         throw new Error('Failed to search products');
+    }
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        throw new Error('Backend server is not responding correctly. Please make sure the server is running.');
     }
     const data = await response.json();
     return data.products || [];

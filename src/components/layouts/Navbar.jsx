@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { Search, ShoppingBag, User, Moon, Sun } from 'lucide-react';
+import { Search, ShoppingBag, User, Moon, Sun, Coins } from 'lucide-react';
 import { selectCartTotalQuantity } from '../../store/slices/cartSlice';
-import { selectIsAuthenticated, logoutUser } from '../../store/slices/authSlice';
+import { selectIsAuthenticated, selectUser, logoutUser } from '../../store/slices/authSlice';
 import { selectTheme, toggleTheme } from '../../store/slices/themeSlice';
 import Button from '../ui/Button';
 import { fetchFilteredProducts } from '../../services/api';
@@ -14,6 +14,7 @@ const Navbar = () => {
     
     const cartCount = useSelector(selectCartTotalQuantity);
     const isAuthenticated = useSelector(selectIsAuthenticated);
+    const user = useSelector(selectUser);
     const theme = useSelector(selectTheme);
 
     // Search States
@@ -152,8 +153,19 @@ const Navbar = () => {
                         {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
                     </Button>
                     
+                    {/* Virtual Coins Display (only when logged in) */}
+                    {isAuthenticated && user?.coins !== undefined && (
+                        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 border border-yellow-200 dark:border-yellow-700/50">
+                            <Coins className="h-4 w-4 text-yellow-600 dark:text-yellow-400" />
+                            <span className="text-sm font-bold text-gray-900 dark:text-yellow-100">{user.coins}</span>
+                        </div>
+                    )}
+                    
                     {/* Cart */}
-                    <Link to="/cart" className="relative p-2 text-muted-foreground hover:text-foreground transition-colors">
+                    <Link 
+                        to={isAuthenticated ? "/cart" : "/login"} 
+                        className="relative p-2 text-muted-foreground hover:text-foreground transition-colors"
+                    >
                         <ShoppingBag className="h-5 w-5" />
                         {cartCount > 0 && (
                             <span className="absolute -top-1 -right-1 bg-primary text-primary-foreground text-[10px] w-4 h-4 rounded-full flex items-center justify-center font-bold">
