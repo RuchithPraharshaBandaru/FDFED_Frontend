@@ -1,7 +1,7 @@
 // src/components/pages/LoginPage.jsx
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, Navigate, Link } from 'react-router-dom';
+import { useNavigate, Navigate, Link, useSearchParams } from 'react-router-dom';
 import { loginUser, selectIsAuthenticated, selectAuthLoading, selectAuthError } from '../../store/slices/authSlice';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
@@ -10,6 +10,8 @@ import Alert from '../ui/Alert';
 function LoginPage() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [searchParams] = useSearchParams();
+    const isSeller = searchParams.get('seller') === 'true';
     const dispatch = useDispatch();
     const navigate = useNavigate();
     
@@ -19,15 +21,27 @@ function LoginPage() {
 
     // If user is already logged in, redirect them to homepage
     if (isAuthenticated) {
+        if (isSeller) {
+            return <Navigate to="/sell" replace />;
+        }
         return <Navigate to="/" replace />; 
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        const result = await dispatch(loginUser({ email, password }));
+        const credentials = { email, password };
+        if (isSeller) {
+            credentials.role = 'seller';
+        }
+
+        const result = await dispatch(loginUser(credentials));
         if (result.type === 'auth/login/fulfilled') {
-            navigate('/');
+            if (isSeller) {
+                navigate('/sell');
+            } else {
+                navigate('/');
+            }
         }
     };
 
