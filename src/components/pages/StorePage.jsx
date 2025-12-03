@@ -5,8 +5,14 @@ import FilterSidebar from '../ui/FilterSidebar';
 import { ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { usePagination } from '../../hooks';
 import { sortProducts } from '../../utils/sortHelpers';
+// 1. Import useSearchParams to read the URL
+import { useSearchParams } from 'react-router-dom';
 
 const StorePage = () => {
+    // 2. Get the search query from the URL
+    const [searchParams] = useSearchParams();
+    const searchQuery = searchParams.get('search') || '';
+
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -17,12 +23,23 @@ const StorePage = () => {
         maxPrice: null
     });
 
-    // Sort products using utility function
-    const sortedProducts = useMemo(() => {
-        return sortProducts(products, sortBy);
-    }, [products, sortBy]);
+    // 3. Create a new filtering step for Search BEFORE sorting
+    const searchedProducts = useMemo(() => {
+        if (!searchQuery) return products;
+        
+        const lowerQuery = searchQuery.toLowerCase();
+        return products.filter(product => 
+            product.title.toLowerCase().includes(lowerQuery) ||
+            product.category.toLowerCase().includes(lowerQuery)
+        );
+    }, [products, searchQuery]);
 
-    // Use custom pagination hook
+    // 4. Update sortedProducts to use 'searchedProducts' instead of 'products'
+    const sortedProducts = useMemo(() => {
+        return sortProducts(searchedProducts, sortBy);
+    }, [searchedProducts, sortBy]);
+
+    // Use custom pagination hook (passed sortedProducts, so it works automatically)
     const {
         currentPage,
         totalPages,
@@ -83,7 +100,6 @@ const StorePage = () => {
 
     return (
         <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-green-50/15 to-emerald-50/20 dark:from-gray-950 dark:via-green-900/25 dark:to-emerald-900/20 overflow-hidden">
-            {/* Futuristic background elements */}
             <div className="absolute inset-0 bg-dot-pattern opacity-[0.02] dark:opacity-[0.06] pointer-events-none" />
             <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-to-br from-green-400/12 to-emerald-500/12 dark:from-green-500/20 dark:to-emerald-600/20 blur-3xl rounded-full" />
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-gradient-to-tr from-emerald-400/8 to-green-500/8 dark:from-emerald-600/15 dark:to-green-700/15 blur-3xl rounded-full" />
@@ -103,9 +119,16 @@ const StorePage = () => {
                                     Shop Sustainable Fashion
                                 </span>
                             </h1>
-                            <p className="text-gray-600 dark:text-gray-400 mt-2">
-                                Discover unique, pre-loved pieces from our community.
-                            </p>
+                            {/* 5. Display what the user is searching for */}
+                            {searchQuery ? (
+                                <p className="text-gray-600 dark:text-gray-400 mt-2">
+                                    Showing results for "<span className="font-bold text-green-600">{searchQuery}</span>"
+                                </p>
+                            ) : (
+                                <p className="text-gray-600 dark:text-gray-400 mt-2">
+                                    Discover unique, pre-loved pieces from our community.
+                                </p>
+                            )}
                         </div>
                         <div className="relative">
                             <select 
@@ -132,14 +155,16 @@ const StorePage = () => {
                             currentProducts.length > 0 ? (
                                 currentProducts.map(product => <ProductCard key={product._id} {...product} />)
                             ) : (
-                                <p className="col-span-full text-center text-gray-500 dark:text-gray-400 py-12">No products found.</p>
+                                <p className="col-span-full text-center text-gray-500 dark:text-gray-400 py-12">
+                                    {searchQuery ? `No products found matching "${searchQuery}"` : "No products found."}
+                                </p>
                             )
                         )}
                         {error && <p className="col-span-full text-center text-red-500 dark:text-red-400">{error}</p>}
                     </div>
 
                     {/* Pagination */}
-                    {!loading && products.length > 0 && (
+                    {!loading && sortedProducts.length > 0 && (
                         <div className="mt-12 flex justify-center items-center space-x-2">
                             <button 
                                 onClick={handlePrevPage}
@@ -151,7 +176,6 @@ const StorePage = () => {
                             
                             {[...Array(totalPages)].map((_, index) => {
                                 const pageNum = index + 1;
-                                // Show first page, last page, current page, and pages around current
                                 if (
                                     pageNum === 1 || 
                                     pageNum === totalPages || 

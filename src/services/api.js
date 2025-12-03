@@ -93,6 +93,10 @@ export const fetchProducts = async () => {
     if (!response.ok) {
         throw new Error('Failed to fetch products');
     }
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        throw new Error('Backend server is not responding correctly. Please make sure the server is running.');
+    }
     const data = await response.json();
     return data;
 };
@@ -121,6 +125,7 @@ export const fetchFilteredProducts = async (filters) => {
     
     if (filters.minPrice) params.append('minPrice', filters.minPrice);
     if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
+    if (filters.search) params.append('search', filters.search);
     params.append('t', new Date().getTime());
 
     const response = await fetch(`${API_BASE_URL}/products/filter?${params.toString()}`, {
@@ -129,6 +134,32 @@ export const fetchFilteredProducts = async (filters) => {
     
     if (!response.ok) {
         throw new Error('Failed to fetch filtered products');
+    }
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        throw new Error('Backend server is not responding correctly. Please make sure the server is running.');
+    }
+    const data = await response.json();
+    return data.products || [];
+};
+
+export const searchProducts = async (query) => {
+    if (!query || query.trim().length === 0) return [];
+    
+    const params = new URLSearchParams();
+    params.append('search', query.trim());
+    params.append('t', new Date().getTime());
+
+    const response = await fetch(`${API_BASE_URL}/products/filter?${params.toString()}`, {
+        credentials: 'include'
+    });
+    
+    if (!response.ok) {
+        throw new Error('Failed to search products');
+    }
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        throw new Error('Backend server is not responding correctly. Please make sure the server is running.');
     }
     const data = await response.json();
     return data.products || [];
@@ -286,27 +317,39 @@ export const apiSyncCart = async (cartItems) => {
     return response.json();
 };
 
-export const apiAddToCart = async (productId) => {
+export const apiAddToCart = async (productId, size) => { // Accept size param
     const response = await fetch(`${API_BASE_URL}/cart/add/${productId}`, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json', // Content-Type is now required
+        },
+        body: JSON.stringify({ size }), // Send size in body
         credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to add to cart');
     return response.json();
 };
 
-export const apiDecreaseQuantity = async (productId) => {
+export const apiDecreaseQuantity = async (productId, size) => {
     const response = await fetch(`${API_BASE_URL}/cart/remove/${productId}`, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ size }),
         credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to decrease quantity');
     return response.json();
 };
 
-export const apiRemoveFromCart = async (productId) => {
+export const apiRemoveFromCart = async (productId, size) => {
     const response = await fetch(`${API_BASE_URL}/cart/remove/${productId}`, {
         method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ size }),
         credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to remove from cart');

@@ -1,205 +1,253 @@
 // src/components/pages/CheckoutPage.jsx
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { apiGetCheckoutDetails, apiSubmitPayment } from '../../services/api';
-import { clearCart, fetchCartItems, selectCartItems, selectCartTotalAmount } from '../../store/slices/cartSlice';
-import { selectUser } from '../../store/slices/authSlice';
-import { useNavigate, Link } from 'react-router-dom';
+import { CreditCard, Wallet, Truck, Coins } from 'lucide-react'; 
 
 const CheckoutPage = () => {
-    const [details, setDetails] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const [paymentMethod, setPaymentMethod] = useState('cod');
-    
-    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const cartItems = useSelector(selectCartItems);
-    const cartTotal = useSelector(selectCartTotalAmount);
-    const currentUser = useSelector(selectUser);
+    const [loading, setLoading] = useState(true);
+    const [submitting, setSubmitting] = useState(false);
+    const [checkoutData, setCheckoutData] = useState(null);
+    const [error, setError] = useState(null);
+    
+    // Form States
+    const [formData, setFormData] = useState({
+        plotno: '',
+        street: '',
+        city: '',
+        state: '',
+        pincode: '',
+        phone: ''
+    });
+    const [paymentMethod, setPaymentMethod] = useState('card');
+    
+    // --- STATE FOR VIRTUAL COINS ---
+    const [useCoins, setUseCoins] = useState(false);
 
     useEffect(() => {
         const fetchDetails = async () => {
             try {
-                setLoading(true);
-                
-                // 1. Refresh cart data to ensure prices/stock are current
-                await dispatch(fetchCartItems());
-                
-                // 2. Fetch checkout details
                 const data = await apiGetCheckoutDetails();
-                console.log('Checkout details:', data);
-                if (data.success) {
-                    setDetails(data);
+                setCheckoutData(data);
+                if (data.user && data.user.Address) {
+                    setFormData({
+                        plotno: data.user.Address.plotno || '',
+                        street: data.user.Address.street || '',
+                        city: data.user.Address.city || '',
+                        state: data.user.Address.state || '',
+                        pincode: data.user.Address.pincode || '',
+                        phone: data.user.Address.phone || ''
+                    });
                 }
             } catch (err) {
-                console.log('Error fetching checkout details:', err);
                 setError(err.message);
+            } finally {
+                setLoading(false);
             }
-            setLoading(false);
         };
         fetchDetails();
-    }, [dispatch]);
+    }, []);
 
-    // Debug: log user data
-    useEffect(() => {
-        console.log('Current user from Redux:', currentUser);
-        console.log('Details from backend:', details);
-    }, [currentUser, details]);
+    const handleInputChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        setError('');
-        
-        // Check if cart is empty
-        if (!cartItems || cartItems.length === 0) {
-            setError('Your cart is empty. Please add items before checking out.');
-            return;
-        }
-        
-        // Get user address from details or currentUser
-        const userAddress = details?.user?.Address || currentUser?.Address;
-        
-        // Check for address
-        if (!userAddress || !userAddress.plotno) {
-            setError('Please add an address to your account before checking out.');
-            return;
-        }
-
+        setSubmitting(true);
         try {
-            // Send payment data - backend will use cart from user session/database
-            const paymentData = {
-                paymentMethod: paymentMethod,
-                address: userAddress
-            };
-            
-            console.log('Sending payment data:', paymentData);
-            
-            const data = await apiSubmitPayment(paymentData);
-            
-            if (data.success) {
-                // Payment successful!
-                dispatch(clearCart());
-                // Redirect to order history to see the new order
-                navigate('/account/orders'); 
-            }
+            await apiSubmitPayment({
+                paymentMethod,
+                address: formData,
+                useCoins: useCoins // Pass the toggle state to backend
+            });
+            navigate('/order-history'); 
         } catch (err) {
-            setError(err.message || 'Failed to place order.');
+            alert(err.message);
+        } finally {
+            setSubmitting(false);
         }
     };
 
-    if (loading) return <div className="min-h-screen flex items-center justify-center dark:bg-gray-900 dark:text-white">Loading checkout details...</div>;
-    
-    // Check if cart is empty
-    if (!cartItems || cartItems.length === 0) {
-        return (
-            <div className="relative min-h-screen bg-gradient-to-br from-white via-green-50/30 to-emerald-50/20 dark:from-gray-950 dark:via-green-900/25 dark:to-emerald-900/20">
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05),transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.08),transparent_50%)] pointer-events-none"></div>
-                <div className="relative container mx-auto px-6 py-8">
-                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl p-8 rounded-2xl shadow-xl border-2 border-gray-200/50 dark:border-gray-700/50 text-center max-w-md mx-auto mt-16">
-                        <h2 className="text-2xl font-bold mb-4 bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-white bg-clip-text text-transparent">Your Cart is Empty</h2>
-                        <p className="text-gray-600 dark:text-gray-400 mb-6">Add some items to your cart before checking out.</p>
-                        <Link to="/store" className="inline-block bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl font-bold hover:from-green-600 hover:to-emerald-700 shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 transition-all">
-                            Continue Shopping
-                        </Link>
-                    </div>
-                </div>
-            </div>
-        );
-    }
+    if (loading) return <div className="p-10 text-center dark:text-white dark:bg-gray-900 min-h-screen">Loading checkout details...</div>;
+    if (error) return <div className="p-10 text-center text-red-500 dark:bg-gray-900 min-h-screen">{error}</div>;
 
-    const { user, extra = 0 } = details || { user: currentUser, extra: 0 };
-    const finalTotal = cartTotal - extra;
+    // --- CALCULATIONS ---
+    const subtotal = checkoutData?.total || 0;
+    const shipping = 5.00;
+    const availableCoins = checkoutData?.user?.coins || 0;
+    
+    let coinDiscount = 0;
+    let finalTotal = subtotal + shipping;
+
+    if (useCoins && availableCoins > 0) {
+        // You can't use more coins than the total bill
+        coinDiscount = Math.min(finalTotal, availableCoins);
+        finalTotal = finalTotal - coinDiscount;
+    }
+    // --------------------
 
     return (
-        <div className="relative min-h-screen bg-gradient-to-br from-white via-green-50/30 to-emerald-50/20 dark:from-gray-950 dark:via-green-900/25 dark:to-emerald-900/20">
-            {/* Background patterns */}
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05),transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.08),transparent_50%)] pointer-events-none"></div>
-            <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PHBhdHRlcm4gaWQ9ImdyaWQiIHdpZHRoPSI2MCIgaGVpZ2h0PSI2MCIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSI+PHBhdGggZD0iTSAxMCAwIEwgMCAwIDAgMTAiIGZpbGw9Im5vbmUiIHN0cm9rZT0iIzEwYjk4MSIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIwLjEiLz48L3BhdHRlcm4+PC9kZWZzPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JpZCkiLz48L3N2Zz4=')] opacity-[0.03] dark:opacity-[0.06] pointer-events-none"></div>
-            
-            {/* Floating orbs */}
-            <div className="absolute top-20 left-10 w-72 h-72 bg-green-500/18 dark:bg-green-500/20 rounded-full blur-3xl pointer-events-none"></div>
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-emerald-500/18 dark:bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
-            
-            <div className="relative container mx-auto px-6 py-8">
-                <h1 className="text-4xl font-bold mb-8 bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-100 dark:to-white bg-clip-text text-transparent">Checkout</h1>
-                <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-7xl mx-auto">
+                <h1 className="text-3xl font-extrabold text-gray-900 dark:text-white mb-8 text-center">Checkout</h1>
                 
-                {/* --- Left Side: Details --- */}
-                <div className="md:col-span-2 space-y-6">
-                    {/* Shipping Address */}
-                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl p-6 rounded-2xl shadow-xl border-2 border-gray-200/50 dark:border-gray-700/50">
-                        <h2 className="text-xl font-bold mb-4 bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-white bg-clip-text text-transparent">Shipping Address</h2>
-                        {user.Address && user.Address.plotno ? (
-                            <div className="text-gray-700 dark:text-gray-300 space-y-1">
-                                <p className="font-semibold">{user.firstname} {user.lastname}</p>
-                                <p>{user.Address.plotno}, {user.Address.street}</p>
-                                <p>{user.Address.city}, {user.Address.state} - {user.Address.pincode}</p>
-                                <p>Phone: {user.Address.phone}</p>
-                            </div>
-                        ) : (
-                            <p className="text-red-500 dark:text-red-400">
-                                No address found. <Link to="/account/address" className="text-green-500 hover:underline font-semibold">Add an address</Link>
-                            </p>
-                        )}
-                    </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
                     
-                    {/* Payment Method */}
-                    <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl p-6 rounded-2xl shadow-xl border-2 border-gray-200/50 dark:border-gray-700/50">
-                        <h2 className="text-xl font-bold mb-4 bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-white bg-clip-text text-transparent">Payment Method</h2>
-                        <div className="space-y-2">
-                            <label className="flex items-center p-4 border-2 border-gray-200/50 dark:border-gray-700/50 rounded-xl has-[:checked]:bg-green-500/10 dark:has-[:checked]:bg-green-500/20 has-[:checked]:border-green-500/50 backdrop-blur-sm transition-all cursor-pointer hover:border-green-500/30">
-                                <input 
-                                    type="radio" 
-                                    name="paymentMethod" 
-                                    value="cod" 
-                                    checked={paymentMethod === 'cod'}
-                                    onChange={(e) => setPaymentMethod(e.target.value)}
-                                    className="form-radio text-green-600 focus:ring-green-500/50"
-                                />
-                                <span className="ml-3 font-bold dark:text-white">Cash on Delivery (COD)</span>
-                            </label>
+                    {/* LEFT COLUMN: Shipping & Payment */}
+                    <div className="space-y-8">
+                        {/* Address Form */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
+                            <h2 className="text-xl font-semibold mb-4 flex items-center dark:text-white">
+                                <Truck className="mr-2 text-green-500" /> Shipping Address
+                            </h2>
+                            <form id="checkout-form" onSubmit={handleSubmit} className="grid grid-cols-2 gap-4">
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Plot No / Flat</label>
+                                    <input required name="plotno" value={formData.plotno} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" />
+                                </div>
+                                <div className="col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Street Area</label>
+                                    <input required name="street" value={formData.street} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">City</label>
+                                    <input required name="city" value={formData.city} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">State</label>
+                                    <input required name="state" value={formData.state} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Pincode</label>
+                                    <input required name="pincode" type="number" value={formData.pincode} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Phone</label>
+                                    <input required name="phone" type="tel" value={formData.phone} onChange={handleInputChange} className="mt-1 block w-full rounded-md border-gray-300 dark:bg-gray-700 dark:border-gray-600 dark:text-white shadow-sm focus:border-green-500 focus:ring-green-500 p-2 border" />
+                                </div>
+                            </form>
+                        </div>
+
+                        {/* Payment Method */}
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
+                            <h2 className="text-xl font-semibold mb-4 flex items-center dark:text-white">
+                                <CreditCard className="mr-2 text-green-500" /> Payment Method
+                            </h2>
+                            <div className="space-y-3">
+                                {['card', 'upi', 'cod'].map(method => (
+                                    <label key={method} className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === method ? 'border-green-500 bg-green-50 dark:bg-green-900/20 ring-1 ring-green-500' : 'border-gray-200 dark:border-gray-600'} ${finalTotal === 0 ? 'opacity-50 pointer-events-none' : ''}`}>
+                                        <input 
+                                            type="radio" 
+                                            name="payment" 
+                                            value={method} 
+                                            checked={paymentMethod === method} 
+                                            onChange={(e) => setPaymentMethod(e.target.value)}
+                                            className="text-green-600 focus:ring-green-500"
+                                            disabled={finalTotal === 0} // Disable regular payment if coins cover everything
+                                        />
+                                        <span className="ml-3 font-medium capitalize dark:text-gray-200">
+                                            {method === 'cod' ? 'Cash on Delivery' : method.toUpperCase()}
+                                        </span>
+                                    </label>
+                                ))}
+                            </div>
+                            {finalTotal === 0 && (
+                                <p className="mt-2 text-sm text-green-600 dark:text-green-400 font-medium">
+                                    Fully paid with Virtual Coins!
+                                </p>
+                            )}
                         </div>
                     </div>
-                </div>
 
-                {/* --- Right Side: Order Summary --- */}
-                <div className="md:col-span-1">
-                    <div className="bg-gradient-to-br from-green-500 to-emerald-600 p-[2px] rounded-2xl">
-                        <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl p-6 rounded-2xl shadow-xl sticky top-24">
-                            <h2 className="text-xl font-bold mb-4 bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-white bg-clip-text text-transparent">Order Summary</h2>
+                    {/* RIGHT COLUMN: Summary */}
+                    <div className="space-y-6">
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 sticky top-24">
+                            <h2 className="text-xl font-semibold mb-6 dark:text-white">Order Summary</h2>
                             
-                            {error && <div className="mb-4 p-3 bg-red-500/10 dark:bg-red-500/20 backdrop-blur-sm border-2 border-red-500/30 text-red-700 dark:text-red-300 rounded-xl text-sm font-semibold">{error}</div>}
-                            
-                            <div className="space-y-3">
-                                {cartItems.map(item => (
-                                    <div key={item._id} className="flex justify-between items-center">
-                                        <span className="text-gray-600 dark:text-gray-300">{item.title} (x{item.quantity})</span>
-                                        <span className="font-semibold dark:text-white">₹{(item.price * item.quantity).toFixed(2)}</span>
+                            {/* Product List */}
+                            <div className="space-y-4 mb-6 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+                                {checkoutData.user.cart.map((item, idx) => (
+                                    <div key={idx} className="flex justify-between items-center text-sm">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded text-gray-600 dark:text-gray-300 font-mono">x{item.quantity}</span>
+                                            <div className="flex flex-col">
+                                                <span className="text-gray-800 dark:text-gray-300 truncate max-w-[150px] font-medium">{item.productId.title}</span>
+                                                {/* Show Size if available */}
+                                                {item.size && <span className="text-xs text-gray-500 dark:text-gray-400">Size: {item.size}</span>}
+                                            </div>
+                                        </div>
+                                        <span className="font-medium dark:text-gray-200">Rs.{item.productId.price * item.quantity}</span>
                                     </div>
                                 ))}
-                                <hr className="my-2 border-gray-200/50 dark:border-gray-700/50"/>
+                            </div>
+
+                            <div className="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-2 text-gray-600 dark:text-gray-400">
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600 dark:text-gray-300">Subtotal</span>
-                                    <span className="font-semibold dark:text-white">₹{cartTotal.toFixed(2)}</span>
+                                    <span>Subtotal</span>
+                                    <span>Rs.{subtotal.toFixed(2)}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span className="text-gray-600 dark:text-gray-300">Donation Credit</span>
-                                    <span className="font-semibold text-green-500">-₹{extra.toFixed(2)}</span>
-                                </div>
-                                <hr className="my-2 border-gray-200/50 dark:border-gray-700/50"/>
-                                <div className="flex justify-between text-lg font-bold">
-                                    <span className="dark:text-white">Total</span>
-                                    <span className="bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">₹{finalTotal.toFixed(2)}</span>
+                                    <span>Shipping</span>
+                                    <span>Rs.{shipping.toFixed(2)}</span>
                                 </div>
                             </div>
-                            <button type="submit" className="w-full bg-gradient-to-r from-green-500 to-emerald-600 text-white px-5 py-3 rounded-xl font-bold hover:from-green-600 hover:to-emerald-700 shadow-lg shadow-green-500/30 hover:shadow-xl hover:shadow-green-500/40 mt-6 transition-all">
-                                Place Order
+
+                            {/* --- VIRTUAL COINS SECTION --- */}
+                            <div className="mt-6 bg-gradient-to-r from-yellow-50 to-orange-50 dark:from-yellow-900/20 dark:to-orange-900/20 p-4 rounded-lg border border-yellow-200 dark:border-yellow-700/50">
+                                <div className="flex items-center justify-between mb-2">
+                                    <div className="flex items-center gap-2">
+                                        <Coins className="text-yellow-500" size={20} />
+                                        <span className="font-bold text-gray-800 dark:text-yellow-100">Use Virtual Coins</span>
+                                    </div>
+                                    <span className="text-sm bg-white dark:bg-gray-800 px-2 py-1 rounded border dark:border-gray-600 dark:text-white shadow-sm">
+                                        Bal: {availableCoins}
+                                    </span>
+                                </div>
+                                
+                                <div className="flex items-center justify-between mt-3">
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input 
+                                            type="checkbox" 
+                                            className="sr-only peer"
+                                            checked={useCoins}
+                                            onChange={() => setUseCoins(!useCoins)}
+                                            disabled={availableCoins <= 0}
+                                        />
+                                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                        <span className="ml-3 text-sm font-medium text-gray-900 dark:text-gray-300">
+                                            {availableCoins > 0 ? "Apply Discount" : "No coins available"}
+                                        </span>
+                                    </label>
+                                    
+                                    {useCoins && (
+                                        <span className="text-red-500 font-bold">- Rs.{coinDiscount.toFixed(2)}</span>
+                                    )}
+                                </div>
+                            </div>
+                            {/* --------------------------- */}
+
+                            <div className="border-t border-gray-200 dark:border-gray-700 mt-6 pt-4">
+                                <div className="flex justify-between items-center">
+                                    <span className="text-lg font-bold text-gray-900 dark:text-white">Total to Pay</span>
+                                    <span className="text-2xl font-extrabold text-green-600 dark:text-green-400">
+                                        Rs.{Math.max(0, finalTotal).toFixed(2)}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                form="checkout-form"
+                                disabled={submitting}
+                                className="w-full mt-8 bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-green-500/30 hover:shadow-green-500/50 hover:scale-[1.02] transition-all disabled:opacity-50 flex justify-center items-center"
+                            >
+                                {submitting ? 'Processing...' : (finalTotal === 0 ? 'Place Order (Paid with Coins)' : 'Pay & Place Order')}
                             </button>
                         </div>
                     </div>
                 </div>
-            </form>
             </div>
         </div>
     );

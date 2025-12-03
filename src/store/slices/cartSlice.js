@@ -25,6 +25,7 @@ export const fetchCartItems = createAsyncThunk(
                         ...item.productId, // Spread product details (title, price, image, etc.)
                         _id: item.productId._id, // Ensure _id is the product ID
                         quantity: item.quantity,
+                        size: item.size,
                         totalPrice: item.productId.price * item.quantity
                     }));
             }
@@ -38,10 +39,10 @@ export const fetchCartItems = createAsyncThunk(
 // Async thunks for backend sync
 export const addToCartAsync = createAsyncThunk(
     'cart/addToCartAsync',
-    async (product, { rejectWithValue }) => {
+    async ({ product, size }, { rejectWithValue }) => { // Destructure object
         try {
-            await apiAddToCart(product._id);
-            return product;
+            await apiAddToCart(product._id, size); // Pass size to API
+            return { ...product, size }; // Return product WITH size
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -50,10 +51,11 @@ export const addToCartAsync = createAsyncThunk(
 
 export const removeFromCartAsync = createAsyncThunk(
     'cart/removeFromCartAsync',
-    async (productId, { rejectWithValue }) => {
+    async ({ id, size }, { rejectWithValue }) => {
         try {
-            await apiRemoveFromCart(productId);
-            return productId;
+            // Pass ID and Size to API
+            await apiRemoveFromCart(id, size);
+            return { id, size };
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -62,10 +64,11 @@ export const removeFromCartAsync = createAsyncThunk(
 
 export const decrementQuantityAsync = createAsyncThunk(
     'cart/decrementQuantityAsync',
-    async (productId, { rejectWithValue }) => {
+    async ({ id, size }, { rejectWithValue }) => {
         try {
-            await apiDecreaseQuantity(productId);
-            return productId;
+            // Pass ID and Size to API
+            await apiDecreaseQuantity(id, size);
+            return { id, size };
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -167,8 +170,12 @@ const cartSlice = createSlice({
             })
             .addCase(addToCartAsync.fulfilled, (state, action) => {
                 state.isLoading = false;
-                const newItem = action.payload;
-                const existingItem = state.items.find(item => item._id === newItem._id);
+                const newItem = action.payload; // This now contains .size
+                
+                // Check if item exists matching BOTH ID and Size
+                const existingItem = state.items.find(item => 
+                    item._id === newItem._id && item.size === newItem.size
+                );
                 
                 if (existingItem) {
                     existingItem.quantity++;
@@ -177,6 +184,7 @@ const cartSlice = createSlice({
                     state.items.push({
                         ...newItem,
                         quantity: 1,
+                        size: newItem.size, // Ensure size is saved to state
                         totalPrice: newItem.price
                     });
                 }
@@ -189,19 +197,19 @@ const cartSlice = createSlice({
             })
             // Remove from cart async
             .addCase(removeFromCartAsync.fulfilled, (state, action) => {
-                const id = action.payload;
-                const existingItem = state.items.find(item => item._id === id);
+                const { id, size } = action.payload;
+                const existingItem = state.items.find(item => item._id === id && item.size === size);
                 
                 if (existingItem) {
                     state.totalQuantity -= existingItem.quantity;
                     state.totalAmount -= existingItem.totalPrice;
-                    state.items = state.items.filter(item => item._id !== id);
+                    state.items = state.items.filter(item => !(item._id === id && item.size === size));
                 }
             })
             // Decrement quantity async
             .addCase(decrementQuantityAsync.fulfilled, (state, action) => {
-                const id = action.payload;
-                const item = state.items.find(item => item._id === id);
+                const { id, size } = action.payload;
+                const item = state.items.find(item => item._id === id && item.size === size);
                 
                 if (item && item.quantity > 1) {
                     item.quantity--;
@@ -212,7 +220,7 @@ const cartSlice = createSlice({
                     // Remove item if quantity becomes 0
                     state.totalQuantity--;
                     state.totalAmount -= item.price;
-                    state.items = state.items.filter(i => i._id !== id);
+                    state.items = state.items.filter(i => !(i._id === id && i.size === size));
                 }
             })
             // Clear cart on logout
