@@ -174,27 +174,6 @@ const ProductPage = () => {
                         </div>
                     </div>
                 </div>
-                
-                <div className="mt-12 relative">
-                    <div className="absolute inset-0 bg-linear-to-r from-green-500/5 to-emerald-500/5 dark:from-green-500/20 dark:to-emerald-500/20 rounded-2xl" />
-                    <div className="relative py-12 bg-white/50 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-green-200/30 dark:border-green-500/40">
-                     <h3 className="text-3xl font-bold text-center mb-8 text-gray-900 dark:text-white">Your Positive Impact</h3>
-                     <div className="grid grid-cols-3 gap-8 text-center max-w-3xl mx-auto">
-                        <div className="p-4">
-                            <p className="text-4xl font-bold bg-linear-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">713 gal</p>
-                            <span className="text-gray-600 dark:text-gray-400 font-medium">of water saved</span>
-                        </div>
-                        <div className="p-4">
-                            <p className="text-4xl font-bold bg-linear-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">18 lbs</p>
-                            <span className="text-gray-600 dark:text-gray-400 font-medium">of CO₂ prevented</span>
-                        </div>
-                        <div className="p-4">
-                            <p className="text-4xl font-bold bg-linear-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent">5.2 lbs</p>
-                            <span className="text-gray-600 dark:text-gray-400 font-medium">of textile waste diverted</span>
-                        </div>
-                     </div>
-                    </div>
-                </div>
 
                 <div className="mt-16">
                     <h3 className="text-2xl font-bold mb-6 dark:text-white">Reviews</h3>
