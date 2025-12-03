@@ -25,6 +25,7 @@ export const fetchCartItems = createAsyncThunk(
                         ...item.productId, // Spread product details (title, price, image, etc.)
                         _id: item.productId._id, // Ensure _id is the product ID
                         quantity: item.quantity,
+                        size: item.size,
                         totalPrice: item.productId.price * item.quantity
                     }));
             }
@@ -38,10 +39,10 @@ export const fetchCartItems = createAsyncThunk(
 // Async thunks for backend sync
 export const addToCartAsync = createAsyncThunk(
     'cart/addToCartAsync',
-    async (product, { rejectWithValue }) => {
+    async ({ product, size }, { rejectWithValue }) => { // Destructure object
         try {
-            await apiAddToCart(product._id);
-            return product;
+            await apiAddToCart(product._id, size); // Pass size to API
+            return { ...product, size }; // Return product WITH size
         } catch (error) {
             return rejectWithValue(error.message);
         }
@@ -167,8 +168,12 @@ const cartSlice = createSlice({
             })
             .addCase(addToCartAsync.fulfilled, (state, action) => {
                 state.isLoading = false;
-                const newItem = action.payload;
-                const existingItem = state.items.find(item => item._id === newItem._id);
+                const newItem = action.payload; // This now contains .size
+                
+                // Check if item exists matching BOTH ID and Size
+                const existingItem = state.items.find(item => 
+                    item._id === newItem._id && item.size === newItem.size
+                );
                 
                 if (existingItem) {
                     existingItem.quantity++;
@@ -177,6 +182,7 @@ const cartSlice = createSlice({
                     state.items.push({
                         ...newItem,
                         quantity: 1,
+                        size: newItem.size, // Ensure size is saved to state
                         totalPrice: newItem.price
                     });
                 }

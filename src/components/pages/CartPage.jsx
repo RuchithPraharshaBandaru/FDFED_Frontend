@@ -12,24 +12,32 @@ import {
 } from '../../store/slices/cartSlice';
 import { Leaf, Plus, Minus } from 'lucide-react';
 
+// --- UPDATED: CartItem now accepts and uses size ---
 const CartItem = ({ item, onAdd, onDecrease, onRemove }) => (
     <div className="flex gap-4 p-4 border-b dark:border-gray-700">
         <img src={item.image || item.productId?.image} alt={item.title || item.productId?.title} className="w-24 h-19 object-cover rounded-md" />
         <div className="flex-grow flex flex-col">
             <div>
                 <h3 className="font-semibold text-gray-800 dark:text-white">{item.title || item.productId?.title}</h3>
+                {/* --- NEW: Display Size --- */}
+                {item.size && (
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        Size: <span className="font-medium text-gray-700 dark:text-gray-300">{item.size}</span>
+                    </p>
+                )}
             </div>
             <div className="mt-auto flex justify-between items-center">
                 <div className="flex items-center gap-2 border dark:border-gray-600 rounded-md">
-                    <button onClick={() => onDecrease(item._id || item.productId?._id)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-l-md">
+                    {/* --- UPDATED: Pass size to handlers --- */}
+                    <button onClick={() => onDecrease(item._id || item.productId?._id, item.size)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-l-md">
                         <Minus size={16} />
                     </button>
                     <span className="px-3 font-semibold dark:text-white">{item.quantity}</span>
-                    <button onClick={() => onAdd(item._id || item.productId?._id)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-r-md">
+                    <button onClick={() => onAdd(item._id || item.productId?._id, item.size)} className="px-3 py-1 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-r-md">
                         <Plus size={16} />
                     </button>
                 </div>
-                <button onClick={() => onRemove(item._id || item.productId?._id)} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Remove</button>
+                <button onClick={() => onRemove(item._id || item.productId?._id, item.size)} className="text-sm text-gray-500 dark:text-gray-400 hover:underline">Remove</button>
             </div>
         </div>
         <p className="text-lg font-bold text-gray-800 dark:text-white">Rs.{((item.price || item.productId?.price) * item.quantity).toFixed(2)}</p>
@@ -45,31 +53,34 @@ const CartPage = () => {
     const estimatedShipping = cartCount > 0 ? 5.00 : 0.00;
     const finalTotal = cartTotal + estimatedShipping;
     
-    const handleAddToCart = (id) => {
-        const item = cartItems.find(i => i._id === id);
+    // --- UPDATED: Handle Size Logic ---
+    const handleAddToCart = (id, size) => {
+        // Find specific item by ID AND Size
+        const item = cartItems.find(i => i._id === id && i.size === size);
         if (item) {
-            dispatch(addToCartAsync(item));
+            // Pass size explicitly to the slice
+            dispatch(addToCartAsync({ product: item, size: size }));
         }
     };
     
-    const handleDecreaseQuantity = (id) => {
-        dispatch(decrementQuantityAsync(id));
+    const handleDecreaseQuantity = (id, size) => {
+        // Assuming your slice has been updated to accept { id, size }
+        // If not, it will only remove by ID (might affect wrong size if ID is not unique)
+        dispatch(decrementQuantityAsync({ id, size }));
     };
     
-    const handleRemoveFromCart = (id) => {
-        dispatch(removeFromCartAsync(id));
+    const handleRemoveFromCart = (id, size) => {
+        dispatch(removeFromCartAsync({ id, size }));
     };
 
     return (
         <div className="relative min-h-screen bg-gradient-to-br from-slate-50 via-green-50/15 to-emerald-50/20 dark:from-gray-950 dark:via-green-900/25 dark:to-emerald-900/20 py-12 overflow-hidden">
-            {/* Futuristic background elements */}
             <div className="absolute inset-0 bg-dot-pattern opacity-[0.02] dark:opacity-[0.06] pointer-events-none" />
             <div className="absolute top-0 right-1/3 w-96 h-96 bg-gradient-to-br from-green-400/10 to-emerald-500/10 dark:from-green-500/20 dark:to-emerald-600/20 blur-3xl rounded-full" />
             <div className="absolute bottom-0 left-1/3 w-96 h-96 bg-gradient-to-tr from-emerald-400/8 to-green-500/8 dark:from-emerald-600/15 dark:to-green-700/15 blur-3xl rounded-full" />
             
             <div className="relative container mx-auto px-6 grid lg:grid-cols-3 gap-12">
                 
-                {/* Left Side: Cart Items */}
                 <div className="lg:col-span-2">
                     <div className="mb-6">
                         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-green-500/10 to-emerald-500/10 dark:from-green-500/15 dark:to-emerald-500/15 border border-green-500/20 mb-3">
@@ -82,9 +93,10 @@ const CartPage = () => {
                         <div className="absolute inset-0 bg-gradient-to-br from-white/70 to-white/40 dark:from-gray-800/80 dark:to-gray-900/70 backdrop-blur-xl rounded-2xl" />
                         <div className="relative bg-white/50 dark:bg-gray-800/60 backdrop-blur-xl rounded-2xl border border-white/20 dark:border-green-500/25 shadow-xl dark:shadow-green-500/15 overflow-hidden">
                         {cartCount > 0 ? (
-                            cartItems.map(item => (
+                            cartItems.map((item, index) => (
                                 <CartItem 
-                                    key={item._id || item.productId?._id}
+                                    // Use index as fallback for key if multiple items have same ID but diff size
+                                    key={`${item._id || item.productId?._id}-${item.size}-${index}`}
                                     item={item} 
                                     onAdd={handleAddToCart}
                                     onDecrease={handleDecreaseQuantity}
@@ -98,7 +110,6 @@ const CartPage = () => {
                     </div>
                 </div>
 
-                {/* Right Side: Order Summary */}
                 <div className="lg:col-span-1">
                     <div className="sticky top-28">
                         <div className="relative bg-gradient-to-br from-green-500 to-emerald-600 dark:from-green-500 dark:to-emerald-600 p-[2px] rounded-2xl shadow-2xl shadow-green-500/20 dark:shadow-green-500/40">

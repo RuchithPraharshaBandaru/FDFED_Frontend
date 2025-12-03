@@ -293,9 +293,13 @@ export const apiSyncCart = async (cartItems) => {
     return response.json();
 };
 
-export const apiAddToCart = async (productId) => {
+export const apiAddToCart = async (productId, size) => { // Accept size param
     const response = await fetch(`${API_BASE_URL}/cart/add/${productId}`, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json', // Content-Type is now required
+        },
+        body: JSON.stringify({ size }), // Send size in body
         credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to add to cart');
