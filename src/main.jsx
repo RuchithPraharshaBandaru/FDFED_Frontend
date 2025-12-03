@@ -11,7 +11,7 @@ import './index.css';
 ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
         <Provider store={store}>
-            <PersistGate loading={null} persistor={persistor}>
+            <PersistGate loading={<div className="min-h-screen flex items-center justify-center">Loading...</div>} persistor={persistor}>
                 <BrowserRouter>
                     <App />
                 </BrowserRouter>
