@@ -152,8 +152,8 @@ const SellPage = () => {
                                 value={formData.items}
                                 onChange={handleChange}
                                 required
+                                placeholder="Select Item"
                                 options={[
-                                    { value: '', label: 'Select Item' },
                                     { value: 't-shirts', label: 'T-shirts' },
                                     { value: 'shirts', label: 'Shirts' },
                                     { value: 'pants-jeans', label: 'Pants/Jeans' },
@@ -170,8 +170,8 @@ const SellPage = () => {
                                 value={formData.fabric}
                                 onChange={handleChange}
                                 required
+                                placeholder="Select material type"
                                 options={[
-                                    { value: '', label: 'Select material type' },
                                     { value: 'Cotton', label: 'Cotton' },
                                     { value: 'Silk', label: 'Silk' },
                                     { value: 'Leather', label: 'Leather' },
@@ -190,8 +190,8 @@ const SellPage = () => {
                                 value={formData.size}
                                 onChange={handleChange}
                                 required
+                                placeholder="Select Size"
                                 options={[
-                                    { value: '', label: 'Select Size' },
                                     { value: 'S', label: 'S' },
                                     { value: 'M', label: 'M' },
                                     { value: 'L', label: 'L' }
@@ -229,8 +229,8 @@ const SellPage = () => {
                                     value={formData.age}
                                     onChange={handleChange}
                                     required
+                                    placeholder="Select Usage Duration"
                                     options={[
-                                        { value: '', label: 'Select Usage Duration' },
                                         { value: '6', label: 'Less than 6 months' },
                                         { value: '1', label: 'More than 1 year' }
                                     ]}
@@ -253,8 +253,8 @@ const SellPage = () => {
                                 value={formData.timeSlot}
                                 onChange={handleChange}
                                 required
+                                placeholder="Select a time slot"
                                 options={[
-                                    { value: '', label: 'Select a time slot' },
                                     { value: 'morning', label: 'Morning (9 AM - 12 PM)' },
                                     { value: 'afternoon', label: 'Afternoon (12 PM - 5 PM)' },
                                     { value: 'evening', label: 'Evening (5 PM - 8 PM)' }

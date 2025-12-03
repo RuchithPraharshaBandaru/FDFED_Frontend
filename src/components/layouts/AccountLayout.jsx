@@ -14,14 +14,16 @@ const AccountLayout = () => {
     };
 
     return (
-        <div className="container mx-auto px-6 py-8 dark:bg-gray-900">
-            <h1 className="text-3xl font-bold mb-2 dark:text-white">My Account</h1>
-            <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">Welcome, {user?.firstname}!</p>
+        <div className="relative min-h-screen bg-gradient-to-br from-white via-green-50/30 to-emerald-50/20 dark:from-gray-950 dark:via-green-900/25 dark:to-emerald-900/20">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.05),transparent_50%)] dark:bg-[radial-gradient(circle_at_50%_50%,rgba(16,185,129,0.08),transparent_50%)] pointer-events-none"></div>
+            <div className="relative container mx-auto px-6 py-8">
+                <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-100 dark:to-white bg-clip-text text-transparent">My Account</h1>
+                <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">Welcome, {user?.firstname}!</p>
             
-            <div className="flex flex-col md:flex-row gap-8">
-                {/* --- Sidebar Navigation --- */}
-                <aside className="w-full md:w-1/4">
-                    <nav className="flex flex-col space-y-2">
+                <div className="flex flex-col md:flex-row gap-8">
+                    {/* --- Sidebar Navigation --- */}
+                    <aside className="w-full md:w-1/4">
+                        <nav className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl p-4 rounded-2xl shadow-xl border-2 border-gray-200/50 dark:border-gray-700/50 hover:border-green-500/30 transition-all flex flex-col space-y-2">
                         
                         {/* --- NEW LINKS ADDED HERE --- */}
                         <NavLink
@@ -55,15 +57,16 @@ const AccountLayout = () => {
                         >
                             Address
                         </NavLink>
-                    </nav>
-                </aside>
+                        </nav>
+                    </aside>
 
-                {/* --- Page Content (Profile, Address, Orders, etc.) --- */}
-                <main className="w-full md:w-3/4">
+                    {/* --- Page Content (Profile, Address, Orders, etc.) --- */}
+                    <main className="w-full md:w-3/4">
                     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
                         <Outlet /> 
                     </div>
-                </main>
+                    </main>
+                </div>
             </div>
         </div>
     );
