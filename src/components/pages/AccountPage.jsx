@@ -11,6 +11,7 @@ import { useFormState } from '../../hooks';
 const AccountPage = () => {
     const dispatch = useDispatch();
     const user = useSelector(selectUser);
+    const [loading, setLoading] = useState(true);
     
     const { formData, setFormData, handleChange } = useFormState({
         firstname: '',
@@ -28,6 +29,7 @@ const AccountPage = () => {
                 lastname: user.lastname || '',
                 email: user.email || '',
             });
+            setLoading(false);
         }
     }, [user, setFormData]);
 
@@ -45,6 +47,22 @@ const AccountPage = () => {
             setError(err.message || 'Failed to update profile.');
         }
     };
+
+    if (loading) {
+        return (
+            <div className="space-y-6">
+                <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-100 dark:to-white bg-clip-text text-transparent">Profile Details</h2>
+                <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl p-8 rounded-2xl shadow-xl border-2 border-gray-200/50 dark:border-gray-700/50">
+                    <div className="space-y-6 animate-pulse">
+                        <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                        <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                        <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                        <div className="h-12 bg-gray-200 dark:bg-gray-700 rounded-xl"></div>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6">
