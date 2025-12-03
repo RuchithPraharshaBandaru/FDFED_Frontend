@@ -6,7 +6,12 @@ import { useFetchData } from '../../hooks';
 
 const OrderHistoryPage = () => {
     const { data, loading, error } = useFetchData(apiGetOrderHistory, []);
-    const orders = data?.orders || [];
+    const allOrders = data?.orders || [];
+    
+    // Filter out orders where all products are unavailable
+    const orders = allOrders.filter(order => 
+        order.products.some(item => item.productId !== null)
+    );
 
     if (loading) return <div className="text-center py-12 text-gray-700 dark:text-gray-300 font-semibold">Loading order history...</div>;
     if (error) return <div className="text-red-600 dark:text-red-400 font-semibold">{error}</div>;
@@ -32,30 +37,23 @@ const OrderHistoryPage = () => {
                             <div className="mt-4 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-xl p-4 border border-gray-200/30 dark:border-gray-600/30">
                                 <h4 className="font-bold mb-3 text-gray-700 dark:text-gray-200">Items:</h4>
                                 <ul className="space-y-3">
-                                    {order.products.map((item) => (
-                                        item.productId ? (
-                                            <li key={item.productId._id} className="flex items-center gap-4 py-3 border-b border-gray-200/30 dark:border-gray-600/30 last:border-0">
-                                                {item.productId.imageSrc && (
-                                                    <img 
-                                                        src={item.productId.imageSrc} 
-                                                        alt={item.productId.title} 
-                                                        className="w-16 h-16 object-cover rounded-lg shadow-sm"
-                                                    />
-                                                )}
-                                                <div className="flex-1">
-                                                    <Link to={`/product/${item.productId._id}`} className="text-green-600 dark:text-green-400 hover:underline font-semibold">
-                                                        {item.productId.title}
-                                                    </Link>
-                                                    <span className="text-gray-500 ml-2 font-medium"> (x {item.quantity})</span>
-                                                </div>
-                                                <span className="font-bold dark:text-white">${(item.price * item.quantity).toFixed(2)}</span>
-                                            </li>
-                                        ) : (
-                                            <li key={item._id} className="flex items-center justify-between py-3 border-b border-gray-200/30 dark:border-gray-600/30 last:border-0">
-                                                <span className="text-gray-500 italic">Product no longer available</span>
-                                                <span className="font-bold dark:text-white">${(item.price * item.quantity).toFixed(2)}</span>
-                                            </li>
-                                        )
+                                    {order.products.filter(item => item.productId !== null).map((item) => (
+                                        <li key={item.productId._id} className="flex items-center gap-4 py-3 border-b border-gray-200/30 dark:border-gray-600/30 last:border-0">
+                                            {item.productId.imageSrc && (
+                                                <img 
+                                                    src={item.productId.imageSrc} 
+                                                    alt={item.productId.title} 
+                                                    className="w-16 h-16 object-cover rounded-lg shadow-sm"
+                                                />
+                                            )}
+                                            <div className="flex-1">
+                                                <Link to={`/product/${item.productId._id}`} className="text-green-600 dark:text-green-400 hover:underline font-semibold">
+                                                    {item.productId.title}
+                                                </Link>
+                                                <span className="text-gray-500 ml-2 font-medium"> (x {item.quantity})</span>
+                                            </div>
+                                            <span className="font-bold dark:text-white">${(item.price * item.quantity).toFixed(2)}</span>
+                                        </li>
                                     ))}
                                 </ul>
                             </div>

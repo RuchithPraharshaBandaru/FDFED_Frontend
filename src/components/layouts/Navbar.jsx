@@ -86,6 +86,7 @@ const Navbar = () => {
                         <li><Link to="/" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Home</Link></li>
                         <li><Link to="/store" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Shop</Link></li>
                         <li><Link to="/sell" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Sell</Link></li>
+                        <li><Link to="/blogs" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">Blogs</Link></li>
                         <li><Link to="/about" className="text-sm font-medium text-muted-foreground transition-colors hover:text-primary">About</Link></li>
                     </ul>
                 </div>
