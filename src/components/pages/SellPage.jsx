@@ -112,7 +112,7 @@ const SellPage = () => {
 
         try {
             await submitDonation(data);
-            setSuccess('Submission successful! You can submit another item or browse the store.');
+            setSuccess('Submission successful! Your donation is pending verification. Virtual coins will be credited once verified.');
             // Reset form using custom hook
             resetForm();
             setFile(null);

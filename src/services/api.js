@@ -416,9 +416,11 @@ export const apiDeleteReview = async (reviewId) => {
  * @returns {Promise<Array>}
  */
 export const fetchBlogs = async () => {
-    const response = await fetch(`http://localhost:8000/api/v1/admin/blogs`, {
+    // CHANGED: Use API_BASE_URL (which is /api/v1/user) instead of the hardcoded admin URL
+    const response = await fetch(`${API_BASE_URL}/blogs`, {
         credentials: 'include'
     });
+    
     if (!response.ok) {
         throw new Error('Failed to fetch blogs');
     }
@@ -438,12 +440,6 @@ export const fetchBlogs = async () => {
     }
     if (data.data?.blogs) {
         return data.data.blogs;
-    }
-    if (data.data?.items) {
-        return data.data.items;
-    }
-    if (data.items) {
-        return data.items;
     }
     
     return [];
