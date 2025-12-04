@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { submitDonation } from '../../services/api';
+import { submitDonation, apiPredictImage } from '../../services/api';
 import Input from '../ui/Input';
 import Select from '../ui/Select';
 import Button from '../ui/Button';
 import Textarea from '../ui/Textarea';
 import Alert from '../ui/Alert';
 import { useFormState } from '../../hooks';
+import { useToast } from '../../context/ToastContext';
 
 const SellPage = () => {
-    const { formData, handleChange, resetForm } = useFormState({
+    const { formData, handleChange, resetForm, setFormData } = useFormState({
         items: '',
         fabric: '',
         size: '',
@@ -20,13 +21,70 @@ const SellPage = () => {
         description: ''
     });
     const [file, setFile] = useState(null);
+    const [preview, setPreview] = useState(null); // Add preview state
     const [loading, setLoading] = useState(false);
+    const [isScanning, setIsScanning] = useState(false); // New state for AI scan
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const navigate = useNavigate();
+    const { showSuccess, showError, showInfo } = useToast();
 
-    const handleFileChange = (e) => {
-        setFile(e.target.files[0]);
+    const handleFileChange = async (e) => {
+        const selectedFile = e.target.files[0];
+        setFile(selectedFile);
+
+        if (selectedFile) {
+            // Create preview
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(selectedFile);
+
+            // Start AI Model Scan
+            setIsScanning(true);
+            setSuccess(null);
+            setError(null);
+
+            try {
+                // Create FormData for the prediction API
+                const predictionData = new FormData();
+                predictionData.append('image', selectedFile);
+
+                // Call the backend API
+                const result = await apiPredictImage(predictionData);
+
+                if (result.is_cloth) {
+                    showSuccess(`Verified as ${result.category}`);
+                    
+                    // If the backend returns specific details in the future, we can auto-fill here.
+                    // For now, the gatekeeper only confirms it is a cloth.
+                    // We can optionally set a default category if the model provides it.
+                    if (result.predicted_details) {
+                         setFormData(prev => ({
+                            ...prev,
+                            ...result.predicted_details
+                        }));
+                    }
+                } else {
+                    const msg = `Verification Failed: The image was identified as ${result.category}. Please upload a valid clothing item.`;
+                    setError(msg);
+                    showError(msg);
+                    setFile(null); // Clear the invalid file
+                    setPreview(null);
+                }
+
+            } catch (err) {
+                console.error("AI Scan Failed", err);
+                const msg = "AI Service Error: " + (err.message || "Could not verify image.");
+                setError(msg);
+                showError(msg);
+            } finally {
+                setIsScanning(false);
+            }
+        } else {
+            setPreview(null);
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -140,6 +198,20 @@ const SellPage = () => {
                                     <p className="text-sm text-gray-600 dark:text-gray-400">Fill in the details to get started</p>
                                 </div>
                             </div>
+
+                            {/* AI Guide Section */}
+                            <div className="mb-6 p-4 bg-green-50/50 dark:bg-green-900/10 rounded-xl border border-green-100 dark:border-green-800/30">
+                                <h3 className="text-sm font-bold text-green-800 dark:text-green-400 mb-2 flex items-center gap-2">
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
+                                    How AI Verification Works:
+                                </h3>
+                                <ol className="list-decimal list-inside space-y-1 text-xs text-green-700 dark:text-green-300 ml-1">
+                                    <li><strong>Upload Photo:</strong> Upload a photo of the cloth you want to sell.</li>
+                                    <li><strong>AI Scan:</strong> We use smart technology to confirm it's a clothing item.</li>
+                                    <li><strong>Auto-Fill:</strong> We'll automatically identify the item (e.g., "Woolen Sweater") and fill in the Item Name for you!</li>
+                                </ol>
+                            </div>
+
                             <form id="clothesForm" className="space-y-6" autoComplete="off" onSubmit={handleSubmit}>
 
                             {/* Form Messages */}
@@ -281,6 +353,24 @@ const SellPage = () => {
                                         required 
                                         className="block w-full text-sm text-gray-600 dark:text-gray-400 file:mr-4 file:py-2.5 file:px-5 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-gradient-to-r file:from-green-500 file:to-emerald-600 file:text-white hover:file:from-green-600 hover:file:to-emerald-700 file:shadow-lg file:shadow-green-500/30 file:transition-all cursor-pointer rounded-xl border-2 border-dashed border-gray-200/50 dark:border-gray-700/50 bg-white/50 dark:bg-gray-800/50 backdrop-blur-sm p-3 hover:border-green-500/30 transition-all" 
                                     />
+                                    {preview && (
+                                        <div className="mt-4 flex justify-center">
+                                            <img 
+                                                src={preview} 
+                                                alt="Preview" 
+                                                className="h-48 w-48 object-cover rounded-xl shadow-lg border-2 border-white dark:border-gray-700"
+                                            />
+                                        </div>
+                                    )}
+                                    {isScanning && (
+                                        <div className="mt-3 flex items-center justify-center gap-2 text-sm font-medium text-green-600 dark:text-green-400 animate-pulse">
+                                            <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                            </svg>
+                                            AI Model is analyzing your image...
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 

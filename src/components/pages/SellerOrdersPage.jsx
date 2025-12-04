@@ -59,7 +59,8 @@ export const SellerOrdersPage = () => {
 
     // Filter and sort orders
     const filteredOrders = useMemo(() => {
-        let filtered = [...orders];
+        const safeOrders = Array.isArray(orders) ? orders : [];
+        let filtered = [...safeOrders];
 
         // Search filter (order ID, customer name, email)
         if (searchTerm) {
@@ -149,9 +150,10 @@ export const SellerOrdersPage = () => {
     ].filter(Boolean).length;
 
     // Calculate statistics
-    const allOrdersCount = orders.length;
-    const allTotalRevenue = orders.reduce((sum, order) => sum + order.totalAmount, 0);
-    const allTotalItems = orders.reduce((sum, order) => 
+    const safeOrders = Array.isArray(orders) ? orders : [];
+    const allOrdersCount = safeOrders.length;
+    const allTotalRevenue = safeOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+    const allTotalItems = safeOrders.reduce((sum, order) => 
         sum + order.items.reduce((itemSum, item) => itemSum + item.quantity, 0), 0
     );
 
@@ -400,10 +402,10 @@ export const SellerOrdersPage = () => {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
                             </svg>
                             <h3 className="text-lg font-medium text-foreground mb-2">
-                                {orders.length === 0 ? 'No orders yet' : 'No orders found'}
+                                {(Array.isArray(orders) ? orders : []).length === 0 ? 'No orders yet' : 'No orders found'}
                             </h3>
                             <p className="text-muted-foreground">
-                                {orders.length === 0 
+                                {(Array.isArray(orders) ? orders : []).length === 0 
                                     ? 'When customers purchase your products, their orders will appear here.'
                                     : 'Try adjusting your filters to see more results.'
                                 }

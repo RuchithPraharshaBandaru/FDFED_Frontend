@@ -24,13 +24,16 @@ export const SellerDashboardPage = () => {
     }, [dispatch]);
 
     // Calculate statistics
-    const totalProducts = products.length;
-    const totalSales = orders?.reduce((sum, order) => sum + order.totalAmount, 0) || 0;
-    const totalOrdersCount = orders?.length || 0;
-    const inStockProducts = products.filter(product => product.stock).length;
+    const safeOrders = Array.isArray(orders) ? orders : [];
+    const safeProducts = Array.isArray(products) ? products : [];
 
-    const recentOrders = orders?.slice(0, 5) || [];
-    const recentProducts = products.slice(0, 5);
+    const totalProducts = safeProducts.length;
+    const totalSales = safeOrders.reduce((sum, order) => sum + order.totalAmount, 0) || 0;
+    const totalOrdersCount = safeOrders.length || 0;
+    const inStockProducts = safeProducts.filter(product => product.stock).length;
+
+    const recentOrders = safeOrders.slice(0, 5);
+    const recentProducts = safeProducts.slice(0, 5);
 
     return (
         <div className="min-h-screen bg-background py-8">

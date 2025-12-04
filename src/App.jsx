@@ -4,6 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Routes, Route } from 'react-router-dom';
 import { selectTheme } from './store/slices/themeSlice';
 import { checkAuth, selectIsAuthenticated } from './store/slices/authSlice'; // Added selectIsAuthenticated
+import { industryCheckAuth } from './store/slices/industrySlice';
 import { fetchCartItems } from './store/slices/cartSlice'; // Added fetchCartItems
 import { ToastProvider } from './context/ToastContext';
 import MainLayout from './components/layouts/MainLayout';
@@ -23,6 +24,18 @@ import OrderHistoryPage from './components/pages/OrderHistoryPage';
 import MyDonationsPage from './components/pages/MyDonationsPage';
 import CheckoutPage from './components/pages/CheckoutPage';
 import BlogsPage from './components/pages/BlogsPage';
+// Industry imports
+import IndustryLayout from './components/layouts/IndustryLayout';
+import ProtectedIndustryRoute from './components/layouts/ProtectedIndustryRoute';
+import IndustryLoginPage from './components/pages/IndustryLoginPage';
+import IndustrySignupPage from './components/pages/IndustrySignupPage';
+import IndustryHomePage from './components/pages/IndustryHomePage';
+import IndustryDashboardPage from './components/pages/IndustryDashboardPage';
+import IndustryInventoryPage from './components/pages/IndustryInventoryPage';
+import IndustryCartPage from './components/pages/IndustryCartPage';
+import IndustryCheckoutPage from './components/pages/IndustryCheckoutPage';
+import IndustryProfilePage from './components/pages/IndustryProfilePage';
+
 // Seller imports
 import { SellerLayout } from './components/layouts/SellerLayout';
 import { SellerLoginPage } from './components/pages/SellerLoginPage';
@@ -59,6 +72,7 @@ function App() {
     // Check authentication on mount
     useEffect(() => {
         dispatch(checkAuth());
+        dispatch(industryCheckAuth());
     }, [dispatch]);
 
     // Sync cart when user is authenticated
@@ -81,6 +95,23 @@ function App() {
     return (
         <ToastProvider>
             <Routes>
+                {/* --- Industry Public Routes --- */}
+                <Route path="/industry/login" element={<IndustryLoginPage />} />
+                <Route path="/industry/signup" element={<IndustrySignupPage />} />
+
+                {/* --- Protected Industry Routes --- */}
+                <Route element={<ProtectedIndustryRoute />}>
+                    <Route path="/industry" element={<IndustryLayout />}>
+                        <Route index element={<IndustryHomePage />} />
+                        <Route path="home" element={<IndustryHomePage />} />
+                        <Route path="dashboard" element={<IndustryDashboardPage />} />
+                        <Route path="inventory" element={<IndustryInventoryPage />} />
+                        <Route path="cart" element={<IndustryCartPage />} />
+                        <Route path="checkout" element={<IndustryCheckoutPage />} />
+                        <Route path="profile" element={<IndustryProfilePage />} />
+                    </Route>
+                </Route>
+
                 {/* --- Seller Public Routes --- */}
                 <Route path="/seller/login" element={<SellerLoginPage />} />
                 <Route path="/seller/signup" element={<SellerSignupPage />} />

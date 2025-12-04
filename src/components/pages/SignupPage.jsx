@@ -1,7 +1,7 @@
 // src/components/pages/SignupPage.jsx
 import React, { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, Navigate, Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
 import { signupUser, selectIsAuthenticated, selectAuthLoading, selectAuthError } from '../../store/slices/authSlice';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
@@ -12,8 +12,6 @@ function SignupPage() {
     const [lastname, setLastname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-    const [searchParams] = useSearchParams();
-    const isSeller = searchParams.get('seller') === 'true';
     const dispatch = useDispatch();
     const navigate = useNavigate();
     
@@ -23,21 +21,13 @@ function SignupPage() {
 
     // If user is already logged in, redirect them
     if (isAuthenticated) {
-        if (isSeller) {
-            return <Navigate to="/sell" replace />;
-        }
         return <Navigate to="/" replace />;
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        const userData = { firstname, lastname, email, password };
-        if (isSeller) {
-            userData.role = 'seller';
-        }
-        
-        const result = await dispatch(signupUser(userData));
+        const result = await dispatch(signupUser({ firstname, lastname, email, password }));
         if (result.type === 'auth/signup/fulfilled') {
             navigate('/');
         }
