@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchSellProductsThunk, updateSellProductStatusThunk, selectAdminSellProducts } from '../../../store/slices/adminSlice';
 import Select from '../../ui/Select';
 import { toast } from 'react-hot-toast';
+import { Toaster } from 'react-hot-toast';
 import Input from '../../ui/Input';
 import Button from '../../ui/Button';
 import Card from '../../ui/Card';
@@ -31,10 +32,16 @@ const SellProductsPage = () => {
   useEffect(() => { dispatch(fetchSellProductsThunk({})); }, [dispatch]);
 
   const updateStatus = async (id, status) => {
+    console.log("updateStatus called with:", id, status);
+    if (!id) {
+      toast.error("Invalid Product ID");
+      return;
+    }
     const res = await dispatch(updateSellProductStatusThunk({ id, userStatus: status }));
+    console.log("updateStatus result:", res);
     if (res.meta.requestStatus === 'fulfilled') {
-      toast.success('User status updated');
-      if (selectedProduct && selectedProduct._id === id) {
+      toast.success(`Product marked as ${status}`);
+      if (selectedProduct && (selectedProduct._id === id || selectedProduct.id === id)) {
         setSelectedProduct(prev => ({ ...prev, userStatus: status }));
       }
     } else {
@@ -49,7 +56,7 @@ const SellProductsPage = () => {
       const inFabric = filters.fabric ? sp.fabric?.toLowerCase().includes(filters.fabric.toLowerCase()) : true;
       const inSize = filters.size ? sp.size === filters.size : true;
       const inGender = filters.gender ? sp.gender === filters.gender : true;
-      const inUserStatus = filters.userStatus ? sp.userStatus === filters.userStatus : true;
+      const inUserStatus = filters.userStatus ? sp.userStatus === filters.userStatus : sp.userStatus !== 'Rejected';
       const inAdminStatus = filters.adminStatus ? sp.adminStatus === filters.adminStatus : true;
       const inTimeSlot = filters.timeSlot ? sp.timeSlot === filters.timeSlot : true;
       const inUsageMin = filters.minUsage ? Number(sp.usageDuration ?? 0) >= Number(filters.minUsage) : true;
@@ -74,6 +81,7 @@ const SellProductsPage = () => {
 
   return (
     <div className="space-y-6">
+      <Toaster position="top-right" />
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white tracking-tight">Second-hand Products</h1>

@@ -313,7 +313,7 @@ const adminSlice = createSlice({
       .addCase(fetchSellProductsThunk.fulfilled, (s, a) => { s.sellProducts = { ...a.payload, loading: false, error: null }; })
       .addCase(fetchSellProductsThunk.rejected, (s, a) => { s.sellProducts.loading = false; s.sellProducts.error = a.payload; })
       .addCase(updateSellProductStatusThunk.fulfilled, (s, a) => {
-        const r = s.sellProducts.items.find(i => i._id === a.payload.id);
+        const r = s.sellProducts.items.find(i => (i._id === a.payload.id) || (i.id === a.payload.id));
         if (r) r.userStatus = a.payload.userStatus;
       })
 
