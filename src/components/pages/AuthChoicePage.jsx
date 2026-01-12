@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
-import { ShieldCheck, User as UserIcon, Store } from 'lucide-react';
+import { ShieldCheck, User as UserIcon, Store, Factory } from 'lucide-react';
 
 const ChoiceCard = ({ icon: Icon, title, description, actions }) => (
   <Card className="flex flex-col gap-4">
@@ -30,7 +30,7 @@ const AuthChoicePage = () => {
         <h1 className="text-2xl font-bold">Choose how you want to continue</h1>
         <p className="text-sm text-muted-foreground">Select your role to proceed to login or signup.</p>
       </div>
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <ChoiceCard
           icon={ShieldCheck}
           title="Admin"
@@ -60,6 +60,17 @@ const AuthChoicePage = () => {
             <>
               <Button variant="secondary" onClick={() => navigate('/seller/login')}>Login</Button>
               <Button onClick={() => navigate('/seller/signup')}>Sign Up</Button>
+            </>
+          }
+        />
+        <ChoiceCard
+          icon={Factory}
+          title="Industry"
+          description="Bulk procurement and inventory"
+          actions={
+            <>
+              <Button variant="secondary" onClick={() => navigate('/industry/login')}>Login</Button>
+              <Button onClick={() => navigate('/industry/signup')}>Sign Up</Button>
             </>
           }
         />

@@ -1,12 +1,13 @@
 // src/services/adminApi.js
 
-const ADMIN_BASE = '/api/v1/admin';
+const ADMIN_BASE = 'http://localhost:8000/api/v1/admin';
 
 const jsonHeaders = { 'Content-Type': 'application/json' };
 
 const handleJson = async (res) => {
   const data = await res.json().catch(() => null);
   if (!res.ok) {
+    console.error("API Error:", res.status, data);
     const msg = data?.message || `Request failed (${res.status})`;
     const err = new Error(msg);
     err.data = data;
@@ -153,10 +154,13 @@ export const getSellProducts = async (page = 1, limit = 50) => {
 };
 
 export const updateSellProductStatus = async (id, userStatus) => {
-  const res = await fetch(`${ADMIN_BASE}/dashboard/sellproduct`, {
-    method: 'POST',
+  console.log(`Updating status for ${id} to ${userStatus}`);
+  const url = `${ADMIN_BASE}/sellproduct/${id}/status`;
+  console.log(`PUT ${url}`);
+  const res = await fetch(url, {
+    method: 'PUT',
     headers: jsonHeaders,
-    body: JSON.stringify({ id, userStatus }),
+    body: JSON.stringify({ status: userStatus }),
     credentials: 'include',
   });
   return handleJson(res);

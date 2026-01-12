@@ -9,6 +9,7 @@ import { Select } from '../ui/Select';
 import { Button } from '../ui/Button';
 import { Alert } from '../ui/Alert';
 import { Card } from '../ui/Card';
+import { Info, CheckCircle, AlertTriangle, Sparkles } from 'lucide-react';
 
 const categories = [
     'Cotton',
@@ -34,6 +35,7 @@ export const SellerCreateProductPage = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [preview, setPreview] = useState(null);
+    const [showAiInfo, setShowAiInfo] = useState(false);
 
     const navigate = useNavigate();
     const { showSuccess, showError } = useToast();
@@ -139,10 +141,37 @@ export const SellerCreateProductPage = () => {
                     <form onSubmit={handleSubmit} className="space-y-6">
                         {/* Product Image */}
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Product Image *
-                            </label>
-                            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                            <div className="flex items-center justify-between mb-2">
+                                <label className="block text-sm font-medium text-gray-700">
+                                    Product Image *
+                                </label>
+                                <button 
+                                    type="button"
+                                    onClick={() => setShowAiInfo(!showAiInfo)}
+                                    className="text-xs flex items-center gap-1 text-indigo-600 hover:text-indigo-700 font-medium"
+                                >
+                                    <Sparkles className="w-3 h-3" />
+                                    AI Verification
+                                </button>
+                            </div>
+
+                            {showAiInfo && (
+                                <div className="mb-4 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-lg border border-indigo-100 dark:border-indigo-800 text-sm">
+                                    <h4 className="font-bold text-indigo-900 dark:text-indigo-300 flex items-center gap-2 mb-2">
+                                        <Sparkles className="w-4 h-4" /> Smart Image Verification
+                                    </h4>
+                                    <ol className="list-decimal list-inside space-y-1 text-indigo-800 dark:text-indigo-200 ml-1">
+                                        <li><strong>Upload:</strong> Select a clear image of your clothing item.</li>
+                                        <li><strong>Verify:</strong> Our system instantly checks if the image is a valid clothing item.</li>
+                                        <li><strong>Auto-Categorize:</strong> If verified, we automatically fill in the <strong>Category</strong> field based on the image.</li>
+                                    </ol>
+                                    <p className="mt-2 text-xs text-indigo-600 dark:text-indigo-400 italic">
+                                        * Non-clothing images will be rejected to maintain platform quality.
+                                    </p>
+                                </div>
+                            )}
+
+                            <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md relative group">
                                 <div className="space-y-1 text-center">
                                     {preview ? (
                                         <div className="mb-4">
@@ -167,7 +196,7 @@ export const SellerCreateProductPage = () => {
                                             />
                                         </svg>
                                     )}
-                                    <div className="flex text-sm text-gray-600">
+                                    <div className="flex text-sm text-gray-600 justify-center">
                                         <label className="relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500">
                                             <span>Upload a file</span>
                                             <input
@@ -181,6 +210,11 @@ export const SellerCreateProductPage = () => {
                                         <p className="pl-1">or drag and drop</p>
                                     </div>
                                     <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                                    
+                                    {/* Tooltip on hover */}
+                                    <div className="absolute bottom-2 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity bg-black/80 text-white text-xs px-2 py-1 rounded pointer-events-none whitespace-nowrap">
+                                        Our AI automatically verifies your image and detects the product category.
+                                    </div>
                                 </div>
                             </div>
                         </div>

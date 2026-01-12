@@ -178,6 +178,19 @@ export const submitDonation = async (formData) => {
     return response.json();
 };
 
+export const apiPredictImage = async (formData) => {
+    const response = await fetch(`${API_BASE_URL}/predict`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Prediction failed' }));
+        throw new Error(errorData.message || 'Prediction failed');
+    }
+    return response.json();
+};
+
 // --- ACCOUNT FUNCTIONS ---
 
 export const apiUpdateAccountDetails = async (userData) => {
@@ -430,4 +443,138 @@ export const fetchBlogs = async () => {
     }
     
     return [];
+};
+
+// --- INDUSTRY FUNCTIONS ---
+
+const INDUSTRY_API_URL = 'http://localhost:8000/api/v1/industry';
+
+export const industryLogin = async (credentials) => {
+    const response = await fetch(`${INDUSTRY_API_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+        credentials: 'include',
+    });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Login failed' }));
+        throw new Error(errorData.message || 'Login failed');
+    }
+    return response.json();
+};
+
+export const industrySignup = async (data) => {
+    const response = await fetch(`${INDUSTRY_API_URL}/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+        credentials: 'include',
+    });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Signup failed' }));
+        throw new Error(errorData.message || 'Signup failed');
+    }
+    return response.json();
+};
+
+export const getIndustryProfile = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/profile`, {
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Not authenticated');
+    return response.json();
+};
+
+export const industryLogout = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/logout`, {
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Logout failed');
+    return { success: true };
+};
+
+export const getIndustryDashboard = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/dashboard`, {
+        credentials: 'include',
+    });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to fetch dashboard data' }));
+        throw new Error(errorData.message || 'Failed to fetch dashboard data');
+    }
+    return response.json();
+};
+
+export const fetchIndustryHome = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/home`, {
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch home data');
+    return response.json();
+};
+
+export const getIndustryProfileForEdit = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/profile/edit`, {
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch profile for edit');
+    return response.json();
+};
+
+export const postIndustryProfileEdit = async (body) => {
+    const response = await fetch(`${INDUSTRY_API_URL}/profile/edit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to update profile');
+    return response.json();
+};
+
+export const getIndustryCart = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/cart?t=${Date.now()}`, {
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch cart');
+    return response.json();
+};
+
+export const postIndustryCart = async (body) => {
+    const response = await fetch(`${INDUSTRY_API_URL}/cart`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to update cart');
+    return response.json();
+};
+
+export const postIndustryCartDelete = async (body) => {
+    const response = await fetch(`${INDUSTRY_API_URL}/cart/delete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to delete from cart');
+    return response.json();
+};
+
+export const getIndustryCheckout = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/checkout`, {
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch checkout data');
+    return response.json();
+};
+
+export const postIndustryCheckout = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Checkout failed');
+    return response.json();
 };

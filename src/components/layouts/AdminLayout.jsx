@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { toggleTheme, selectTheme } from '../../store/slices/themeSlice';
 import { adminLogout } from '../../store/slices/adminAuthSlice';
 import { Link, NavLink, Outlet } from 'react-router-dom';
-import { BarChart3, ClipboardList, Home, NotebookPen, Package, ShieldCheck, ShoppingCart, Store, Users, UserCog, Truck, Sun, Moon } from 'lucide-react';
+import { ClipboardList, Home, NotebookPen, Package, ShieldCheck, ShoppingCart, Store, Users, Sun, Moon } from 'lucide-react';
 
 const NavItem = ({ to, icon: Icon, label }) => (
   <NavLink
@@ -26,8 +26,8 @@ const AdminLayout = () => {
   };
 
   const handleLogout = async () => {
-    const res = await dispatch(adminLogout());
-    navigate('/admin/login');
+    await dispatch(adminLogout());
+    navigate('/auth');
   };
 
   return (
@@ -59,9 +59,6 @@ const AdminLayout = () => {
           <NavItem to="/admin/vendors" icon={ShieldCheck} label="Vendors" />
           <NavItem to="/admin/orders" icon={ShoppingCart} label="Orders" />
           <NavItem to="/admin/sell-products" icon={ClipboardList} label="Second-hand" />
-          <NavItem to="/admin/managers" icon={UserCog} label="Managers" />
-          <NavItem to="/admin/delivery" icon={Truck} label="Delivery" />
-          <NavItem to="/admin/analytics" icon={BarChart3} label="Analytics" />
         </nav>
       </aside>
       <main className="col-span-12 md:col-span-9 lg:col-span-10 p-6">

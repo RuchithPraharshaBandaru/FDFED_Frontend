@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
-import { loginSeller, clearError } from '../../store/slices/sellerSlice';
+import { loginSeller, clearError, clearSeller } from '../../store/slices/sellerSlice';
 import { useToast } from '../../context/ToastContext';
 import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
@@ -17,14 +17,18 @@ export const SellerLoginPage = () => {
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const { loading, error, isAuthenticated } = useSelector((state) => state.seller);
+    const { loading, error, isAuthenticated, seller } = useSelector((state) => state.seller);
     const { showSuccess, showError } = useToast();
 
     useEffect(() => {
-        if (isAuthenticated) {
+        if (isAuthenticated && seller) {
             navigate('/seller/dashboard');
+        } else if (isAuthenticated && !seller) {
+            // Inconsistent state: authenticated but no seller data.
+            // Clear auth state to prevent redirect loops or long loading times.
+            dispatch(clearSeller());
         }
-    }, [isAuthenticated, navigate]);
+    }, [isAuthenticated, seller, navigate, dispatch]);
 
     useEffect(() => {
         // Clear any previous errors when component mounts
