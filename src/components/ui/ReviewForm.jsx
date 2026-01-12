@@ -22,11 +22,15 @@ const ReviewForm = ({ productId, onReviewSubmitted }) => {
             const data = await apiSubmitReview(productId, { rating, description });
             if (data.success) {
                 setMessage('Review submitted successfully!');
+                
+                // --- MODIFIED: Pass the review data back to the parent ---
+                if (onReviewSubmitted) {
+                    onReviewSubmitted({ rating, description }); 
+                }
+                // --------------------------------------------------------
+
                 setRating(0);
                 setDescription('');
-                if (onReviewSubmitted) {
-                    onReviewSubmitted(); // Tell the parent page to re-fetch reviews
-                }
             }
         } catch (err) {
             setError(err.message || 'Failed to submit review.');

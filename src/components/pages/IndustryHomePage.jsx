@@ -193,8 +193,9 @@ const HomeProductCard = ({ fabric, size, usageDuration, estimated_value, _id, qu
                       </button>
                       <span className="w-8 text-center text-sm font-bold text-slate-700 dark:text-zinc-300">{selectedQty}</span>
                       <button 
-                          onClick={() => setSelectedQty(selectedQty + 1)}
-                          className="p-2 hover:text-emerald-500 transition-colors"
+                          onClick={() => setSelectedQty(Math.min(quantity || 1, selectedQty + 1))}
+                          className="p-2 hover:text-emerald-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                          disabled={selectedQty >= (quantity || 1)}
                       >
                           <Plus className="w-3 h-3" />
                       </button>

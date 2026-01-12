@@ -49,22 +49,22 @@ const IndustryCartPage = () => {
 
     useEffect(() => { loadCart(); }, []);
 
-    const handleDelete = async (itemId) => {
-        console.log('handleDelete called for itemId:', itemId); // Log 1
-        if (!itemId) {
-            console.log('handleDelete: itemId is null or undefined, returning.');
+    const handleDelete = async (item) => {
+        // The backend uses the 'id' field (UUID) to identify cart items for deletion.
+        // We must prioritize item.id over item._id.
+        const cartItemId = item.id;
+        
+        if (!cartItemId) {
+            console.error("Cannot delete item: Missing 'id' property (UUID). Item:", item);
             return;
         }
-        setDeletingId(itemId);
+        
+        setDeletingId(cartItemId);
         try {
-            console.log('handleDelete: About to call postIndustryCartDelete for itemId:', itemId); // Log 2
-            await postIndustryCartDelete({ id: itemId });
-            console.log('handleDelete: postIndustryCartDelete successful for itemId:', itemId); // Log 3
-            // Refresh data
+            await postIndustryCartDelete({ id: cartItemId });
             await loadCart();
         } catch (err) {
-            console.error("Delete error for itemId:", itemId, err);
-            // Optional: Show a toast error here
+            console.error("Delete error:", err);
         } finally {
             setDeletingId(null);
         }
@@ -184,12 +184,12 @@ const IndustryCartPage = () => {
                                                     Qty: {item.quantity}
                                                 </div>
                                                 <button 
-                                                    onClick={() => handleDelete(item._id || item.id)} 
-                                                    disabled={deletingId === (item._id || item.id)}
+                                                    onClick={() => handleDelete(item)} 
+                                                    disabled={deletingId === item.id}
                                                     className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors disabled:opacity-50"
                                                     title="Remove Item"
                                                 >
-                                                    {deletingId === (item._id || item.id) ? (
+                                                    {deletingId === item.id ? (
                                                         <Loader2 className="w-5 h-5 animate-spin text-red-500" />
                                                     ) : (
                                                         <Trash2 className="w-5 h-5" />

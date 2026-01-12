@@ -1,56 +1,65 @@
-import React, { useEffect, useState } from 'react';
-import { X, CheckCircle, AlertCircle, Info } from 'lucide-react';
+// src/components/ui/Toast.jsx
+import React, { useEffect } from 'react';
+import { X, CheckCircle, AlertCircle, Info, AlertTriangle } from 'lucide-react';
 
-const Toast = ({ id, message, type = 'info', duration = 3000, onClose }) => {
-  const [isVisible, setIsVisible] = useState(true);
+const Toast = ({ 
+    id,
+    message, 
+    type = 'info', 
+    duration = 3000,
+    onClose,
+    className = '',
+}) => {
+    useEffect(() => {
+        if (duration > 0) {
+            const timer = setTimeout(() => {
+                onClose(id);
+            }, duration);
+            return () => clearTimeout(timer);
+        }
+    }, [duration, id, onClose]);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsVisible(false);
-      setTimeout(() => onClose(id), 300);
-    }, duration);
+    const styles = {
+        success: {
+            container: 'border-green-500/50 bg-green-500/10 dark:bg-green-500/20 text-green-700 dark:text-green-300',
+            icon: CheckCircle,
+            iconColor: 'text-green-600 dark:text-green-400'
+        },
+        error: {
+            container: 'border-red-500/50 bg-red-500/10 dark:bg-red-500/20 text-red-700 dark:text-red-300',
+            icon: AlertCircle,
+            iconColor: 'text-red-600 dark:text-red-400'
+        },
+        warning: {
+            container: 'border-yellow-500/50 bg-yellow-500/10 dark:bg-yellow-500/20 text-yellow-700 dark:text-yellow-300',
+            icon: AlertTriangle,
+            iconColor: 'text-yellow-600 dark:text-yellow-400'
+        },
+        info: {
+            container: 'border-blue-500/50 bg-blue-500/10 dark:bg-blue-500/20 text-blue-700 dark:text-blue-300',
+            icon: Info,
+            iconColor: 'text-blue-600 dark:text-blue-400'
+        }
+    };
 
-    return () => clearTimeout(timer);
-  }, [id, duration, onClose]);
+    const style = styles[type] || styles.info;
+    const Icon = style.icon;
 
-  const typeStyles = {
-    success: 'bg-green-50 text-green-900 border-green-200 dark:bg-green-950 dark:text-green-50 dark:border-green-800',
-    error: 'bg-red-50 text-red-900 border-red-200 dark:bg-red-950 dark:text-red-50 dark:border-red-800',
-    warning: 'bg-yellow-50 text-yellow-900 border-yellow-200 dark:bg-yellow-950 dark:text-yellow-50 dark:border-yellow-800',
-    info: 'bg-blue-50 text-blue-900 border-blue-200 dark:bg-blue-950 dark:text-blue-50 dark:border-blue-800'
-  };
-
-  const typeIcons = {
-    success: <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400" />,
-    error: <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />,
-    warning: <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />,
-    info: <Info className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-  };
-
-  return (
-    <div
-      className={`
-        fixed bottom-4 right-4 max-w-sm rounded-lg border shadow-lg
-        transition-all duration-300 ease-out pointer-events-auto
-        ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}
-        ${typeStyles[type]}
-        flex items-center gap-3 p-4
-        z-50
-      `}
-    >
-      {typeIcons[type]}
-      <div className="flex-1 text-sm font-medium">{message}</div>
-      <button
-        onClick={() => {
-          setIsVisible(false);
-          setTimeout(() => onClose(id), 300);
-        }}
-        className="flex-shrink-0 text-current opacity-60 hover:opacity-100 transition-opacity"
-      >
-        <X className="h-4 w-4" />
-      </button>
-    </div>
-  );
+    return (
+        <div 
+            className={`flex items-center gap-3 min-w-[300px] max-w-md p-4 rounded-xl border-2 backdrop-blur-sm shadow-lg animate-in slide-in-from-top-5 ${style.container} ${className}`}
+        >
+            <Icon className={`h-5 w-5 flex-shrink-0 ${style.iconColor}`} />
+            <p className="flex-1 text-sm font-medium">{message}</p>
+            <button
+                onClick={() => onClose(id)}
+                className="flex-shrink-0 p-1 rounded-md hover:bg-white/20 transition-colors"
+            >
+                <X className="h-4 w-4" />
+            </button>
+        </div>
+    );
 };
 
 export default Toast;
+export { Toast };

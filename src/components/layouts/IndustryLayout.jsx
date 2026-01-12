@@ -1,25 +1,12 @@
 import React, { useState, createContext, useContext, useEffect } from 'react';
 import { Link, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectIndustryIsAuthenticated, industryLogoutThunk } from '../../store/slices/industrySlice';
 import { 
     Menu, X, ShoppingCart, BarChart3, Settings, LogOut, 
     Home, Package, Bell, User, Leaf, ChevronRight, 
     CheckCircle, AlertCircle, XCircle, Info, Sun, Moon 
 } from 'lucide-react';
-
-// --- Internal API Helper for Layout (Self-contained) ---
-const industryLogout = async () => {
-    try {
-        const res = await fetch('http://localhost:8000/api/v1/industry/logout', { 
-            credentials: 'include' 
-        });
-        const data = await res.json().catch(() => ({}));
-        if (!res.ok) throw new Error(data.message || 'Logout failed');
-        return data;
-    } catch (err) {
-        console.error('Logout error:', err);
-        throw err;
-    }
-};
 
 // --- Theme Context ---
 const ThemeContext = createContext();
@@ -78,8 +65,9 @@ const IndustryLayoutContent = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const { theme, toggleTheme } = useTheme();
+    const dispatch = useDispatch();
     
-    const [isAuthenticated, setIsAuthenticated] = useState(true); 
+    const isAuthenticated = useSelector(selectIndustryIsAuthenticated); 
     const [toasts, setToasts] = useState([]);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -93,13 +81,11 @@ const IndustryLayoutContent = () => {
 
     const handleLogout = async () => {
         try {
-            await industryLogout();
-            setIsAuthenticated(false);
+            await dispatch(industryLogoutThunk()).unwrap();
             setUserMenuOpen(false);
             addToast('Logged out successfully', 'success');
             navigate('/industry/login');
         } catch (error) {
-            setIsAuthenticated(false); 
             navigate('/industry/login');
             addToast('Logged out (Session expired)', 'info');
         }

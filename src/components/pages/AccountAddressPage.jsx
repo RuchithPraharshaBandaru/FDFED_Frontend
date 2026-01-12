@@ -5,6 +5,7 @@ import Input from '../ui/Input';
 import Button from '../ui/Button';
 import Alert from '../ui/Alert';
 import { useFormState } from '../../hooks';
+import { isValidPhone, isValidPincode } from '../../utils/validators';
 
 const AccountAddressPage = () => {
     const { formData, setFormData, handleChange } = useFormState({
@@ -18,6 +19,7 @@ const AccountAddressPage = () => {
     const [loading, setLoading] = useState(true);
     const [message, setMessage] = useState('');
     const [error, setError] = useState('');
+    const [errors, setErrors] = useState({});
 
     useEffect(() => {
         const fetchAddress = async () => {
@@ -39,6 +41,18 @@ const AccountAddressPage = () => {
         e.preventDefault();
         setError('');
         setMessage('');
+        const newErrors = {};
+        if (!formData.plotno || !formData.plotno.trim()) newErrors.plotno = 'Plot/House number is required';
+        if (!formData.street || !formData.street.trim()) newErrors.street = 'Street/Area is required';
+        if (!formData.city || !formData.city.trim()) newErrors.city = 'City is required';
+        if (!formData.state || !formData.state.trim()) newErrors.state = 'State is required';
+        if (!isValidPincode(formData.pincode)) newErrors.pincode = 'Please enter a valid 6-digit pincode';
+        if (!isValidPhone(formData.phone)) newErrors.phone = 'Please enter a valid 10-digit phone number';
+        if (Object.keys(newErrors).length > 0) {
+            setErrors(newErrors);
+            return;
+        }
+        setErrors({});
         try {
             const data = await apiUpdateAccountAddress(formData);
             if (data.success) {
@@ -68,36 +82,42 @@ const AccountAddressPage = () => {
                             value={formData.plotno}
                             onChange={handleChange}
                         />
+                        {errors.plotno && <p className="text-sm text-red-600 mt-1">{errors.plotno}</p>}
                         <Input
                             label="Street / Area"
                             name="street"
                             value={formData.street}
                             onChange={handleChange}
                         />
+                        {errors.street && <p className="text-sm text-red-600 mt-1">{errors.street}</p>}
                         <Input
                             label="City"
                             name="city"
                             value={formData.city}
                             onChange={handleChange}
                         />
+                        {errors.city && <p className="text-sm text-red-600 mt-1">{errors.city}</p>}
                         <Input
                             label="State"
                             name="state"
                             value={formData.state}
                             onChange={handleChange}
                         />
+                        {errors.state && <p className="text-sm text-red-600 mt-1">{errors.state}</p>}
                         <Input
                             label="Pincode"
                             name="pincode"
                             value={formData.pincode}
                             onChange={handleChange}
                         />
+                        {errors.pincode && <p className="text-sm text-red-600 mt-1">{errors.pincode}</p>}
                         <Input
                             label="Phone Number"
                             name="phone"
                             value={formData.phone}
                             onChange={handleChange}
                         />
+                        {errors.phone && <p className="text-sm text-red-600 mt-1">{errors.phone}</p>}
                     </div>
                     
                     <Button type="submit" variant="primary" fullWidth>

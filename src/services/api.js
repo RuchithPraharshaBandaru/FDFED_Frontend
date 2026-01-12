@@ -208,7 +208,19 @@ export const apiCheckAuth = async () => {
         credentials: 'include',
     });
     if (!response.ok) throw new Error('Not authenticated');
-    const data = await response.json();
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        // Received HTML or another content type, treat as unauthenticated
+        // Read and discard to free the stream
+        await response.text().catch(() => '');
+        throw new Error('Not authenticated');
+    }
+    let data;
+    try {
+        data = await response.json();
+    } catch (e) {
+        throw new Error('Not authenticated');
+    }
     console.log('Check auth response:', data);
     return {
         success: true,
@@ -250,6 +262,10 @@ export const fetchProducts = async () => {
     if (!response.ok) {
         throw new Error('Failed to fetch products');
     }
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        throw new Error('Backend server is not responding correctly. Please make sure the server is running.');
+    }
     const data = await response.json();
     return data;
 };
@@ -278,6 +294,7 @@ export const fetchFilteredProducts = async (filters) => {
     
     if (filters.minPrice) params.append('minPrice', filters.minPrice);
     if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
+    if (filters.search) params.append('search', filters.search);
     params.append('t', new Date().getTime());
 
     const response = await fetch(`${API_BASE_URL}/products/filter?${params.toString()}`, {
@@ -286,6 +303,32 @@ export const fetchFilteredProducts = async (filters) => {
     
     if (!response.ok) {
         throw new Error('Failed to fetch filtered products');
+    }
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        throw new Error('Backend server is not responding correctly. Please make sure the server is running.');
+    }
+    const data = await response.json();
+    return data.products || [];
+};
+
+export const searchProducts = async (query) => {
+    if (!query || query.trim().length === 0) return [];
+    
+    const params = new URLSearchParams();
+    params.append('search', query.trim());
+    params.append('t', new Date().getTime());
+
+    const response = await fetch(`${API_BASE_URL}/products/filter?${params.toString()}`, {
+        credentials: 'include'
+    });
+    
+    if (!response.ok) {
+        throw new Error('Failed to search products');
+    }
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        throw new Error('Backend server is not responding correctly. Please make sure the server is running.');
     }
     const data = await response.json();
     return data.products || [];
@@ -300,6 +343,19 @@ export const submitDonation = async (formData) => {
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Submission failed. Please try again.' }));
         throw new Error(errorData.message || 'Submission failed.');
+    }
+    return response.json();
+};
+
+export const apiPredictImage = async (formData) => {
+    const response = await fetch(`${API_BASE_URL}/predict`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+    });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Prediction failed' }));
+        throw new Error(errorData.message || 'Prediction failed');
     }
     return response.json();
 };
@@ -443,27 +499,39 @@ export const apiSyncCart = async (cartItems) => {
     return response.json();
 };
 
-export const apiAddToCart = async (productId) => {
+export const apiAddToCart = async (productId, size) => { // Accept size param
     const response = await fetch(`${API_BASE_URL}/cart/add/${productId}`, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json', // Content-Type is now required
+        },
+        body: JSON.stringify({ size }), // Send size in body
         credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to add to cart');
     return response.json();
 };
 
-export const apiDecreaseQuantity = async (productId) => {
+export const apiDecreaseQuantity = async (productId, size) => {
     const response = await fetch(`${API_BASE_URL}/cart/remove/${productId}`, {
         method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ size }),
         credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to decrease quantity');
     return response.json();
 };
 
-export const apiRemoveFromCart = async (productId) => {
+export const apiRemoveFromCart = async (productId, size) => {
     const response = await fetch(`${API_BASE_URL}/cart/remove/${productId}`, {
         method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ size }),
         credentials: 'include',
     });
     if (!response.ok) throw new Error('Failed to remove from cart');
@@ -508,5 +576,174 @@ export const apiDeleteReview = async (reviewId) => {
         const err = await response.json();
         throw new Error(err.message || 'Failed to delete review');
     }
+    return response.json();
+};
+
+// --- BLOG FUNCTIONS ---
+/**
+ * Fetches all blogs (public endpoint)
+ * @returns {Promise<Array>}
+ */
+export const fetchBlogs = async () => {
+    // CHANGED: Use API_BASE_URL (which is /api/v1/user) instead of the hardcoded admin URL
+    const response = await fetch(`${API_BASE_URL}/blogs`, {
+        credentials: 'include'
+    });
+    
+    if (!response.ok) {
+        throw new Error('Failed to fetch blogs');
+    }
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+        throw new Error('Backend server is not responding correctly. Please make sure the server is running.');
+    }
+    const data = await response.json();
+    console.log('Blogs API response:', data);
+    
+    // Handle multiple response formats
+    if (Array.isArray(data)) {
+        return data;
+    }
+    if (data.blogs) {
+        return data.blogs;
+    }
+    if (data.data?.blogs) {
+        return data.data.blogs;
+    }
+    
+    return [];
+};
+
+// --- INDUSTRY FUNCTIONS ---
+
+const INDUSTRY_API_URL = 'http://localhost:8000/api/v1/industry';
+
+export const industryLogin = async (credentials) => {
+    const response = await fetch(`${INDUSTRY_API_URL}/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+        credentials: 'include',
+    });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Login failed' }));
+        throw new Error(errorData.message || 'Login failed');
+    }
+    return response.json();
+};
+
+export const industrySignup = async (data) => {
+    const response = await fetch(`${INDUSTRY_API_URL}/signup`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data),
+        credentials: 'include',
+    });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Signup failed' }));
+        throw new Error(errorData.message || 'Signup failed');
+    }
+    return response.json();
+};
+
+export const getIndustryProfile = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/profile`, {
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Not authenticated');
+    return response.json();
+};
+
+export const industryLogout = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/logout`, {
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Logout failed');
+    return { success: true };
+};
+
+export const getIndustryDashboard = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/dashboard`, {
+        credentials: 'include',
+    });
+    if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to fetch dashboard data' }));
+        throw new Error(errorData.message || 'Failed to fetch dashboard data');
+    }
+    return response.json();
+};
+
+export const fetchIndustryHome = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/home`, {
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch home data');
+    return response.json();
+};
+
+export const getIndustryProfileForEdit = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/profile/edit`, {
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch profile for edit');
+    return response.json();
+};
+
+export const postIndustryProfileEdit = async (body) => {
+    const response = await fetch(`${INDUSTRY_API_URL}/profile/edit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to update profile');
+    return response.json();
+};
+
+export const getIndustryCart = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/cart?t=${Date.now()}`, {
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch cart');
+    return response.json();
+};
+
+export const postIndustryCart = async (body) => {
+    const response = await fetch(`${INDUSTRY_API_URL}/cart`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to update cart');
+    return response.json();
+};
+
+export const postIndustryCartDelete = async (body) => {
+    const response = await fetch(`${INDUSTRY_API_URL}/cart/delete`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to delete from cart');
+    return response.json();
+};
+
+export const getIndustryCheckout = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/checkout`, {
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to fetch checkout data');
+    return response.json();
+};
+
+export const postIndustryCheckout = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/checkout`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Checkout failed');
     return response.json();
 };

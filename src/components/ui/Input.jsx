@@ -19,7 +19,7 @@ const Input = ({
             {label && (
                 <label 
                     htmlFor={inputId} 
-                    className="text-sm font-semibold bg-gradient-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-white bg-clip-text text-transparent"
+                    className="text-sm font-semibold bg-linear-to-r from-gray-700 to-gray-900 dark:from-gray-200 dark:to-white bg-clip-text text-transparent"
                 >
                     {label}
                 </label>
@@ -40,3 +40,4 @@ const Input = ({
 };
 
 export default Input;
+export { Input };

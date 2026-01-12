@@ -1,15 +1,12 @@
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import Navbar from './Navbar';
 
-const MainLayout = ({ children }) => {
-    const { pathname } = useLocation();
-    const isIndustryPath = pathname.startsWith('/industry');
-
+const MainLayout = () => {
     return (
         <div className="min-h-screen bg-background text-foreground font-sans antialiased">
-            {!isIndustryPath && <Navbar />}
-            <main>{children}</main>
+            <Navbar />
+            <main><Outlet /></main>
         </div>
     );
 };

@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { ShieldCheck, Lock, CheckCircle2, Server } from 'lucide-react';
-
-// --- MOCKS FOR PREVIEW (Replace with your actual imports) ---
-// import { useSelector } from 'react-redux';
-// import { selectIndustryIsAuthenticated } from '../../store/slices/industrySlice';
+import { useSelector } from 'react-redux';
+import { selectIndustryIsAuthenticated, selectIndustryInitialized } from '../../store/slices/industrySlice';
 
 const ProtectedIndustryRoute = () => {
-    // Mock State for Preview - Replace with Redux selectors
-    // const isAuthenticated = useSelector(selectIndustryIsAuthenticated);
-    const isAuthenticated = true; // Hardcoded for demo
+    const isAuthenticated = useSelector(selectIndustryIsAuthenticated);
+    const isAuthCheckComplete = useSelector(selectIndustryInitialized);
+    
     const [initialized, setInitialized] = useState(false);
     const [progress, setProgress] = useState(0);
     const [statusStep, setStatusStep] = useState(0);
@@ -47,7 +45,7 @@ const ProtectedIndustryRoute = () => {
     }, []);
 
     // Initial Loading State (Modern Light/Green Secure Screen)
-    if (!initialized) {
+    if (!initialized || !isAuthCheckComplete) {
         return (
             <div className="min-h-screen bg-slate-50 dark:bg-zinc-950 flex flex-col items-center justify-center relative overflow-hidden font-sans transition-colors duration-300">
                 
