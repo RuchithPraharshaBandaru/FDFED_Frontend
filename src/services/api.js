@@ -19,6 +19,9 @@ export const apiLogin = async (credentials) => {
     }
     const data = await response.json();
     console.log('Login response:', data);
+    if (data?.success === false) {
+        throw new Error(data.message || 'Login failed');
+    }
     return {
         success: true,
         user: data.user || data.data?.user || data,
@@ -53,6 +56,9 @@ export const apiCheckAuth = async () => {
         throw new Error('Not authenticated');
     }
     console.log('Check auth response:', data);
+    if (data?.success === false) {
+        throw new Error(data.message || 'Not authenticated');
+    }
     return {
         success: true,
         user: data.user || data.data?.user || data,
