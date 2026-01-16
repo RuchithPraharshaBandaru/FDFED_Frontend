@@ -38,7 +38,7 @@ const AccountLayout = () => {
                             style={({ isActive }) => isActive ? activeStyle : undefined}
                             className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                         >
-                            My Donations
+                            Sold Products
                         </NavLink>
                         {/* --- END OF NEW LINKS --- */}
 
