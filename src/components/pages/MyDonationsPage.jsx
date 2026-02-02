@@ -8,15 +8,15 @@ const MyDonationsPage = () => {
     const { data, loading, error } = useFetchData(apiGetDonatedProducts, []);
     const products = data?.products || [];
 
-    if (loading) return <div className="text-center py-12 text-gray-700 dark:text-gray-300 font-semibold">Loading donated products...</div>;
+    if (loading) return <div className="text-center py-12 text-gray-700 dark:text-gray-300 font-semibold">Loading sold products...</div>;
     if (error) return <div className="text-red-600 dark:text-red-400 font-semibold">{error}</div>;
 
     return (
         <div className="space-y-6">
-            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-100 dark:to-white bg-clip-text text-transparent">My Donated Products</h2>
+            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-100 dark:to-white bg-clip-text text-transparent">My Sold Products</h2>
             {products.length === 0 ? (
                 <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl p-8 rounded-2xl shadow-xl border-2 border-gray-200/50 dark:border-gray-700/50 text-center">
-                    <p className="dark:text-gray-300">You have not donated any products yet. <Link to="/sell" className="text-green-500 hover:underline font-bold">Donate now!</Link></p>
+                    <p className="dark:text-gray-300">You have not sold any products yet. <Link to="/sell" className="text-green-500 hover:underline font-bold">List one now!</Link></p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

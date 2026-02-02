@@ -126,21 +126,21 @@ const SellPage = () => {
     
     // This is the static data for the points table from your EJS
     const pointsData = [
-        { s: 'S', f: 'Cotton', u: '< 6 mos', p: 200 },
-        { s: 'M', f: 'Cotton', u: '< 6 mos', p: 250 },
-        { s: 'L', f: 'Cotton', u: '< 6 mos', p: 300 },
-        { s: 'S', f: 'Silk', u: '< 6 mos', p: 300 },
-        { s: 'M', f: 'Silk', u: '< 6 mos', p: 350 },
-        { s: 'L', f: 'Silk', u: '< 6 mos', p: 400 },
-        { s: 'S', f: 'Linen', u: '< 6 mos', p: 220 },
-        { s: 'M', f: 'Linen', u: '< 6 mos', p: 270 },
-        { s: 'L', f: 'Linen', u: '< 6 mos', p: 320 },
-        { s: 'S', f: 'Leather', u: '< 6 mos', p: 450 },
-        { s: 'M', f: 'Leather', u: '< 6 mos', p: 550 },
-        { s: 'L', f: 'Leather', u: '< 6 mos', p: 600 },
-        { s: 'S', f: 'Cashmere', u: '< 6 mos', p: 400 },
-        { s: 'M', f: 'Cashmere', u: '< 6 mos', p: 450 },
-        { s: 'L', f: 'Cashmere', u: '< 6 mos', p: 500 },
+        { s: 'S', f: 'Cotton', u: '< 1 yr', p: 200 },
+        { s: 'M', f: 'Cotton', u: '< 1 yr', p: 250 },
+        { s: 'L', f: 'Cotton', u: '< 1 yr', p: 300 },
+        { s: 'S', f: 'Silk', u: '< 1 yr', p: 300 },
+        { s: 'M', f: 'Silk', u: '< 1 yr', p: 350 },
+        { s: 'L', f: 'Silk', u: '< 1 yr', p: 400 },
+        { s: 'S', f: 'Linen', u: '< 1 yr', p: 220 },
+        { s: 'M', f: 'Linen', u: '< 1 yr', p: 270 },
+        { s: 'L', f: 'Linen', u: '< 1 yr', p: 320 },
+        { s: 'S', f: 'Leather', u: '< 1 yr', p: 450 },
+        { s: 'M', f: 'Leather', u: '< 1 yr', p: 550 },
+        { s: 'L', f: 'Leather', u: '< 1 yr', p: 600 },
+        { s: 'S', f: 'Cashmere', u: '< 1 yr', p: 400 },
+        { s: 'M', f: 'Cashmere', u: '< 1 yr', p: 450 },
+        { s: 'L', f: 'Cashmere', u: '< 1 yr', p: 500 },
         { s: 'S', f: 'Cotton', u: '> 1 yr', p: 140 },
         { s: 'M', f: 'Cotton', u: '> 1 yr', p: 180 },
         { s: 'L', f: 'Cotton', u: '> 1 yr', p: 220 },
@@ -303,11 +303,11 @@ const SellPage = () => {
                                     required
                                     placeholder="Select Usage Duration"
                                     options={[
-                                        { value: '6', label: 'Less than 6 months' },
+                                        { value: '6', label: 'Less than 1 year' },
                                         { value: '1', label: 'More than 1 year' }
                                     ]}
                                 />
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Choose "6" for less than 6 months, "1" for more than 1 year.</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Choose "6" for less than 1 year, "1" for more than 1 year.</p>
                             </div>
 
                             <Input

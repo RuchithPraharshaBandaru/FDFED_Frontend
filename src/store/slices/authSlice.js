@@ -39,9 +39,22 @@ export const loginUser = createAsyncThunk(
             const response = await apiLogin(credentials);
             console.log('loginUser response:', response);
             if (response.success) {
+                let user = response.user;
+                let token = response.token;
+
+                if (!user || user.coins === undefined) {
+                    try {
+                        const fresh = await apiCheckAuth();
+                        user = fresh.user || user;
+                        token = fresh.token || token;
+                    } catch (error) {
+                        console.log('loginUser checkAuth fallback failed:', error);
+                    }
+                }
+
                 return {
-                    user: response.user,
-                    token: response.token
+                    user,
+                    token
                 };
             }
             return rejectWithValue(response.message || 'Login failed');
