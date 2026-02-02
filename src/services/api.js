@@ -462,11 +462,31 @@ export const industryLogin = async (credentials) => {
         body: JSON.stringify(credentials),
         credentials: 'include',
     });
+    
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Login failed' }));
-        throw new Error(errorData.message || 'Login failed');
+        // Check if response is JSON for error message
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json().catch(() => ({ message: 'Invalid credentials' }));
+            throw new Error(errorData.message || 'Invalid credentials');
+        }
+        throw new Error('Invalid credentials');
     }
-    return response.json();
+    
+    // Try to parse response
+    let data;
+    try {
+        data = await response.json();
+    } catch (e) {
+        throw new Error('Invalid server response');
+    }
+    
+    // Accept response if it has user data (be flexible with structure)
+    if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) {
+        throw new Error('Invalid credentials');
+    }
+    
+    return data;
 };
 
 export const industrySignup = async (data) => {
@@ -476,11 +496,31 @@ export const industrySignup = async (data) => {
         body: JSON.stringify(data),
         credentials: 'include',
     });
+    
     if (!response.ok) {
-        const errorData = await response.json().catch(() => ({ message: 'Signup failed' }));
-        throw new Error(errorData.message || 'Signup failed');
+        // Check if response is JSON for error message
+        const contentType = response.headers.get('content-type');
+        if (contentType && contentType.includes('application/json')) {
+            const errorData = await response.json().catch(() => ({ message: 'Signup failed' }));
+            throw new Error(errorData.message || 'Signup failed');
+        }
+        throw new Error('Signup failed');
     }
-    return response.json();
+    
+    // Try to parse response
+    let result;
+    try {
+        result = await response.json();
+    } catch (e) {
+        throw new Error('Invalid server response');
+    }
+    
+    // Accept response if it has user data (be flexible with structure)
+    if (!result || (typeof result === 'object' && Object.keys(result).length === 0)) {
+        throw new Error('Signup failed - invalid response');
+    }
+    
+    return result;
 };
 
 export const getIndustryProfile = async () => {
