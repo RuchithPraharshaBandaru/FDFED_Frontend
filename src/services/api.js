@@ -184,11 +184,12 @@ export const submitDonation = async (formData) => {
     return response.json();
 };
 
-export const apiPredictImage = async (formData) => {
+export const apiPredictImage = async (formData, options = {}) => {
     const response = await fetch(`${API_BASE_URL}/predict`, {
         method: 'POST',
         body: formData,
-        credentials: 'include'
+        credentials: 'include',
+        signal: options.signal
     });
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Prediction failed' }));
