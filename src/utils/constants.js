@@ -15,21 +15,21 @@ export const POINTS_TABLE = [
     { s: 'S', f: 'Cashmere', u: '< 1 yr', p: 400 },
     { s: 'M', f: 'Cashmere', u: '< 1 yr', p: 450 },
     { s: 'L', f: 'Cashmere', u: '< 1 yr', p: 500 },
-    { s: 'S', f: 'Cotton', u: '> 1 yr', p: 140 },
-    { s: 'M', f: 'Cotton', u: '> 1 yr', p: 180 },
-    { s: 'L', f: 'Cotton', u: '> 1 yr', p: 220 },
-    { s: 'S', f: 'Silk', u: '> 1 yr', p: 220 },
-    { s: 'M', f: 'Silk', u: '> 1 yr', p: 260 },
-    { s: 'L', f: 'Silk', u: '> 1 yr', p: 300 },
-    { s: 'S', f: 'Linen', u: '> 1 yr', p: 160 },
-    { s: 'M', f: 'Linen', u: '> 1 yr', p: 200 },
-    { s: 'L', f: 'Linen', u: '> 1 yr', p: 240 },
-    { s: 'S', f: 'Leather', u: '> 1 yr', p: 300 },
-    { s: 'M', f: 'Leather', u: '> 1 yr', p: 350 },
-    { s: 'L', f: 'Leather', u: '> 1 yr', p: 400 },
-    { s: 'S', f: 'Cashmere', u: '> 1 yr', p: 300 },
-    { s: 'M', f: 'Cashmere', u: '> 1 yr', p: 350 },
-    { s: 'L', f: 'Cashmere', u: '> 1 yr', p: 400 },
+    { s: 'S', f: 'Cotton', u: '>= 1 yr', p: 140 },
+    { s: 'M', f: 'Cotton', u: '>= 1 yr', p: 180 },
+    { s: 'L', f: 'Cotton', u: '>= 1 yr', p: 220 },
+    { s: 'S', f: 'Silk', u: '>= 1 yr', p: 220 },
+    { s: 'M', f: 'Silk', u: '>= 1 yr', p: 260 },
+    { s: 'L', f: 'Silk', u: '>= 1 yr', p: 300 },
+    { s: 'S', f: 'Linen', u: '>= 1 yr', p: 160 },
+    { s: 'M', f: 'Linen', u: '>= 1 yr', p: 200 },
+    { s: 'L', f: 'Linen', u: '>= 1 yr', p: 240 },
+    { s: 'S', f: 'Leather', u: '>= 1 yr', p: 300 },
+    { s: 'M', f: 'Leather', u: '>= 1 yr', p: 350 },
+    { s: 'L', f: 'Leather', u: '>= 1 yr', p: 400 },
+    { s: 'S', f: 'Cashmere', u: '>= 1 yr', p: 300 },
+    { s: 'M', f: 'Cashmere', u: '>= 1 yr', p: 350 },
+    { s: 'L', f: 'Cashmere', u: '>= 1 yr', p: 400 },
 ];
 
 // Categories for filtering
@@ -66,7 +66,7 @@ export const GENDERS = ['Male', 'Female', 'Unisex'];
 export const USAGE_DURATIONS = [
     '< 1 year',
     '6-12 months',
-    '> 1 year'
+    '>= 1 yr'
 ];
 
 // Price ranges for filtering

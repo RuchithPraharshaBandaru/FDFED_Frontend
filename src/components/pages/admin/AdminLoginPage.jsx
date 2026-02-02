@@ -6,8 +6,8 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { adminLogin, checkAdminAuth, selectIsAdminAuthenticated, selectAdminAuthLoading, selectAdminAuthError } from '../../../store/slices/adminAuthSlice';
 import Button from '../../ui/Button';
 import Input from '../../ui/Input';
-import { useNavigate } from 'react-router-dom';
-import { LockKeyhole } from 'lucide-react';
+import { useNavigate, Link } from 'react-router-dom';
+import { LockKeyhole, ArrowLeft, AlertCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const schema = z.object({
@@ -39,10 +39,23 @@ const AdminLoginPage = () => {
   return (
     <div className="min-h-[70vh] flex items-center justify-center">
       <div className="w-full max-w-md space-y-6 p-6 rounded-2xl border bg-white/60 dark:bg-gray-900/50 backdrop-blur">
+        <Link
+          to="/auth"
+          className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-primary transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Back to role selection
+        </Link>
         <div className="flex items-center gap-2">
           <LockKeyhole className="text-green-600" />
           <h1 className="text-xl font-bold">Admin Sign In</h1>
         </div>
+        {error && (
+          <div className="flex items-start gap-3 rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
+            <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
+            <span className="font-medium">{error}</span>
+          </div>
+        )}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <Input label="Email" type="email" placeholder="admin@example.com" {...register('email')} />
