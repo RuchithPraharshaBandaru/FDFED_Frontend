@@ -62,6 +62,15 @@ export const SellerLoginPage = () => {
     return (
         <div className="min-h-screen bg-background flex flex-col justify-center py-12 sm:px-6 lg:px-8">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="mb-4 text-center">
+                    <Link
+                        to="/auth"
+                        className="inline-flex items-center gap-2 text-sm font-semibold text-muted-foreground hover:text-primary transition-colors"
+                    >
+                        <span aria-hidden>←</span>
+                        Back to role selection
+                    </Link>
+                </div>
                 <h2 className="mt-6 text-center text-3xl font-extrabold bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 bg-clip-text text-transparent">
                     Seller Login
                 </h2>

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { industryLoginThunk, selectIndustryIsAuthenticated } from '../../store/slices/industrySlice';
-import { Mail, Lock, ArrowRight, Loader2, Building2, AlertCircle } from 'lucide-react';
+import { Mail, Lock, ArrowRight, Loader2, Building2, AlertCircle, ArrowLeft } from 'lucide-react';
 
 const IndustryLoginPage = () => {
     const [email, setEmail] = useState('');
@@ -52,6 +52,15 @@ const IndustryLoginPage = () => {
 
             <div className="w-full max-w-md bg-white dark:bg-zinc-900 rounded-3xl shadow-2xl border border-slate-100 dark:border-zinc-800 overflow-hidden relative z-10">
                 <div className="p-8 md:p-10">
+                    <div className="mb-6">
+                        <Link
+                            to="/auth"
+                            className="inline-flex items-center gap-2 text-sm font-semibold text-slate-600 hover:text-emerald-600 dark:text-zinc-400 dark:hover:text-emerald-400 transition-colors"
+                        >
+                            <ArrowLeft className="w-4 h-4" />
+                            Back to role selection
+                        </Link>
+                    </div>
                     <div className="text-center mb-8">
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 mb-4">
                             <Building2 className="w-8 h-8" />

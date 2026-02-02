@@ -6,7 +6,7 @@ import Button from './Button';
 import Badge from './Badge';
 import { calculateAverageRating, getReviewCount } from '../../utils/ratingHelpers';
 
-const ProductCard = ({ _id, image, title, category, price, reviews = [] }) => {
+const ProductCard = ({ _id, image, title, category, price, reviews = [], stock = true }) => {
     const averageRating = calculateAverageRating(reviews);
     const reviewCount = getReviewCount(reviews);
     return (
@@ -53,11 +53,18 @@ const ProductCard = ({ _id, image, title, category, price, reviews = [] }) => {
                         <Button 
                             size="sm" 
                             className="h-8 text-xs gap-1.5"
+                            disabled={!stock}
                             onClick={(e) => {
                                 e.preventDefault(); // Prevent navigation if adding to cart logic exists
                             }}
                         >
-                            <ShoppingCart className="h-3.5 w-3.5" /> Add
+                            {stock ? (
+                                <>
+                                    <ShoppingCart className="h-3.5 w-3.5" /> Add
+                                </>
+                            ) : (
+                                'Out of Stock'
+                            )}
                         </Button>
                     </div>
                 </div>
