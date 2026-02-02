@@ -149,7 +149,7 @@ const InventoryCard = ({ fabric, size, usageDuration, estimated_value, _id, quan
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm border-b border-slate-50 dark:border-zinc-800 pb-2">
                <span className="text-slate-400 dark:text-zinc-500 font-medium text-xs uppercase tracking-wide">Usage</span>
-               <span className="text-slate-700 dark:text-zinc-300 font-bold">{usageDuration === 6 ? '< 1 year' : '> 1 year'}</span>
+               <span className="text-slate-700 dark:text-zinc-300 font-bold">{usageDuration === 6 ? '< 1 year' : '>= 1 year'}</span>
             </div>
             <div className="flex items-center justify-between text-sm border-b border-slate-50 dark:border-zinc-800 pb-2">
                <span className="text-slate-400 dark:text-zinc-500 font-medium text-xs uppercase tracking-wide">MOQ</span>

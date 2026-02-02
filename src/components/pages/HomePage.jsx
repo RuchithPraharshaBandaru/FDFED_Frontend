@@ -9,7 +9,15 @@ import { useFetchData } from '../../hooks';
 
 const HomePage = () => {
     const { data, loading, error } = useFetchData(fetchProducts, []);
-    const products = data || []; // Handle null/undefined data
+    // API may return either an array or an object like { products: [...] } or { data: { products: [...] } }
+    const products = (() => {
+        if (!data) return [];
+        if (Array.isArray(data)) return data;
+        if (Array.isArray(data.products)) return data.products;
+        if (Array.isArray(data.data?.products)) return data.data.products;
+        if (Array.isArray(data.data)) return data.data;
+        return [];
+    })();
 
     return (
         <div className="flex flex-col min-h-screen bg-background font-sans">
@@ -184,8 +192,8 @@ const HomePage = () => {
                     {error && <div className="text-center text-destructive p-8 bg-destructive/10 rounded-lg">{error}</div>}
                     
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                        {products.slice(0, 8).map(product => (
-                            <ProductCard key={product._id} {...product} />
+                        {products.slice(0, 8).map((product, idx) => (
+                            <ProductCard key={product?._id || product?.id || idx} {...product} />
                         ))}
                     </div>
                 </div>

@@ -47,7 +47,7 @@ const ProductCard = ({ _id, image, title, category, price, reviews = [] }) => {
                     <div className="mt-auto pt-3 flex items-center justify-between border-t border-border/50">
                         <div className="flex flex-col">
                             <span className="text-xs text-muted-foreground">Price</span>
-                            <span className="text-lg font-bold text-primary">₹{price.toLocaleString()}</span>
+                            <span className="text-lg font-bold text-primary">₹{price ? price.toLocaleString() : 'N/A'}</span>
                         </div>
                         {/* Button is now STATIC (always visible) instead of hover-only */}
                         <Button 
