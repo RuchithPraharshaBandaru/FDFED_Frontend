@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchDashboard, selectAdminDashboard } from '../../../store/slices/adminSlice';
 import { BarChart3, Users, Package, ShoppingCart, TrendingUp, ArrowUpRight } from 'lucide-react';
 import Graph from '../../ui/Graph';
 import Card from '../../ui/Card';
-import { fetchAllCharts } from '../../../services/chartsLocal';
 
 const StatCard = ({ icon: Icon, label, value, color, trend }) => (
   <Card className="relative overflow-hidden border-none shadow-lg hover:shadow-xl transition-all duration-300">
@@ -29,21 +28,11 @@ const StatCard = ({ icon: Icon, label, value, color, trend }) => (
 
 const AdminDashboardPage = () => {
   const dispatch = useDispatch();
-  const { metrics, top, loading } = useSelector(selectAdminDashboard);
-  const [localCharts, setLocalCharts] = useState({
-    usersCreated: [],
-    productsAdded: [],
-    ordersCount: [],
-    revenue: [],
-  });
+  const { metrics, top, loading, series } = useSelector(selectAdminDashboard);
 
   useEffect(() => {
-    // Fetch backend dashboard for summary and top lists
+    // Fetch backend dashboard for summary, charts and top lists
     dispatch(fetchDashboard({ days: 30, tz: 'UTC' }));
-    // Load local chart JSONs for chart rendering
-    fetchAllCharts()
-      .then(setLocalCharts)
-      .catch(() => setLocalCharts({ usersCreated: [], productsAdded: [], ordersCount: [], revenue: [] }));
   }, [dispatch]);
 
   return (
@@ -59,39 +48,35 @@ const AdminDashboardPage = () => {
           label="Total Users" 
           value={metrics?.users} 
           color="bg-blue-500"
-          trend="+12% from last month"
         />
         <StatCard 
           icon={Package} 
           label="Total Products" 
           value={metrics?.products} 
           color="bg-purple-500"
-          trend="+5% new items"
         />
         <StatCard 
           icon={ShoppingCart} 
           label="Total Orders" 
           value={metrics?.orders} 
           color="bg-orange-500"
-          trend="+18% conversion rate"
         />
         <StatCard 
           icon={BarChart3} 
           label="Total Revenue" 
           value={metrics?.totalRevenue} 
           color="bg-green-500"
-          trend="+24% revenue growth"
         />
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
         <div className="space-y-8">
-          <Graph title="User Growth" series={localCharts.usersCreated} color="#3b82f6" />
-          <Graph title="Product Inventory" series={localCharts.productsAdded} color="#a855f7" />
+          <Graph title="User Growth" series={series?.usersCreated || []} color="#3b82f6" />
+          <Graph title="Product Inventory" series={series?.productsAdded || []} color="#a855f7" />
         </div>
         <div className="space-y-8">
-          <Graph title="Order Volume" series={localCharts.ordersCount} color="#f97316" />
-          <Graph title="Revenue Trends" series={localCharts.revenue} formatValue={(v) => `₹${Number(v || 0).toFixed(0)}`} color="#22c55e" />
+          <Graph title="Order Volume" series={series?.ordersCount || []} color="#f97316" />
+          <Graph title="Revenue Trends" series={series?.revenue || []} formatValue={(v) => `₹${Number(v || 0).toFixed(0)}`} color="#22c55e" />
         </div>
       </div>
 
