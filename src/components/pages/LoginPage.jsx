@@ -100,6 +100,15 @@ function LoginPage() {
                     </Button>
                 </form>
 
+                <div className="mt-6">
+                    <a
+                        href="http://localhost:8000/api/v1/user/auth/google"
+                        className="inline-flex w-full items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-gray-800/80 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                    >
+                        Continue with Google
+                    </a>
+                </div>
+
                 <p className="text-sm text-center text-gray-600 dark:text-gray-400 mt-6">
                     Don't have an account?{' '}
                     <Link to="/signup" className="font-semibold text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 transition-colors">
