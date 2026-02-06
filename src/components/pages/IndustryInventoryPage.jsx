@@ -74,9 +74,15 @@ const AestheticSelect = ({ label, value, onChange, options, suffix = "" }) => (
         className="w-full appearance-none bg-slate-50 dark:bg-zinc-800/50 border border-slate-200 dark:border-zinc-700 text-slate-700 dark:text-zinc-300 rounded-xl py-2.5 pl-4 pr-10 focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all text-sm font-medium cursor-pointer hover:border-emerald-200 dark:hover:border-emerald-800"
       >
         <option value="">All {label}s</option>
-        {options.map(opt => (
-          <option key={opt} value={opt}>{opt}{suffix}</option>
-        ))}
+        {options.map((opt) => {
+          const optionValue = typeof opt === 'object' ? opt.value : opt;
+          const optionLabel = typeof opt === 'object' ? opt.label : opt;
+          return (
+            <option key={optionValue} value={optionValue}>
+              {optionLabel}{suffix}
+            </option>
+          );
+        })}
       </select>
       <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none" />
     </div>
@@ -149,7 +155,7 @@ const InventoryCard = ({ fabric, size, usageDuration, estimated_value, _id, quan
           <div className="space-y-3">
             <div className="flex items-center justify-between text-sm border-b border-slate-50 dark:border-zinc-800 pb-2">
                <span className="text-slate-400 dark:text-zinc-500 font-medium text-xs uppercase tracking-wide">Usage</span>
-               <span className="text-slate-700 dark:text-zinc-300 font-bold">{usageDuration} M</span>
+               <span className="text-slate-700 dark:text-zinc-300 font-bold">{usageDuration === 6 ? '< 1 year' : '>= 1 year'}</span>
             </div>
             <div className="flex items-center justify-between text-sm border-b border-slate-50 dark:border-zinc-800 pb-2">
                <span className="text-slate-400 dark:text-zinc-500 font-medium text-xs uppercase tracking-wide">MOQ</span>
@@ -247,6 +253,13 @@ const IndustryInventoryPage = () => {
     const durations = new Set(products.map(p => p.usageDuration).filter(Boolean));
     return Array.from(durations).sort((a, b) => a - b);
   }, [products]);
+
+  const durationOptions = useMemo(() => (
+    uniqueDurations.map((duration) => ({
+      value: duration,
+      label: Number(duration) === 6 ? '< 1 year' : '>= 1 year'
+    }))
+  ), [uniqueDurations]);
 
   // Filter and sort products
   const filteredProducts = useMemo(() => {
@@ -365,11 +378,11 @@ const IndustryInventoryPage = () => {
                 />
 
                 <AestheticSelect 
-                    label="Duration"
-                    value={durationFilter}
-                    onChange={(e) => setDurationFilter(e.target.value)}
-                    options={uniqueDurations}
-                    suffix=" months"
+                  label="Duration"
+                  value={durationFilter}
+                  onChange={(e) => setDurationFilter(e.target.value)}
+                  options={durationOptions}
+                  // suffix=" months"
                 />
 
                 <div className="space-y-1.5">

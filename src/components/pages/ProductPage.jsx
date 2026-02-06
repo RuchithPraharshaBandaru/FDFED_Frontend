@@ -157,7 +157,15 @@ const ProductPage = () => {
                                }
                                disabled:opacity-50`}
                            >
-                               {added ? <><Check className="mr-2"/> Added!</> : 'Add to Cart'}
+                               {added ? (
+                                   <>
+                                       <Check className="mr-2" /> Added!
+                                   </>
+                               ) : !product.stock ? (
+                                   'Out of Stock'
+                               ) : (
+                                   'Add to Cart'
+                               )}
                            </button>
                            <button className="border-2 border-gray-200 dark:border-gray-700 p-3 rounded-xl hover:border-green-500 dark:hover:border-green-500 transition-all shadow-sm"><Heart /></button>
                        </div>

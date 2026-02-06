@@ -165,7 +165,7 @@ const HomeProductCard = ({ fabric, size, usageDuration, estimated_value, _id, qu
                    <Leaf className="w-4 h-4" />
                    <span className="font-medium text-xs uppercase tracking-wide">Usage</span>
                </div>
-               <span className="text-slate-700 dark:text-zinc-300 font-bold">{usageDuration} Months</span>
+               <span className="text-slate-700 dark:text-zinc-300 font-bold">{usageDuration === 6 ? '< 1 year' : '>= 1 year'}   </span>
             </div>
             <div className="flex items-center justify-between text-sm border-b border-slate-50 dark:border-zinc-800 pb-3">
                <div className="flex items-center gap-2 text-slate-500 dark:text-zinc-400">

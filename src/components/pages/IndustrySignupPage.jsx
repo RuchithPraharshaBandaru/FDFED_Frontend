@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { industrySignupThunk, selectIndustryIsAuthenticated } from '../../store/slices/industrySlice';
@@ -9,18 +9,10 @@ const IndustrySignupPage = () => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
-    const [justSignedUp, setJustSignedUp] = useState(false);
-    
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const loading = useSelector(state => state.industry?.isLoading);
     const isAuthenticated = useSelector(selectIndustryIsAuthenticated);
-
-    useEffect(() => {
-        if (isAuthenticated && justSignedUp) {
-            navigate('/industry');
-        }
-    }, [isAuthenticated, justSignedUp, navigate]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -29,11 +21,15 @@ const IndustrySignupPage = () => {
             setError("Please fill in all fields");
             return;
         }
+        if (password.length <= 6 || !/[A-Z]/.test(password)) {
+            setError("Password must be more than 6 characters and include at least one capital letter.");
+            return;
+        }
 
         try {
             const result = await dispatch(industrySignupThunk({ companyName, email, password }));
             if (result.meta?.requestStatus === 'fulfilled') {
-                setJustSignedUp(true);
+                navigate('/industry/login');
             } else if (result.meta?.requestStatus === 'rejected') {
                 setError(result.payload || 'Signup failed. Please try again.');
             }

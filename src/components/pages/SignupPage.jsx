@@ -13,6 +13,7 @@ function SignupPage() {
     const [lastname, setLastname] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [redirectToLogin, setRedirectToLogin] = useState(false);
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const [errors, setErrors] = useState({});
@@ -20,6 +21,10 @@ function SignupPage() {
     const isAuthenticated = useSelector(selectIsAuthenticated);
     const isLoading = useSelector(selectAuthLoading);
     const error = useSelector(selectAuthError);
+
+    if (redirectToLogin) {
+        return <Navigate to="/login" replace />;
+    }
 
     // If user is already logged in, redirect them
     if (isAuthenticated) {
@@ -44,7 +49,7 @@ function SignupPage() {
 
         const result = await dispatch(signupUser({ firstname, lastname, email, password }));
         if (result.type === 'auth/signup/fulfilled') {
-            navigate('/');
+            setRedirectToLogin(true);
         }
     };
 

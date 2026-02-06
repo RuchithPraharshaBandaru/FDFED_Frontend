@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { submitDonation, apiPredictImage } from '../../services/api';
+import { submitDonation } from '../../services/api';
 import Input from '../ui/Input';
 import Select from '../ui/Select';
 import Button from '../ui/Button';
@@ -27,7 +27,14 @@ const SellPage = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(null);
     const navigate = useNavigate();
-    const { showSuccess, showError, showInfo } = useToast();
+    const { showSuccess, showError } = useToast();
+    const resultRef = useRef(null);
+
+    const scrollToResult = () => {
+        if (resultRef.current) {
+            resultRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
 
     const handleFileChange = async (e) => {
         const selectedFile = e.target.files[0];
@@ -40,48 +47,8 @@ const SellPage = () => {
                 setPreview(reader.result);
             };
             reader.readAsDataURL(selectedFile);
-
-            // Start AI Model Scan
-            setIsScanning(true);
             setSuccess(null);
             setError(null);
-
-            try {
-                // Create FormData for the prediction API
-                const predictionData = new FormData();
-                predictionData.append('image', selectedFile);
-
-                // Call the backend API
-                const result = await apiPredictImage(predictionData);
-
-                if (result.is_cloth) {
-                    showSuccess(`Verified as ${result.category}`);
-                    
-                    // If the backend returns specific details in the future, we can auto-fill here.
-                    // For now, the gatekeeper only confirms it is a cloth.
-                    // We can optionally set a default category if the model provides it.
-                    if (result.predicted_details) {
-                         setFormData(prev => ({
-                            ...prev,
-                            ...result.predicted_details
-                        }));
-                    }
-                } else {
-                    const msg = `Verification Failed: The image was identified as ${result.category}. Please upload a valid clothing item.`;
-                    setError(msg);
-                    showError(msg);
-                    setFile(null); // Clear the invalid file
-                    setPreview(null);
-                }
-
-            } catch (err) {
-                console.error("AI Scan Failed", err);
-                const msg = "AI Service Error: " + (err.message || "Could not verify image.");
-                setError(msg);
-                showError(msg);
-            } finally {
-                setIsScanning(false);
-            }
         } else {
             setPreview(null);
         }
@@ -96,6 +63,7 @@ const SellPage = () => {
         }
 
         setLoading(true);
+        setIsScanning(true);
         setError(null);
         setSuccess(null);
 
@@ -111,51 +79,63 @@ const SellPage = () => {
         data.append('photos', file); 
 
         try {
-            await submitDonation(data);
-            setSuccess('Submission successful! Your donation is pending verification. Virtual coins will be credited once verified.');
+            const result = await submitDonation(data);
+            const message = result?.message || 'Submission successful! Your donation is pending verification. Virtual coins will be credited once verified.';
+            setSuccess(message);
+            showSuccess(message);
+            setTimeout(scrollToResult, 0);
+            const predictedItem = (result?.product?.items || '').toLowerCase();
+            if (predictedItem === 'cloth') {
+                navigate('/account/donations');
+                return;
+            }
             // Reset form using custom hook
             resetForm();
             setFile(null);
             e.target.reset(); // Resets the file input
         } catch (err) {
-            setError(err.message || 'An error occurred. Please try again.');
+            const msg = err.message || 'An error occurred. Please try again.';
+            setError(msg);
+            showError(msg);
+            setTimeout(scrollToResult, 0);
         } finally {
             setLoading(false);
+            setIsScanning(false);
         }
     };
     
     // This is the static data for the points table from your EJS
     const pointsData = [
-        { s: 'S', f: 'Cotton', u: '< 6 mos', p: 200 },
-        { s: 'M', f: 'Cotton', u: '< 6 mos', p: 250 },
-        { s: 'L', f: 'Cotton', u: '< 6 mos', p: 300 },
-        { s: 'S', f: 'Silk', u: '< 6 mos', p: 300 },
-        { s: 'M', f: 'Silk', u: '< 6 mos', p: 350 },
-        { s: 'L', f: 'Silk', u: '< 6 mos', p: 400 },
-        { s: 'S', f: 'Linen', u: '< 6 mos', p: 220 },
-        { s: 'M', f: 'Linen', u: '< 6 mos', p: 270 },
-        { s: 'L', f: 'Linen', u: '< 6 mos', p: 320 },
-        { s: 'S', f: 'Leather', u: '< 6 mos', p: 450 },
-        { s: 'M', f: 'Leather', u: '< 6 mos', p: 550 },
-        { s: 'L', f: 'Leather', u: '< 6 mos', p: 600 },
-        { s: 'S', f: 'Cashmere', u: '< 6 mos', p: 400 },
-        { s: 'M', f: 'Cashmere', u: '< 6 mos', p: 450 },
-        { s: 'L', f: 'Cashmere', u: '< 6 mos', p: 500 },
-        { s: 'S', f: 'Cotton', u: '> 1 yr', p: 140 },
-        { s: 'M', f: 'Cotton', u: '> 1 yr', p: 180 },
-        { s: 'L', f: 'Cotton', u: '> 1 yr', p: 220 },
-        { s: 'S', f: 'Silk', u: '> 1 yr', p: 220 },
-        { s: 'M', f: 'Silk', u: '> 1 yr', p: 260 },
-        { s: 'L', f: 'Silk', u: '> 1 yr', p: 300 },
-        { s: 'S', f: 'Linen', u: '> 1 yr', p: 160 },
-        { s: 'M', f: 'Linen', u: '> 1 yr', p: 200 },
-        { s: 'L', f: 'Linen', u: '> 1 yr', p: 240 },
-        { s: 'S', f: 'Leather', u: '> 1 yr', p: 300 },
-        { s: 'M', f: 'Leather', u: '> 1 yr', p: 350 },
-        { s: 'L', f: 'Leather', u: '> 1 yr', p: 400 },
-        { s: 'S', f: 'Cashmere', u: '> 1 yr', p: 260 },
-        { s: 'M', f: 'Cashmere', u: '> 1 yr', p: 320 },
-        { s: 'L', f: 'Cashmere', u: '> 1 yr', p: 350 },
+        { s: 'S', f: 'Cotton', u: '< 1 yr', p: 200 },
+        { s: 'M', f: 'Cotton', u: '< 1 yr', p: 250 },
+        { s: 'L', f: 'Cotton', u: '< 1 yr', p: 300 },
+        { s: 'S', f: 'Silk', u: '< 1 yr', p: 300 },
+        { s: 'M', f: 'Silk', u: '< 1 yr', p: 350 },
+        { s: 'L', f: 'Silk', u: '< 1 yr', p: 400 },
+        { s: 'S', f: 'Linen', u: '< 1 yr', p: 220 },
+        { s: 'M', f: 'Linen', u: '< 1 yr', p: 270 },
+        { s: 'L', f: 'Linen', u: '< 1 yr', p: 320 },
+        { s: 'S', f: 'Leather', u: '< 1 yr', p: 450 },
+        { s: 'M', f: 'Leather', u: '< 1 yr', p: 550 },
+        { s: 'L', f: 'Leather', u: '< 1 yr', p: 600 },
+        { s: 'S', f: 'Cashmere', u: '< 1 yr', p: 400 },
+        { s: 'M', f: 'Cashmere', u: '< 1 yr', p: 450 },
+        { s: 'L', f: 'Cashmere', u: '< 1 yr', p: 500 },
+        { s: 'S', f: 'Cotton', u: '>= 1 yr', p: 140 },
+        { s: 'M', f: 'Cotton', u: '>= 1 yr', p: 180 },
+        { s: 'L', f: 'Cotton', u: '>= 1 yr', p: 220 },
+        { s: 'S', f: 'Silk', u: '>= 1 yr', p: 220 },
+        { s: 'M', f: 'Silk', u: '>= 1 yr', p: 260 },
+        { s: 'L', f: 'Silk', u: '>= 1 yr', p: 300 },
+        { s: 'S', f: 'Linen', u: '>= 1 yr', p: 160 },
+        { s: 'M', f: 'Linen', u: '>= 1 yr', p: 200 },
+        { s: 'L', f: 'Linen', u: '>= 1 yr', p: 240 },
+        { s: 'S', f: 'Leather', u: '>= 1 yr', p: 300 },
+        { s: 'M', f: 'Leather', u: '>= 1 yr', p: 350 },
+        { s: 'L', f: 'Leather', u: '>= 1 yr', p: 400 },
+        { s: 'S', f: 'Cashmere', u: '>= 1 yr', p: 260 },
+        { s: 'M', f: 'Cashmere', u: '>= 1 yr', p: 320 },
+        { s: 'L', f: 'Cashmere', u: '>= 1 yr', p: 350 },
     ];
 
     return (
@@ -208,13 +188,14 @@ const SellPage = () => {
                                 <ol className="list-decimal list-inside space-y-1 text-xs text-green-700 dark:text-green-300 ml-1">
                                     <li><strong>Upload Photo:</strong> Upload a photo of the cloth you want to sell.</li>
                                     <li><strong>AI Scan:</strong> We use smart technology to confirm it's a clothing item.</li>
-                                    <li><strong>Auto-Fill:</strong> We'll automatically identify the item (e.g., "Woolen Sweater") and fill in the Item Name for you!</li>
+                                    
                                 </ol>
                             </div>
 
                             <form id="clothesForm" className="space-y-6" autoComplete="off" onSubmit={handleSubmit}>
 
                             {/* Form Messages */}
+                            <div ref={resultRef} />
                             <Alert type="success" message={success} />
                             <Alert type="error" message={error} />
 
@@ -303,11 +284,11 @@ const SellPage = () => {
                                     required
                                     placeholder="Select Usage Duration"
                                     options={[
-                                        { value: '6', label: 'Less than 6 months' },
+                                        { value: '6', label: 'Less than 1 year' },
                                         { value: '1', label: 'More than 1 year' }
                                     ]}
                                 />
-                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Choose "6" for less than 6 months, "1" for more than 1 year.</p>
+                                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Choose "6" for less than 1 year, "1" for more than 1 year.</p>
                             </div>
 
                             <Input
@@ -387,9 +368,9 @@ const SellPage = () => {
                     </div>
 
                     {/* Points Calculator - Futuristic Card */}
-                    <div className="lg:w-1/3 flex flex-col">
-                        <div className="relative h-full bg-gradient-to-br from-green-500 to-emerald-600 dark:from-green-500 dark:to-emerald-600 p-[2px] rounded-2xl shadow-2xl shadow-green-500/20 dark:shadow-green-500/40">
-                            <div className="bg-white/95 h-full dark:bg-gray-800/95 backdrop-blur-xl p-6 rounded-2xl">
+                    <div className={`lg:w-1/3 flex flex-col ${preview ? 'self-stretch' : ''}`}>
+                        <div className={`relative ${preview ? 'h-full' : ''} bg-gradient-to-br from-green-500 to-emerald-600 dark:from-green-500 dark:to-emerald-600 p-[2px] rounded-2xl shadow-2xl shadow-green-500/20 dark:shadow-green-500/40`}>
+                            <div className={`bg-white/95 ${preview ? 'h-full flex flex-col min-h-0' : ''} dark:bg-gray-800/95 backdrop-blur-xl p-6 rounded-2xl`}>
                                 <div className="flex items-center gap-2 mb-4">
                                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
                                         <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -401,7 +382,7 @@ const SellPage = () => {
                                 <p className="text-gray-600 dark:text-gray-300 mb-4 text-sm leading-relaxed">
                                     Earn points based on <span className="font-semibold text-green-600 dark:text-green-400">size</span>, <span className="font-semibold text-green-600 dark:text-green-400">fabric</span>, and <span className="font-semibold text-green-600 dark:text-green-400">usage duration</span>.
                                 </p>
-                                <div className="overflow-x-auto max-h-[60.5rem] overflow-y-auto mb-2 rounded-xl border border-gray-200/50 dark:border-gray-700/50">
+                                <div className={`overflow-x-auto ${preview ? 'flex-1 min-h-0' : 'max-h-[60.5rem]'} overflow-y-auto mb-2 rounded-xl border border-gray-200/50 dark:border-gray-700/50`}>
                                     <table className="min-w-full text-sm text-left">
                                         <thead className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/50 dark:to-emerald-950/50 sticky top-0 backdrop-blur-sm">
                                             <tr>
