@@ -1,6 +1,6 @@
 // src/store/slices/adminAuthSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { adminLogin as apiAdminLogin, adminLogout as apiAdminLogout, getDashboard } from '../../services/adminApi';
+import { adminLogin as apiAdminLogin, adminLogout as apiAdminLogout, checkAuth } from '../../services/adminApi';
 
 const initialState = {
   isAuthenticated: false,
@@ -11,8 +11,8 @@ const initialState = {
 
 export const checkAdminAuth = createAsyncThunk('adminAuth/check', async (_, { rejectWithValue }) => {
   try {
-    const res = await getDashboard();
-    if (res?.success) return true;
+    const res = await checkAuth();
+    if (res) return true;
     return rejectWithValue('Not authenticated');
   } catch (e) {
     return rejectWithValue(e.message || 'Not authenticated');
