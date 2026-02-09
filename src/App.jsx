@@ -23,6 +23,8 @@ import AccountAddressPage from './components/pages/AccountAddressPage';
 import OrderHistoryPage from './components/pages/OrderHistoryPage';
 import MyDonationsPage from './components/pages/MyDonationsPage';
 import CheckoutPage from './components/pages/CheckoutPage';
+import CheckoutSuccess from './components/pages/CheckoutSuccess';
+import CheckoutCancel from './components/pages/CheckoutCancel';
 import BlogsPage from './components/pages/BlogsPage';
 // Industry imports
 import IndustryLayout from './components/layouts/IndustryLayout';
@@ -166,6 +168,8 @@ function App() {
                         <Route path="/cart" element={<CartPage />} />
                         <Route path="/sell" element={<SellPage />} />
                         <Route path="/checkout" element={<CheckoutPage />} />
+                        <Route path="/checkout/success" element={<CheckoutSuccess />} />
+                        <Route path="/checkout/cancel" element={<CheckoutCancel />} />
                         
                         {/* --- Account & Dashboard Routes --- */}
                         <Route path="/account" element={<AccountLayout />}>

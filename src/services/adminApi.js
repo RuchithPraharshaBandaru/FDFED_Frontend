@@ -37,6 +37,11 @@ export const adminLogout = async () => {
   return handleJson(res);
 };
 
+export const checkAuth = async () => {
+  const res = await fetch(`${ADMIN_BASE}/check-auth`, { credentials: 'include' });
+  return handleJson(res);
+};
+
 export const getLoginPage = async (error) => {
   const url = new URL(`${ADMIN_BASE}/login`, window.location.origin);
   if (error) url.searchParams.set('error', error);
@@ -76,7 +81,7 @@ export const getCustomers = async (page = 1, limit = 50) => {
 };
 
 export const deleteCustomer = async (id) => {
-  const res = await fetch(`${ADMIN_BASE}/customer/${id}`, { method: 'DELETE', credentials: 'include' });
+  const res = await fetch(`${ADMIN_BASE}/customers/${id}`, { method: 'DELETE', credentials: 'include' });
   return handleJson(res);
 };
 
@@ -87,38 +92,46 @@ export const getProductsAdmin = async (page = 1, limit = 50) => {
 };
 
 export const deleteProduct = async (id) => {
-  const res = await fetch(`${ADMIN_BASE}/product/${id}`, { method: 'DELETE', credentials: 'include' });
+  const res = await fetch(`${ADMIN_BASE}/products/${id}`, { method: 'DELETE', credentials: 'include' });
   return handleJson(res);
 };
 
 export const approveProduct = async (id) => {
-  const res = await fetch(`${ADMIN_BASE}/product/approve/${id}`, { credentials: 'include' });
+  const res = await fetch(`${ADMIN_BASE}/products/${id}/approval`, {
+    method: 'PUT',
+    headers: jsonHeaders,
+    body: JSON.stringify({ approved: true }),
+    credentials: 'include',
+  });
   return handleJson(res);
 };
 
 export const disapproveProduct = async (id) => {
-  const res = await fetch(`${ADMIN_BASE}/product/disapprove/${id}`, { credentials: 'include' });
+  const res = await fetch(`${ADMIN_BASE}/products/${id}/approval`, {
+    method: 'PUT',
+    headers: jsonHeaders,
+    body: JSON.stringify({ approved: false }),
+    credentials: 'include',
+  });
   return handleJson(res);
 };
 
 // Sellers & Vendors
 export const getSellers = async (page = 1, limit = 50) => {
-  const res = await fetch(`${ADMIN_BASE}/seller?page=${page}&limit=${limit}`, { credentials: 'include' });
+  const res = await fetch(`${ADMIN_BASE}/sellers?page=${page}&limit=${limit}`, { credentials: 'include' });
   return handleJson(res);
 };
 
-export const getVendors = async (page = 1, limit = 50) => {
-  const res = await fetch(`${ADMIN_BASE}/vendors?page=${page}&limit=${limit}`, { credentials: 'include' });
-  return handleJson(res);
-};
+// Deprecated: Mapped to getSellers
+export const getVendors = getSellers;
 
 export const approveSeller = async (id) => {
-  const res = await fetch(`${ADMIN_BASE}/seller/approve/${id}`, { credentials: 'include' });
+  const res = await fetch(`${ADMIN_BASE}/sellers/${id}/approve`, { method: 'PUT', credentials: 'include' });
   return handleJson(res);
 };
 
 export const deleteSeller = async (id) => {
-  const res = await fetch(`${ADMIN_BASE}/seller/${id}`, { method: 'DELETE', credentials: 'include' });
+  const res = await fetch(`${ADMIN_BASE}/sellers/${id}`, { method: 'DELETE', credentials: 'include' });
   return handleJson(res);
 };
 
@@ -150,13 +163,13 @@ export const getOrderUser = async (orderId) => {
 
 // Second-hand (Sell Product)
 export const getSellProducts = async (page = 1, limit = 50) => {
-  const res = await fetch(`${ADMIN_BASE}/dashboard/sellproduct?page=${page}&limit=${limit}`, { credentials: 'include' });
+  const res = await fetch(`${ADMIN_BASE}/secondhand-products?page=${page}&limit=${limit}`, { credentials: 'include' });
   return handleJson(res);
 };
 
 export const updateSellProductStatus = async (id, userStatus) => {
   console.log(`Updating status for ${id} to ${userStatus}`);
-  const url = `${ADMIN_BASE}/sellproduct/${id}/status`;
+  const url = `${ADMIN_BASE}/secondhand-products/${id}/status`;
   console.log(`PUT ${url}`);
   const res = await fetch(url, {
     method: 'PUT',
@@ -174,7 +187,7 @@ export const getManagers = async (page = 1, limit = 50) => {
 };
 
 export const createManager = async ({ email, password }) => {
-  const res = await fetch(`${ADMIN_BASE}/create/manager`, {
+  const res = await fetch(`${ADMIN_BASE}/managers`, {
     method: 'POST',
     headers: jsonHeaders,
     body: JSON.stringify({ email, password }),
@@ -209,6 +222,7 @@ export const getAnalytics = async ({ from, to, page = 1, limit = 50 }) => {
 export default {
   adminLogin,
   adminLogout,
+  checkAuth,
   getLoginPage,
   getDashboard,
   getBlogs,
