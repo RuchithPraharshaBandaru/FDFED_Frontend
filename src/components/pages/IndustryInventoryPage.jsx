@@ -5,14 +5,26 @@ import {
 } from 'lucide-react';
 
 // --- API HELPERS (Internal for stability) ---
-const INDUSTRY_BASE = 'http://localhost:8000/api/v1/industry';
+// const INDUSTRY_BASE = 'http://localhost:8000/api/v1/industry';
+const INDUSTRY_BASE = import.meta.env.VITE_INDUSTRY_BASE;
+
 
 const fetchIndustryHome = async () => {
     try {
         const res = await fetch(`${INDUSTRY_BASE}/home`, { credentials: 'include' });
-        if (!res.ok) throw new Error('Failed to fetch inventory');
-        const data = await res.json();
-        return data;
+        const responseText = await res.text();
+
+        if (!res.ok) {
+            console.error("API Error: Non-OK response.", { status: res.status, body: responseText });
+            throw new Error(`Failed to fetch inventory. Status: ${res.status}`);
+        }
+
+        try {
+            return JSON.parse(responseText);
+        } catch (e) {
+            console.error("API Error: Failed to parse JSON.", { body: responseText });
+            throw new Error(`Invalid JSON response. The server returned HTML or another non-JSON format.`);
+        }
     } catch (error) {
         console.error("API Error:", error);
         throw error;
@@ -27,8 +39,19 @@ const postIndustryCart = async (body) => {
             body: JSON.stringify(body), 
             credentials: 'include'
         });
-        if (!res.ok) throw new Error('Failed to add to cart');
-        return await res.json();
+        const responseText = await res.text();
+
+        if (!res.ok) {
+            console.error("Cart API Error: Non-OK response.", { status: res.status, body: responseText });
+            throw new Error(`Failed to add to cart. Status: ${res.status}`);
+        }
+
+        try {
+            return JSON.parse(responseText);
+        } catch (e) {
+            console.error("Cart API Error: Failed to parse JSON.", { body: responseText });
+            throw new Error(`Invalid JSON response. The server returned HTML or another non-JSON format.`);
+        }
     } catch (error) {
         console.error("Cart Error:", error);
         throw error;

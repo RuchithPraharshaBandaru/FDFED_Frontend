@@ -1,6 +1,7 @@
 // src/services/adminApi.js
 
-const ADMIN_BASE = 'http://localhost:8000/api/v1/admin';
+// const ADMIN_BASE = 'http://localhost:8000/api/v1/admin';
+const ADMIN_BASE = import.meta.env.VITE_ADMIN_URL;
 
 const jsonHeaders = { 'Content-Type': 'application/json' };
 
