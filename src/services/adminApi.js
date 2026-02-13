@@ -134,6 +134,22 @@ export const deleteSeller = async (id) => {
   return handleJson(res);
 };
 
+// Industries
+export const getIndustries = async (page = 1, limit = 50) => {
+  const res = await fetch(`${ADMIN_BASE}/industries?page=${page}&limit=${limit}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+export const getIndustryById = async (id) => {
+  const res = await fetch(`${ADMIN_BASE}/industries/${id}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+export const deleteIndustry = async (id) => {
+  const res = await fetch(`${ADMIN_BASE}/industries/${id}`, { method: 'DELETE', credentials: 'include' });
+  return handleJson(res);
+};
+
 // Orders
 export const getOrders = async (page = 1, limit = 50) => {
   const res = await fetch(`${ADMIN_BASE}/orders?page=${page}&limit=${limit}`, { credentials: 'include' });
@@ -200,13 +216,12 @@ export const deleteManager = async (id) => {
   return handleJson(res);
 };
 
-// Delivery placeholder
 export const getDelivery = async () => {
   const res = await fetch(`${ADMIN_BASE}/delivery`, { credentials: 'include' });
   return handleJson(res);
 };
 
-// Analytics
+// Analytics (original)
 export const getAnalytics = async ({ from, to, page = 1, limit = 50 }) => {
   const url = new URL(`${ADMIN_BASE}/analytics`, window.location.origin);
   if (from) url.searchParams.set('from', from);
@@ -215,6 +230,39 @@ export const getAnalytics = async ({ from, to, page = 1, limit = 50 }) => {
   url.searchParams.set('limit', String(limit));
   const path = url.toString().replace(window.location.origin, '');
   const res = await fetch(path, { credentials: 'include' });
+  return handleJson(res);
+};
+
+// Product Analytics
+export const getProductAnalytics = async (period = '3m') => {
+  const res = await fetch(`${ADMIN_BASE}/analytics/products?period=${period}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+// User Purchase Analytics
+export const getUserPurchaseAnalytics = async (userId, period = '3m') => {
+  const res = await fetch(`${ADMIN_BASE}/analytics/users/${userId}/purchases?period=${period}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+// Performance Rankings
+export const getSellerRankings = async (period = '3m', limit = 10, metric = 'value') => {
+  const res = await fetch(`${ADMIN_BASE}/analytics/rankings/sellers?period=${period}&limit=${limit}&metric=${metric}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+export const getIndustryRankings = async (period = '3m', limit = 10, metric = 'value') => {
+  const res = await fetch(`${ADMIN_BASE}/analytics/rankings/industries?period=${period}&limit=${limit}&metric=${metric}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+export const getSellerTimeseries = async (sellerId, period = '3m', interval = 'month', metric = 'value') => {
+  const res = await fetch(`${ADMIN_BASE}/analytics/sellers/${sellerId}/timeseries?period=${period}&interval=${interval}&metric=${metric}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+export const getIndustryTimeseries = async (industryId, period = '3m', interval = 'month', metric = 'value') => {
+  const res = await fetch(`${ADMIN_BASE}/analytics/industries/${industryId}/timeseries?period=${period}&interval=${interval}&metric=${metric}`, { credentials: 'include' });
   return handleJson(res);
 };
 
@@ -237,6 +285,9 @@ export default {
   getVendors,
   approveSeller,
   deleteSeller,
+  getIndustries,
+  getIndustryById,
+  deleteIndustry,
   getOrders,
   getOrdersByUser,
   updateOrderStatus,
@@ -248,4 +299,10 @@ export default {
   deleteManager,
   getDelivery,
   getAnalytics,
+  getProductAnalytics,
+  getUserPurchaseAnalytics,
+  getSellerRankings,
+  getIndustryRankings,
+  getSellerTimeseries,
+  getIndustryTimeseries,
 };
