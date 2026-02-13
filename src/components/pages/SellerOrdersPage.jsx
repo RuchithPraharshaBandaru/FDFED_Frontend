@@ -8,6 +8,7 @@ import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Input } from '../ui/Input';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { OrdersPageShimmer } from '../ui/Shimmer';
 
 export const SellerOrdersPage = () => {
     const dispatch = useDispatch();
@@ -158,15 +159,7 @@ export const SellerOrdersPage = () => {
     );
 
     if (ordersLoading) {
-        return (
-            <div className="min-h-screen bg-background py-8">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-center items-center h-64">
-                        <p className="text-muted-foreground">Loading orders...</p>
-                    </div>
-                </div>
-            </div>
-        );
+        return <OrdersPageShimmer />;
     }
 
     return (

@@ -12,6 +12,7 @@ import { Badge } from '../ui/Badge';
 import { Alert } from '../ui/Alert';
 import { Input } from '../ui/Input';
 import { Select } from '../ui/Select';
+import { ProductsPageShimmer } from '../ui/Shimmer';
 
 export const SellerProductsPage = () => {
     const dispatch = useDispatch();
@@ -134,15 +135,7 @@ export const SellerProductsPage = () => {
     };
 
     if (productsLoading) {
-        return (
-            <div className="min-h-screen bg-background py-8">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-center items-center h-64">
-                        <p className="text-muted-foreground">Loading products...</p>
-                    </div>
-                </div>
-            </div>
-        );
+        return <ProductsPageShimmer />;
     }
 
     return (

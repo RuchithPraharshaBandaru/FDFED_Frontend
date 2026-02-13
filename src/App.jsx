@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Routes, Route } from 'react-router-dom';
 import { selectTheme } from './store/slices/themeSlice';
@@ -7,6 +7,7 @@ import { checkAuth, selectIsAuthenticated } from './store/slices/authSlice'; // 
 import { industryCheckAuth } from './store/slices/industrySlice';
 import { fetchCartItems } from './store/slices/cartSlice'; // Added fetchCartItems
 import { ToastProvider } from './context/ToastContext';
+import SplashScreen from './components/ui/SplashScreen';
 import MainLayout from './components/layouts/MainLayout';
 import HomePage from './components/pages/HomePage';
 import ProductPage from './components/pages/ProductPage';
@@ -68,6 +69,7 @@ function App() {
     const dispatch = useDispatch();
     const theme = useSelector(selectTheme);
     const isAuthenticated = useSelector(selectIsAuthenticated); // Select auth state
+    const [showSplash, setShowSplash] = useState(true);
     
     // Check authentication on mount
     useEffect(() => {
@@ -94,6 +96,7 @@ function App() {
     
     return (
         <ToastProvider>
+            {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
             <Routes>
                 {/* --- Industry Public Routes --- */}
                 <Route path="/industry/login" element={<IndustryLoginPage />} />
