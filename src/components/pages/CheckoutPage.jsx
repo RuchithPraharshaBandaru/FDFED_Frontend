@@ -22,7 +22,7 @@ const CheckoutPage = () => {
         pincode: '',
         phone: ''
     });
-    const [paymentMethod, setPaymentMethod] = useState('cod');
+    const [paymentMethod, setPaymentMethod] = useState('stripe');
     
     // --- STATE FOR VIRTUAL COINS ---
     const [useCoins, setUseCoins] = useState(false);
@@ -73,11 +73,15 @@ const CheckoutPage = () => {
         }
         setErrors({});
         try {
-            await apiSubmitPayment({
+            const response = await apiSubmitPayment({
                 paymentMethod,
                 address: formData,
                 useCoins: useCoins // Pass the toggle state to backend
             });
+            if (response?.checkoutUrl) {
+                window.location.href = response.checkoutUrl;
+                return;
+            }
             // FIX: Redirect to the correct route defined in App.jsx
             navigate('/account/orders'); 
         } catch (err) {
@@ -159,18 +163,18 @@ const CheckoutPage = () => {
                                 <CreditCard className="mr-2 text-green-500" /> Payment Method
                             </h2>
                             <div className="space-y-3">
-                                <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === 'cod' ? 'border-green-500 bg-green-50 dark:bg-green-900/20 ring-1 ring-green-500' : 'border-gray-200 dark:border-gray-600'} ${finalTotal === 0 ? 'opacity-50 pointer-events-none' : ''}`}>
+                                <label className={`flex items-center p-4 border rounded-lg cursor-pointer transition-all ${paymentMethod === 'stripe' ? 'border-green-500 bg-green-50 dark:bg-green-900/20 ring-1 ring-green-500' : 'border-gray-200 dark:border-gray-600'} ${finalTotal === 0 ? 'opacity-50 pointer-events-none' : ''}`}>
                                     <input 
                                         type="radio" 
                                         name="payment" 
-                                        value="cod" 
-                                        checked={paymentMethod === 'cod'} 
+                                        value="stripe" 
+                                        checked={paymentMethod === 'stripe'} 
                                         onChange={(e) => setPaymentMethod(e.target.value)}
                                         className="text-green-600 focus:ring-green-500"
                                         disabled={finalTotal === 0}
                                     />
                                     <span className="ml-3 font-medium dark:text-gray-200">
-                                        Cash on Delivery
+                                        Card (Stripe)
                                     </span>
                                 </label>
                             </div>
