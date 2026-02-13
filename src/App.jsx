@@ -1,5 +1,5 @@
 // src/App.jsx
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Routes, Route } from 'react-router-dom';
 import { selectTheme } from './store/slices/themeSlice';
@@ -7,6 +7,7 @@ import { checkAuth, selectIsAuthenticated } from './store/slices/authSlice'; // 
 import { industryCheckAuth } from './store/slices/industrySlice';
 import { fetchCartItems } from './store/slices/cartSlice'; // Added fetchCartItems
 import { ToastProvider } from './context/ToastContext';
+import SplashScreen from './components/ui/SplashScreen';
 import MainLayout from './components/layouts/MainLayout';
 import HomePage from './components/pages/HomePage';
 import ProductPage from './components/pages/ProductPage';
@@ -56,8 +57,12 @@ import AdminBlogsPage from './components/pages/admin/BlogsPage';
 import BlogCreatePage from './components/pages/admin/BlogCreatePage';
 import CustomersPage from './components/pages/admin/CustomersPage';
 import ProductsPage from './components/pages/admin/ProductsPage';
+import ProductAnalyticsPage from './components/pages/admin/ProductAnalyticsPage';
+import UserPurchaseAnalyticsPage from './components/pages/admin/UserPurchaseAnalyticsPage';
+import PerformanceRankingsPage from './components/pages/admin/PerformanceRankingsPage';
 import SellersPage from './components/pages/admin/SellersPage';
 import VendorsPage from './components/pages/admin/VendorsPage';
+import IndustriesPage from './components/pages/admin/IndustriesPage';
 import OrdersPage from './components/pages/admin/OrdersPage';
 import OrderUserPage from './components/pages/admin/OrderUserPage';
 import SellProductsPage from './components/pages/admin/SellProductsPage';
@@ -70,7 +75,8 @@ function App() {
     const dispatch = useDispatch();
     const theme = useSelector(selectTheme);
     const isAuthenticated = useSelector(selectIsAuthenticated); // Select auth state
-    
+    const [showSplash, setShowSplash] = useState(true);
+
     // Check authentication on mount
     useEffect(() => {
         dispatch(checkAuth());
@@ -83,7 +89,7 @@ function App() {
             dispatch(fetchCartItems());
         }
     }, [dispatch, isAuthenticated]);
-    
+
     // Apply theme to document on mount and when it changes
     useEffect(() => {
         const root = document.documentElement;
@@ -93,9 +99,10 @@ function App() {
             root.classList.remove('dark');
         }
     }, [theme]);
-    
+
     return (
         <ToastProvider>
+            {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
             <Routes>
                 {/* --- Industry Public Routes --- */}
                 <Route path="/industry/login" element={<IndustryLoginPage />} />
@@ -117,7 +124,7 @@ function App() {
                 {/* --- Seller Public Routes --- */}
                 <Route path="/seller/login" element={<SellerLoginPage />} />
                 <Route path="/seller/signup" element={<SellerSignupPage />} />
-                
+
                 {/* --- Protected Seller Routes --- */}
                 <Route path="/seller" element={<SellerLayout />}>
                     <Route path="dashboard" element={<SellerDashboardPage />} />
@@ -130,16 +137,21 @@ function App() {
 
                 {/* Admin Routes */}
                 <Route path="/admin/login" element={<AdminLoginPage />} />
-                <Route element={<AdminProtectedRoute />}> 
-                    <Route path="admin" element={<AdminLayout />}> 
+                <Route element={<AdminProtectedRoute />}>
+                    <Route path="admin" element={<AdminLayout />}>
                         <Route index element={<AdminDashboardPage />} />
                         <Route path="dashboard" element={<AdminDashboardPage />} />
+                        <Route path="product-analytics" element={<ProductAnalyticsPage />} />
+                        <Route path="user-analytics" element={<UserPurchaseAnalyticsPage />} />
+                        <Route path="user-analytics/:userId" element={<UserPurchaseAnalyticsPage />} />
+                        <Route path="performance-rankings" element={<PerformanceRankingsPage />} />
                         <Route path="blogs" element={<AdminBlogsPage />} />
                         <Route path="blogs/create" element={<BlogCreatePage />} />
                         <Route path="customers" element={<CustomersPage />} />
                         <Route path="products" element={<ProductsPage />} />
                         <Route path="sellers" element={<SellersPage />} />
                         <Route path="vendors" element={<VendorsPage />} />
+                        <Route path="industries" element={<IndustriesPage />} />
                         <Route path="orders" element={<OrdersPage />} />
                         <Route path="orders/user/:userId" element={<OrderUserPage />} />
                         <Route path="sell-products" element={<SellProductsPage />} />
@@ -148,7 +160,7 @@ function App() {
                         <Route path="analytics" element={<AnalyticsPage />} />
                     </Route>
                 </Route>
-                
+
                 {/* --- Regular App Routes with MainLayout --- */}
                 <Route element={<MainLayout />}>
                     {/* --- Public Routes --- */}
@@ -158,7 +170,7 @@ function App() {
                     <Route path="/about" element={<AboutUsPage />} />
                     <Route path="/blogs" element={<BlogsPage />} />
                     <Route path="/auth" element={<AuthChoicePage />} />
-                    
+
                     {/* --- Auth Routes --- */}
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/signup" element={<SignupPage />} />
@@ -168,6 +180,7 @@ function App() {
                         <Route path="/cart" element={<CartPage />} />
                         <Route path="/sell" element={<SellPage />} />
                         <Route path="/checkout" element={<CheckoutPage />} />
+
                         <Route path="/checkout/success" element={<CheckoutSuccess />} />
                         <Route path="/checkout/cancel" element={<CheckoutCancel />} />
                         

@@ -5,7 +5,7 @@ import Button from '../../ui/Button';
 import Card from '../../ui/Card';
 import Modal from '../../ui/Modal';
 import Select from '../../ui/Select';
-import { Check, X, Trash2, Eye, ArrowUp, ArrowDown, ArrowUpDown, Search, Package, Tag, Store, DollarSign, Calendar } from 'lucide-react';
+import { Check, X, Trash2, Eye, ArrowUp, ArrowDown, ArrowUpDown, Search, Package, Tag, Store, IndianRupee, Calendar } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const ProductsPage = () => {
@@ -13,16 +13,16 @@ const ProductsPage = () => {
   const { items, loading } = useSelector(selectAdminProducts);
   const [viewProduct, setViewProduct] = useState(null);
   const [confirmDelete, setConfirmDelete] = useState(null);
-  
+
   // Filters
   const [search, setSearch] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [verifiedFilter, setVerifiedFilter] = useState('all'); // all | verified | pending
-  
+
   // Pagination
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  
+
   // Sorting
   const [sortKey, setSortKey] = useState(null); // 'title' | 'price' | 'category' | 'seller' | 'verified'
   const [sortDir, setSortDir] = useState('asc'); // 'asc' | 'desc'
@@ -42,9 +42,9 @@ const ProductsPage = () => {
       const catOk = categoryFilter === 'all' || p.category === categoryFilter;
       const ver = !!p.verified;
       const verOk = verifiedFilter === 'all' || (verifiedFilter === 'verified' ? ver : !ver);
-      
+
       if (!catOk || !verOk) return false;
-      
+
       if (!search) return true;
       const q = search.toLowerCase();
       return (
@@ -130,9 +130,9 @@ const ProductsPage = () => {
           <div className="flex flex-col sm:flex-row gap-3 w-full lg:w-auto">
             <div className="relative w-full sm:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input 
-                type="text" 
-                placeholder="Search products..." 
+              <input
+                type="text"
+                placeholder="Search products..."
                 className="pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none transition-all w-full"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -272,20 +272,20 @@ const ProductsPage = () => {
               Showing <span className="font-medium">{start + 1}</span> to <span className="font-medium">{Math.min(end, total)}</span> of <span className="font-medium">{total}</span> results
             </div>
             <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setPage(p => Math.max(1, p - 1))} 
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={currentPage <= 1}
                 className="disabled:opacity-50"
               >
                 Previous
               </Button>
               <div className="text-sm font-medium px-2">Page {currentPage} of {totalPages}</div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))} 
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage >= totalPages}
                 className="disabled:opacity-50"
               >
@@ -324,7 +324,7 @@ const ProductsPage = () => {
                   </div>
                 </div>
               </div>
-              
+
               <div className="space-y-6">
                 <div>
                   <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">{p.title}</h3>
@@ -340,7 +340,7 @@ const ProductsPage = () => {
                     )}
                     <span className="text-xs text-gray-500">ID: {p._id}</span>
                   </div>
-                  
+
                   <div className="prose dark:prose-invert max-w-none text-sm text-gray-600 dark:text-gray-300 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-800">
                     {p.description || <span className="italic text-gray-400">No description provided.</span>}
                   </div>
@@ -405,16 +405,16 @@ const ProductsPage = () => {
 
 // Helper icon component
 const ClockIcon = ({ size, className }) => (
-  <svg 
-    xmlns="http://www.w3.org/2000/svg" 
-    width={size} 
-    height={size} 
-    viewBox="0 0 24 24" 
-    fill="none" 
-    stroke="currentColor" 
-    strokeWidth="2" 
-    strokeLinecap="round" 
-    strokeLinejoin="round" 
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
     className={className}
   >
     <circle cx="12" cy="12" r="10" />

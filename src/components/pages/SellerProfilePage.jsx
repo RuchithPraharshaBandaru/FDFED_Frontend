@@ -7,6 +7,7 @@ import { Input } from '../ui/Input';
 import { Button } from '../ui/Button';
 import { Alert } from '../ui/Alert';
 import { Card } from '../ui/Card';
+import { ProfilePageShimmer } from '../ui/Shimmer';
 
 export const SellerProfilePage = () => {
     const dispatch = useDispatch();
@@ -196,15 +197,7 @@ export const SellerProfilePage = () => {
     };
 
     if (loading && !seller) {
-        return (
-            <div className="min-h-screen bg-background py-8">
-                <div className="container max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-center items-center h-64">
-                        <p className="text-muted-foreground">Loading profile...</p>
-                    </div>
-                </div>
-            </div>
-        );
+        return <ProfilePageShimmer />;
     }
 
     return (
