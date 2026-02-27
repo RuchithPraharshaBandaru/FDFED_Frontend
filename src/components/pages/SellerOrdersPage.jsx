@@ -1,7 +1,7 @@
 // src/components/pages/SellerOrdersPage.jsx
 import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchSellerOrders } from '../../store/slices/sellerSlice';
+import { fetchSellerOrders, updateOrderStatus } from '../../store/slices/sellerSlice';
 import { apiUpdateOrderStatus } from '../../services/sellerApi';
 import { useToast } from '../../context/ToastContext';
 import { Card } from '../ui/Card';
@@ -46,8 +46,10 @@ export const SellerOrdersPage = () => {
         try {
             setUpdatingOrder(orderId);
             await apiUpdateOrderStatus(orderId, newStatus);
+            // Optimistically update local state so the order stays visible
+            dispatch(updateOrderStatus({ orderId, status: newStatus }));
             showSuccess(`Order status updated to ${newStatus}`);
-            // Refresh orders to get updated data
+            // Also refresh from server for consistency
             dispatch(fetchSellerOrders());
         } catch (error) {
             console.error('Failed to update order status:', error);
