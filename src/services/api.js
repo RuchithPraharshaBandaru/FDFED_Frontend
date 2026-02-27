@@ -317,6 +317,26 @@ export const apiSubmitPayment = async (paymentData) => {
 };
 
 /**
+ * Confirms Stripe payment after redirect when webhooks are skipped.
+ * @param {string} sessionId
+ */
+export const apiConfirmStripePayment = async (sessionId) => {
+    const response = await fetch(`${API_BASE_URL}/stripe/confirm`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ sessionId }),
+        credentials: 'include',
+    });
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.error || err.message || 'Stripe confirmation failed');
+    }
+    return response.json();
+};
+
+/**
  * Syncs the Redux cart with the backend before checkout
  * @param {Array} cartItems - Array of cart items from Redux
  * @returns {Promise<Object>}
