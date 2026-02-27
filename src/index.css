@@ -118,6 +118,20 @@
 
 /* Background Pattern Utilities for Visual Texture */
 @layer utilities {
+  /* Shimmer animation for loading states */
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+  
+  .animate-shimmer {
+    animation: shimmer 2s ease-in-out infinite;
+  }
+
   .bg-grid-pattern {
     background-size: 40px 40px;
     background-image: linear-gradient(to right, hsl(var(--border)) 1px, transparent 1px),

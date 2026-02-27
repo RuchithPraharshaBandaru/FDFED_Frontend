@@ -134,6 +134,22 @@ export const deleteSeller = async (id) => {
   return handleJson(res);
 };
 
+// Industries
+export const getIndustries = async (page = 1, limit = 50) => {
+  const res = await fetch(`${ADMIN_BASE}/industries?page=${page}&limit=${limit}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+export const getIndustryById = async (id) => {
+  const res = await fetch(`${ADMIN_BASE}/industries/${id}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+export const deleteIndustry = async (id) => {
+  const res = await fetch(`${ADMIN_BASE}/industries/${id}`, { method: 'DELETE', credentials: 'include' });
+  return handleJson(res);
+};
+
 // Orders
 export const getOrders = async (page = 1, limit = 50) => {
   const res = await fetch(`${ADMIN_BASE}/orders?page=${page}&limit=${limit}`, { credentials: 'include' });
@@ -200,13 +216,12 @@ export const deleteManager = async (id) => {
   return handleJson(res);
 };
 
-// Delivery placeholder
 export const getDelivery = async () => {
   const res = await fetch(`${ADMIN_BASE}/delivery`, { credentials: 'include' });
   return handleJson(res);
 };
 
-// Analytics
+// Analytics (original)
 export const getAnalytics = async ({ from, to, page = 1, limit = 50 }) => {
   const url = new URL(`${ADMIN_BASE}/analytics`, window.location.origin);
   if (from) url.searchParams.set('from', from);
@@ -215,6 +230,110 @@ export const getAnalytics = async ({ from, to, page = 1, limit = 50 }) => {
   url.searchParams.set('limit', String(limit));
   const path = url.toString().replace(window.location.origin, '');
   const res = await fetch(path, { credentials: 'include' });
+  return handleJson(res);
+};
+
+// Product Analytics
+export const getProductAnalytics = async (period = '3m') => {
+  const res = await fetch(`${ADMIN_BASE}/analytics/products?period=${period}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+// User Purchase Analytics
+export const getUserPurchaseAnalytics = async (userId, period = '3m') => {
+  const res = await fetch(`${ADMIN_BASE}/analytics/users/${userId}/purchases?period=${period}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+// Performance Rankings
+export const getSellerRankings = async (period = '3m', limit = 10, metric = 'value') => {
+  const res = await fetch(`${ADMIN_BASE}/analytics/rankings/sellers?period=${period}&limit=${limit}&metric=${metric}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+export const getIndustryRankings = async (period = '3m', limit = 10, metric = 'value') => {
+  const res = await fetch(`${ADMIN_BASE}/analytics/rankings/industries?period=${period}&limit=${limit}&metric=${metric}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+export const getSellerTimeseries = async (sellerId, period = '3m', interval = 'month', metric = 'value') => {
+  const res = await fetch(`${ADMIN_BASE}/analytics/sellers/${sellerId}/timeseries?period=${period}&interval=${interval}&metric=${metric}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+export const getIndustryTimeseries = async (industryId, period = '3m', interval = 'month', metric = 'value') => {
+  const res = await fetch(`${ADMIN_BASE}/analytics/industries/${industryId}/timeseries?period=${period}&interval=${interval}&metric=${metric}`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+// Default export moved to end of file
+
+// --- RIDER MANAGEMENT (ADMIN) ---
+
+const ADMIN_RIDER_BASE = 'http://localhost:8000/api/v1/admin/rider';
+
+export const getAdminRiders = async (status) => {
+  const url = new URL(`${ADMIN_RIDER_BASE}/riders`, window.location.origin);
+  if (status) url.searchParams.set('status', status);
+  const path = url.toString().replace(window.location.origin, '');
+  const res = await fetch(path, { credentials: 'include' });
+  return handleJson(res);
+};
+
+export const verifyRider = async (riderId) => {
+  const res = await fetch(`${ADMIN_RIDER_BASE}/riders/${riderId}/verify`, { method: 'PUT', credentials: 'include' });
+  return handleJson(res);
+};
+
+export const suspendRider = async (riderId, reason) => {
+  const res = await fetch(`${ADMIN_RIDER_BASE}/riders/${riderId}/suspend`, {
+    method: 'PUT',
+    headers: jsonHeaders,
+    body: JSON.stringify({ reason }),
+    credentials: 'include',
+  });
+  return handleJson(res);
+};
+
+// --- PICKUP & DISPATCH (ADMIN) ---
+
+export const createPickup = async (pickupData) => {
+  // pickupData: { itemIds: [], deliveryFeeOverride: number }
+  const res = await fetch(`${ADMIN_RIDER_BASE}/pickups/create`, {
+    method: 'POST',
+    headers: jsonHeaders,
+    body: JSON.stringify(pickupData),
+    credentials: 'include',
+  });
+  return handleJson(res);
+};
+
+export const getPendingItems = async () => {
+  const res = await fetch(`${ADMIN_RIDER_BASE}/pickups/pending-items`, { credentials: 'include' });
+  return handleJson(res);
+};
+
+export const processPayout = async (payoutId, status, adminNote) => {
+  // status: "Approved" | "Rejected"
+  const res = await fetch(`${ADMIN_RIDER_BASE}/payouts/${payoutId}`, {
+    method: 'PUT',
+    headers: jsonHeaders,
+    body: JSON.stringify({ status, adminNote }),
+    credentials: 'include',
+  });
+  return handleJson(res);
+};
+
+export const getAdminPayouts = async (status) => {
+  const url = new URL(`${ADMIN_RIDER_BASE}/payouts`, window.location.origin);
+  if (status) url.searchParams.set('status', status);
+  const path = url.toString().replace(window.location.origin, '');
+  const res = await fetch(path, { credentials: 'include' });
+  return handleJson(res);
+};
+
+export const getRiderAnalytics = async () => {
+  const res = await fetch(`${ADMIN_RIDER_BASE}/analytics`, { credentials: 'include' });
   return handleJson(res);
 };
 
@@ -237,6 +356,9 @@ export default {
   getVendors,
   approveSeller,
   deleteSeller,
+  getIndustries,
+  getIndustryById,
+  deleteIndustry,
   getOrders,
   getOrdersByUser,
   updateOrderStatus,
@@ -248,4 +370,19 @@ export default {
   deleteManager,
   getDelivery,
   getAnalytics,
+  getProductAnalytics,
+  getUserPurchaseAnalytics,
+  getSellerRankings,
+  getIndustryRankings,
+  getSellerTimeseries,
+  getIndustryTimeseries,
+  // Rider
+  getAdminRiders,
+  verifyRider,
+  suspendRider,
+  createPickup,
+  getPendingItems,
+  processPayout,
+  getAdminPayouts,
+  getRiderAnalytics
 };

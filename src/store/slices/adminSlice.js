@@ -14,6 +14,8 @@ import {
   getVendors,
   approveSeller,
   deleteSeller,
+  getIndustries,
+  deleteIndustry,
   getOrders,
   getOrdersByUser,
   updateOrderStatus,
@@ -122,6 +124,22 @@ export const approveSellerThunk = createAsyncThunk('admin/sellers/approve', asyn
 
 export const deleteSellerThunk = createAsyncThunk('admin/sellers/delete', async (id, { rejectWithValue }) => {
   try { await deleteSeller(id); return id; } catch (e) { return rejectWithValue(e?.data?.message || e.message); }
+});
+
+export const fetchIndustriesThunk = createAsyncThunk('admin/industries', async ({ page = 1, limit = 50 } = {}, { rejectWithValue }) => {
+  try {
+    const data = await getIndustries(page, limit);
+    const payload = data?.data && typeof data.data === 'object' ? data.data : data;
+    const items = payload.industries || payload.items || [];
+    const total = typeof payload.total === 'number' ? payload.total : items.length;
+    const currentPage = typeof payload.page === 'number' ? payload.page : page;
+    const currentLimit = typeof payload.limit === 'number' ? payload.limit : limit;
+    return { items, total, page: currentPage, limit: currentLimit };
+  } catch (e) { return rejectWithValue(e.message); }
+});
+
+export const deleteIndustryThunk = createAsyncThunk('admin/industries/delete', async (id, { rejectWithValue }) => {
+  try { await deleteIndustry(id); return id; } catch (e) { return rejectWithValue(e?.data?.message || e.message); }
 });
 
 export const fetchOrdersThunk = createAsyncThunk('admin/orders', async ({ page = 1, limit = 50 } = {}, { rejectWithValue }) => {
@@ -239,6 +257,7 @@ const initialState = {
   products: emptyList(),
   sellers: emptyList(),
   vendors: emptyList(),
+  industries: emptyList(),
   orders: emptyList(),
   userOrders: {}, // map userId -> list shape
   sellProducts: emptyList(),
@@ -291,6 +310,12 @@ const adminSlice = createSlice({
       .addCase(approveSellerThunk.fulfilled, (s, a) => { /* optional local mark */ })
       .addCase(deleteSellerThunk.fulfilled, (s, a) => { s.sellers.items = s.sellers.items.filter(x => x._id !== a.payload); })
 
+      // Industries
+      .addCase(fetchIndustriesThunk.pending, (s) => { s.industries.loading = true; s.industries.error = null; })
+      .addCase(fetchIndustriesThunk.fulfilled, (s, a) => { s.industries = { ...a.payload, loading: false, error: null }; })
+      .addCase(fetchIndustriesThunk.rejected, (s, a) => { s.industries.loading = false; s.industries.error = a.payload; })
+      .addCase(deleteIndustryThunk.fulfilled, (s, a) => { s.industries.items = s.industries.items.filter(x => x._id !== a.payload); })
+
       // Orders
       .addCase(fetchOrdersThunk.pending, (s) => { s.orders.loading = true; s.orders.error = null; })
       .addCase(fetchOrdersThunk.fulfilled, (s, a) => { s.orders = { ...a.payload, loading: false, error: null }; })
@@ -340,6 +365,7 @@ export const selectAdminCustomers = (s) => s.admin.customers;
 export const selectAdminProducts = (s) => s.admin.products;
 export const selectAdminSellers = (s) => s.admin.sellers;
 export const selectAdminVendors = (s) => s.admin.vendors;
+export const selectAdminIndustries = (s) => s.admin.industries;
 export const selectAdminOrders = (s) => s.admin.orders;
 export const selectAdminUserOrders = (s, userId) => s.admin.userOrders[userId];
 export const selectAdminSellProducts = (s) => s.admin.sellProducts;
