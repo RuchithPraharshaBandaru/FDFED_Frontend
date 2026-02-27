@@ -63,6 +63,14 @@ const AdminLayout = () => {
           <NavItem to="/admin/industries" icon={Building2} label="Industries" />
           <NavItem to="/admin/orders" icon={ShoppingCart} label="Orders" />
           <NavItem to="/admin/sell-products" icon={ClipboardList} label="Second-hand" />
+          <div className="pt-4 pb-2">
+            <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+              Rider Management
+            </h3>
+          </div>
+          <NavItem to="/admin/riders" icon={Users} label="Riders" />
+          <NavItem to="/admin/dispatch" icon={Package} label="Dispatch" />
+          <NavItem to="/admin/payouts" icon={Store} label="Payouts" />
         </nav>
       </aside>
       <main className="col-span-12 md:col-span-9 lg:col-span-10 p-6">
