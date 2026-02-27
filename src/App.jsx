@@ -71,26 +71,39 @@ import DeliveryPage from './components/pages/admin/DeliveryPage';
 import AnalyticsPage from './components/pages/admin/AnalyticsPage';
 import AuthChoicePage from './components/pages/AuthChoicePage';
 
+// Rider Imports
+import RiderLayout from './components/layouts/RiderLayout';
+import RiderProtectedRoute from './components/layouts/RiderProtectedRoute';
+import RiderLoginPage from './components/pages/rider/RiderLoginPage';
+import RiderSignupPage from './components/pages/rider/RiderSignupPage';
+import RiderDashboardPage from './components/pages/rider/RiderDashboardPage';
+import RiderHistoryPage from './components/pages/rider/RiderHistoryPage';
+import RiderEarningsPage from './components/pages/rider/RiderEarningsPage';
+import RiderProfilePage from './components/pages/rider/RiderProfilePage';
+
+// Admin Rider Imports
+import RidersPage from './components/pages/admin/RidersPage';
+import DispatchPage from './components/pages/admin/DispatchPage';
+import PayoutsPage from './components/pages/admin/PayoutsPage';
+
 function App() {
     const dispatch = useDispatch();
     const theme = useSelector(selectTheme);
-    const isAuthenticated = useSelector(selectIsAuthenticated); // Select auth state
+    const isAuthenticated = useSelector(selectIsAuthenticated);
     const [showSplash, setShowSplash] = useState(true);
 
-    // Check authentication on mount
     useEffect(() => {
         dispatch(checkAuth());
         dispatch(industryCheckAuth());
+        // For rider, we might want to check auth on mount too if token is persisted
     }, [dispatch]);
 
-    // Sync cart when user is authenticated
     useEffect(() => {
         if (isAuthenticated) {
             dispatch(fetchCartItems());
         }
     }, [dispatch, isAuthenticated]);
 
-    // Apply theme to document on mount and when it changes
     useEffect(() => {
         const root = document.documentElement;
         if (theme === 'dark') {
@@ -104,6 +117,20 @@ function App() {
         <ToastProvider>
             {showSplash && <SplashScreen onComplete={() => setShowSplash(false)} />}
             <Routes>
+                {/* --- Rider Routes --- */}
+                <Route path="/rider/login" element={<RiderLoginPage />} />
+                <Route path="/rider/signup" element={<RiderSignupPage />} />
+
+                <Route element={<RiderProtectedRoute />}>
+                    <Route path="/rider" element={<RiderLayout />}>
+                        <Route index element={<RiderDashboardPage />} />
+                        <Route path="dashboard" element={<RiderDashboardPage />} />
+                        <Route path="history" element={<RiderHistoryPage />} />
+                        <Route path="earnings" element={<RiderEarningsPage />} />
+                        <Route path="profile" element={<RiderProfilePage />} />
+                    </Route>
+                </Route>
+
                 {/* --- Industry Public Routes --- */}
                 <Route path="/industry/login" element={<IndustryLoginPage />} />
                 <Route path="/industry/signup" element={<IndustrySignupPage />} />
@@ -158,6 +185,9 @@ function App() {
                         <Route path="managers" element={<ManagersPage />} />
                         <Route path="delivery" element={<DeliveryPage />} />
                         <Route path="analytics" element={<AnalyticsPage />} />
+                        <Route path="riders" element={<RidersPage />} />
+                        <Route path="dispatch" element={<DispatchPage />} />
+                        <Route path="payouts" element={<PayoutsPage />} />
                     </Route>
                 </Route>
 

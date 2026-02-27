@@ -10,11 +10,12 @@ import sellerReducer from './slices/sellerSlice';
 import adminReducer from './slices/adminSlice';
 import adminAuthReducer from './slices/adminAuthSlice';
 import industryReducer from './slices/industrySlice';
+import riderReducer from './slices/riderSlice';
 
 const persistConfig = {
     key: 'root',
     storage,
-    whitelist: ['cart', 'auth', 'theme', 'seller','admin', 'adminAuth', 'industry'] // Only persist these reducers
+    whitelist: ['cart', 'auth', 'theme', 'seller', 'admin', 'adminAuth', 'industry', 'rider'] // Only persist these reducers
 };
 
 const rootReducer = combineReducers({
@@ -24,7 +25,8 @@ const rootReducer = combineReducers({
     seller: sellerReducer,
     admin: adminReducer,
     adminAuth: adminAuthReducer,
-    industry: industryReducer
+    industry: industryReducer,
+    rider: riderReducer
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer);
