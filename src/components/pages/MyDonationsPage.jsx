@@ -1,19 +1,38 @@
-    // src/components/pages/MyDonationsPage.jsx
-import React from 'react';
+// src/components/pages/MyDonationsPage.jsx
+import React, { useState } from 'react';
 import { apiGetDonatedProducts } from '../../services/api';
 import { Link } from 'react-router-dom';
 import { useFetchData } from '../../hooks';
 
 const MyDonationsPage = () => {
-    const { data, loading, error } = useFetchData(apiGetDonatedProducts, []);
+    const [timePeriod, setTimePeriod] = useState('all');
+    const { data, loading, error } = useFetchData(() => apiGetDonatedProducts(timePeriod), [timePeriod]);
     const products = data?.products || [];
 
     if (loading) return <div className="text-center py-12 text-gray-700 dark:text-gray-300 font-semibold">Loading sold products...</div>;
     if (error) return <div className="text-red-600 dark:text-red-400 font-semibold">{error}</div>;
 
     return (
-        <div className="space-y-6">
-            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-100 dark:to-white bg-clip-text text-transparent">My Sold Products</h2>
+        <div className="space-y-6 animate-fade-in">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-100 dark:to-white bg-clip-text text-transparent">My Sold Products</h2>
+
+                <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                    {['week', 'month', 'year', 'all'].map((period) => (
+                        <button
+                            key={period}
+                            onClick={() => setTimePeriod(period)}
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${timePeriod === period
+                                    ? 'bg-white dark:bg-gray-700 text-green-600 dark:text-green-400 shadow-sm'
+                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                }`}
+                        >
+                            {period.charAt(0).toUpperCase() + period.slice(1)}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             {products.length === 0 ? (
                 <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl p-8 rounded-2xl shadow-xl border-2 border-gray-200/50 dark:border-gray-700/50 text-center">
                     <p className="dark:text-gray-300">You have not sold any products yet. <Link to="/sell" className="text-green-500 hover:underline font-bold">List one now!</Link></p>
