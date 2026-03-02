@@ -262,6 +262,16 @@ export const getAnalytics = async ({ from, to, page = 1, limit = 50 }) => {
   return handleJson(res);
 };
 
+export const getAdminRevenueStats = async (timePeriod = 'all') => {
+  const url = new URL(`${ADMIN_BASE}/dashboard-revenue`, window.location.origin);
+  if (timePeriod && timePeriod !== 'all') {
+    url.searchParams.set('timePeriod', timePeriod);
+  }
+  const path = url.toString().replace(window.location.origin, '');
+  const res = await fetch(path, { credentials: 'include' });
+  return handleJson(res);
+};
+
 // Product Analytics
 export const getProductAnalytics = async (period = '3m') => {
   const res = await fetch(`${ADMIN_BASE}/analytics/products?period=${period}`, { credentials: 'include' });
@@ -413,5 +423,6 @@ export default {
   getPendingItems,
   processPayout,
   getAdminPayouts,
-  getRiderAnalytics
+  getRiderAnalytics,
+  getAdminRevenueStats
 };

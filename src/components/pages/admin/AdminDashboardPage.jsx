@@ -1,6 +1,7 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchDashboard, selectAdminDashboard } from '../../../store/slices/adminSlice';
+import { getAdminRevenueStats } from '../../../services/adminApi';
 import { BarChart3, Users, Package, ShoppingCart, TrendingUp, ArrowUpRight } from 'lucide-react';
 import Graph from '../../ui/Graph';
 import Card from '../../ui/Card';
@@ -30,10 +31,31 @@ const AdminDashboardPage = () => {
   const dispatch = useDispatch();
   const { metrics, top, loading, series } = useSelector(selectAdminDashboard);
 
+  const [revenueTimePeriod, setRevenueTimePeriod] = useState('all');
+  const [revenueStats, setRevenueStats] = useState({ newProductRevenue: 0, secondHandRevenue: 0 });
+  const [revenueLoading, setRevenueLoading] = useState(true);
+
   useEffect(() => {
     // Fetch backend dashboard for summary, charts and top lists
     dispatch(fetchDashboard({ days: 30, tz: 'UTC' }));
   }, [dispatch]);
+
+  useEffect(() => {
+    const fetchRevenue = async () => {
+      setRevenueLoading(true);
+      try {
+        const res = await getAdminRevenueStats(revenueTimePeriod);
+        if (res?.success) {
+          setRevenueStats(res.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch revenue stats", err);
+      } finally {
+        setRevenueLoading(false);
+      }
+    };
+    fetchRevenue();
+  }, [revenueTimePeriod]);
 
   return (
     <div className="space-y-8 p-2">
@@ -43,30 +65,64 @@ const AdminDashboardPage = () => {
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatCard 
-          icon={Users} 
-          label="Total Users" 
-          value={metrics?.users} 
+        <StatCard
+          icon={Users}
+          label="Total Users"
+          value={metrics?.users}
           color="bg-blue-500"
         />
-        <StatCard 
-          icon={Package} 
-          label="Total Products" 
-          value={metrics?.products} 
+        <StatCard
+          icon={Package}
+          label="Total Products"
+          value={metrics?.products}
           color="bg-purple-500"
         />
-        <StatCard 
-          icon={ShoppingCart} 
-          label="Total Orders" 
-          value={metrics?.orders} 
+        <StatCard
+          icon={ShoppingCart}
+          label="Total Orders"
+          value={metrics?.orders}
           color="bg-orange-500"
         />
-        <StatCard 
-          icon={BarChart3} 
-          label="Total Revenue" 
-          value={metrics?.totalRevenue} 
+        <StatCard
+          icon={BarChart3}
+          label="Total Money Costumers spent"
+          value={metrics?.totalRevenue}
           color="bg-green-500"
         />
+      </div>
+
+      <div className="flex flex-col gap-4 mt-8 mb-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Commission Revenue (10%)</h2>
+          <div className="flex bg-white dark:bg-gray-800 rounded-lg p-1 shadow-sm border border-gray-100 dark:border-gray-700">
+            {['week', 'month', 'year', 'all'].map(t => (
+              <button
+                key={t}
+                onClick={() => setRevenueTimePeriod(t)}
+                className={`px-4 py-1.5 text-sm font-medium rounded-md capitalize transition-colors ${revenueTimePeriod === t
+                    ? 'bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+                    : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300'
+                  }`}
+              >
+                {t}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-6">
+          <StatCard
+            icon={TrendingUp}
+            label="New Product Revenue"
+            value={revenueLoading ? "..." : `₹${revenueStats.newProductRevenue}`}
+            color="bg-indigo-500"
+          />
+          <StatCard
+            icon={TrendingUp}
+            label="Second Hand Revenue"
+            value={revenueLoading ? "..." : `🪙 ${revenueStats.secondHandRevenue}`}
+            color="bg-teal-500"
+          />
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-8">
@@ -108,13 +164,13 @@ const AdminDashboardPage = () => {
                       <td className="py-3 px-4">
                         <div className="flex items-center gap-3">
                           <img
-                            src={s.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent((s.firstname||'') + ' ' + (s.lastname||''))}&background=random`}
+                            src={s.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent((s.firstname || '') + ' ' + (s.lastname || ''))}&background=random`}
                             alt={s.firstname}
                             className="h-10 w-10 rounded-full object-cover ring-2 ring-white dark:ring-gray-900 shadow-sm"
                           />
                           <div>
                             <div className="font-medium text-gray-900 dark:text-white">{s.firstname} {s.lastname}</div>
-                            <div className="text-xs text-gray-500">ID: {(s._id||'').slice(-6)}</div>
+                            <div className="text-xs text-gray-500">ID: {(s._id || '').slice(-6)}</div>
                           </div>
                         </div>
                       </td>
