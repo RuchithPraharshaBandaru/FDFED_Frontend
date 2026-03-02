@@ -3,7 +3,7 @@ import Button from '../ui/Button';
 import Badge from '../ui/Badge';
 import { useNavigate, Link } from 'react-router-dom';
 import { getIndustryCheckout, postIndustryCheckout } from '../../services/api';
-import { CheckCircle, Package, Mail, MapPin, Loader } from 'lucide-react';
+import { CheckCircle, Package, Mail, MapPin, Loader, CreditCard } from 'lucide-react';
 
 const IndustryCheckoutPage = () => {
     const [data, setData] = useState(null);
@@ -12,7 +12,7 @@ const IndustryCheckoutPage = () => {
     const [error, setError] = useState(null);
     const [success, setSuccess] = useState(false);
     const navigate = useNavigate();
-
+    
     useEffect(() => {
         let mounted = true;
         const load = async () => {
@@ -29,15 +29,19 @@ const IndustryCheckoutPage = () => {
         };
         load();
         return () => { mounted = false };
-    }, []);
+    }, [navigate]);
 
     const handleCheckout = async () => {
         setProcessing(true);
         setError(null);
         try {
+            // Mimic the User payment flow directly
             const res = await postIndustryCheckout();
+            
+            // Assuming successful completion
             setSuccess(true);
             setTimeout(() => navigate('/industry/dashboard'), 2000);
+            
         } catch (err) {
             setError(err.message || 'Checkout failed');
             setProcessing(false);
@@ -143,6 +147,28 @@ const IndustryCheckoutPage = () => {
                                             <p className="font-bold text-lg">₹{(item.amount || 0).toLocaleString()}</p>
                                         </div>
                                     ))}
+                                </div>
+                            </div>
+
+                            {/* Payment Method */}
+                            <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700">
+                                <h2 className="text-xl font-semibold mb-4 flex items-center dark:text-white">
+                                    <CreditCard className="mr-2 text-blue-500" /> Payment Method
+                                </h2>
+                                <div className="space-y-3">
+                                    <label className="flex items-center p-4 border rounded-lg cursor-pointer transition-all border-blue-500 bg-blue-50 dark:bg-blue-900/20 ring-1 ring-blue-500">
+                                        <input 
+                                            type="radio" 
+                                            name="payment" 
+                                            value="stripe" 
+                                            checked={true} 
+                                            readOnly
+                                            className="text-blue-600 focus:ring-blue-500"
+                                        />
+                                        <span className="ml-3 font-medium dark:text-gray-200">
+                                            Card (Stripe)
+                                        </span>
+                                    </label>
                                 </div>
                             </div>
                         </div>

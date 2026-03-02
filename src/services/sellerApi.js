@@ -1,6 +1,7 @@
 // src/services/sellerApi.js
 
-const API_BASE_URL = 'http://localhost:8000/api/v1/seller';
+// const API_BASE_URL = 'http://localhost:8000/api/v1/seller';
+const API_BASE_URL = import.meta.env.VITE_SELLER_URL;
 
 // Helper function to handle API responses
 const handleApiResponse = async (response) => {

@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 // --- INTERNAL API SERVICES (For Preview Stability) ---
-const INDUSTRY_BASE = 'http://localhost:8000/api/v1/industry';
+const INDUSTRY_BASE = import.meta.env.VITE_INDUSTRY_BASE;
 
 const fetchIndustryHome = async () => {
     try {
