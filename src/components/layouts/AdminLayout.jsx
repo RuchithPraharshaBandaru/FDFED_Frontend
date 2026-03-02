@@ -2,9 +2,9 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { toggleTheme, selectTheme } from '../../store/slices/themeSlice';
-import { adminLogout } from '../../store/slices/adminAuthSlice';
+import { adminLogout, selectAdminRole } from '../../store/slices/adminAuthSlice';
 import { Link, NavLink, Outlet } from 'react-router-dom';
-import { ClipboardList, Home, NotebookPen, Package, ShieldCheck, ShoppingCart, Store, Users, Sun, Moon, Building2, BarChart3, Trophy } from 'lucide-react';
+import { ClipboardList, Home, NotebookPen, Package, ShieldCheck, ShoppingCart, Store, Users, Sun, Moon, Building2, BarChart3, Trophy, UserCog } from 'lucide-react';
 
 const NavItem = ({ to, icon: Icon, label }) => (
   <NavLink
@@ -20,6 +20,7 @@ const AdminLayout = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const mode = useSelector(selectTheme);
+  const role = useSelector(selectAdminRole);
 
   const handleToggle = () => {
     dispatch(toggleTheme());
@@ -34,7 +35,7 @@ const AdminLayout = () => {
     <div className="min-h-screen grid grid-cols-12 bg-background text-foreground">
       <aside className="col-span-12 md:col-span-3 lg:col-span-2 border-r p-4 space-y-4">
         <div className="flex items-center justify-between">
-          <Link to="/admin/dashboard" className="text-2xl font-bold text-primary">Admin</Link>
+          <Link to="/admin/dashboard" className="text-2xl font-bold text-primary">{role === 'manager' ? 'Manager' : 'Admin'}</Link>
           <button
             onClick={handleLogout}
             className="px-3 py-1.5 rounded-lg text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors"
@@ -52,25 +53,30 @@ const AdminLayout = () => {
         </button>
         <nav className="space-y-1">
           <NavItem to="/admin/dashboard" icon={Home} label="Dashboard" />
-          <NavItem to="/admin/product-analytics" icon={BarChart3} label="Product Analytics" />
-          <NavItem to="/admin/user-analytics" icon={Users} label="User Analytics" />
-          <NavItem to="/admin/performance-rankings" icon={Trophy} label="Rankings" />
-          <NavItem to="/admin/blogs" icon={NotebookPen} label="Blogs" />
+          {role !== 'manager' && <NavItem to="/admin/product-analytics" icon={BarChart3} label="Product Analytics" />}
+          {role !== 'manager' && <NavItem to="/admin/user-analytics" icon={Users} label="User Analytics" />}
+          {role !== 'manager' && <NavItem to="/admin/performance-rankings" icon={Trophy} label="Rankings" />}
+          {role !== 'manager' && <NavItem to="/admin/blogs" icon={NotebookPen} label="Blogs" />}
+          {role !== 'manager' && <NavItem to="/admin/managers" icon={UserCog} label="Managers" />}
           <NavItem to="/admin/customers" icon={Users} label="Customers" />
           <NavItem to="/admin/products" icon={Package} label="Products" />
           <NavItem to="/admin/sellers" icon={Store} label="Sellers" />
           <NavItem to="/admin/vendors" icon={ShieldCheck} label="Vendors" />
-          <NavItem to="/admin/industries" icon={Building2} label="Industries" />
+          {role !== 'manager' && <NavItem to="/admin/industries" icon={Building2} label="Industries" />}
           <NavItem to="/admin/orders" icon={ShoppingCart} label="Orders" />
           <NavItem to="/admin/sell-products" icon={ClipboardList} label="Second-hand" />
-          <div className="pt-4 pb-2">
-            <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-              Rider Management
-            </h3>
-          </div>
-          <NavItem to="/admin/riders" icon={Users} label="Riders" />
-          <NavItem to="/admin/dispatch" icon={Package} label="Dispatch" />
-          <NavItem to="/admin/payouts" icon={Store} label="Payouts" />
+          {role !== 'manager' && (
+            <>
+              <div className="pt-4 pb-2">
+                <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                  Rider Management
+                </h3>
+              </div>
+              <NavItem to="/admin/riders" icon={Users} label="Riders" />
+              <NavItem to="/admin/dispatch" icon={Package} label="Dispatch" />
+              <NavItem to="/admin/payouts" icon={Store} label="Payouts" />
+            </>
+          )}
         </nav>
       </aside>
       <main className="col-span-12 md:col-span-9 lg:col-span-10 p-6">
