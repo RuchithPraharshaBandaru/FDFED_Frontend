@@ -1,6 +1,7 @@
 // src/services/api.js
 
-const API_BASE_URL = 'http://localhost:8000/api/v1/user';
+// const API_BASE_URL = 'http://localhost:8000/api/v1/user';
+const API_BASE_URL = import.meta.env.VITE_USER_URL;
 
 // --- AUTH FUNCTIONS ---
 
@@ -107,8 +108,10 @@ export const fetchProducts = async () => {
     return data;
 };
 
+const product_base=import.meta.env.VITE_PRODUCT_URL;
+
 export const fetchProductById = async (productId) => {
-    const response = await fetch(`http://localhost:8000/api/v1/product/details/${productId}`, {
+    const response = await fetch(`${product_base}/details/${productId}`, {
         credentials: 'include'
     });
     if (!response.ok) {
@@ -485,7 +488,8 @@ export const fetchBlogs = async () => {
 
 // --- INDUSTRY FUNCTIONS ---
 
-const INDUSTRY_API_URL = 'http://localhost:8000/api/v1/industry';
+// const INDUSTRY_API_URL = 'http://localhost:8000/api/v1/industry';
+const INDUSTRY_API_URL = import.meta.env.VITE_INDUSTRY_BASE;
 
 export const industryLogin = async (credentials) => {
     const response = await fetch(`${INDUSTRY_API_URL}/login`, {
@@ -654,5 +658,15 @@ export const postIndustryCheckout = async () => {
         credentials: 'include',
     });
     if (!response.ok) throw new Error('Checkout failed');
+    return response.json();
+};
+
+export const postIndustryStripeSession = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/create-checkout-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to create Stripe session');
     return response.json();
 };

@@ -57,8 +57,31 @@ const IndustryDashboardPage = () => {
 
     const orders = data?.orders || [];
     const totalAmount = data?.totalAmount || 0;
+    const analytics = data?.analytics || null;
     const totalOrders = orders.length;
-    const totalItems = orders.reduce((sum, order) => sum + (order.quantity || 0), 0);
+    const totalItems = analytics?.totalItems || orders.reduce((sum, order) => sum + (order.quantity || 0), 0);
+
+    // Helpers to get sorted analytics arrays
+    const sortedFabrics = analytics?.fabricDistribution 
+        ? Object.entries(analytics.fabricDistribution).sort((a, b) => b[1] - a[1]) 
+        : [];
+    const sortedSizes = analytics?.sizeDistribution 
+        ? Object.entries(analytics.sizeDistribution).sort((a, b) => b[1] - a[1]) 
+        : [];
+    const sortedMonths = analytics?.monthlySpend 
+        ? Object.entries(analytics.monthlySpend).sort((a, b) => a[0].localeCompare(b[0])) 
+        : [];
+    
+    // Advanced Analytics
+    const sortedCombinations = analytics?.topCombinations
+        ? Object.entries(analytics.topCombinations).sort((a,b) => b[1] - a[1]).slice(0, 5) // Top 5
+        : [];
+    
+    const sortedDurations = analytics?.usageDurationDistribution
+        ? Object.entries(analytics.usageDurationDistribution).sort((a,b) => parseInt(a[0]) - parseInt(b[0]))
+        : [];
+
+    const averageDays = analytics?.averageDaysBetweenOrders || 0;
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/10 to-cyan-50/10 dark:from-gray-950 dark:via-blue-950/10 dark:to-cyan-950/10 py-12">
@@ -107,15 +130,133 @@ const IndustryDashboardPage = () => {
 
                     <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-border shadow-sm">
                         <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-medium text-muted-foreground">Avg Order</h3>
-                            <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center">
-                                <TrendingUp className="h-5 w-5 text-purple-600 dark:text-purple-400" />
+                            <h3 className="text-sm font-medium text-muted-foreground">Order Frequency</h3>
+                            <div className="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/50 flex items-center justify-center">
+                                <TrendingUp className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                             </div>
                         </div>
-                        <p className="text-3xl font-bold">₹{(totalAmount / Math.max(totalOrders, 1)).toLocaleString()}</p>
-                        <p className="text-xs text-muted-foreground mt-2">Per order average</p>
+                        <p className="text-3xl font-bold">{averageDays > 0 ? `${averageDays} days` : 'N/A'}</p>
+                        <p className="text-xs text-muted-foreground mt-2">Average days between orders</p>
                     </div>
                 </div>
+
+                {/* Advanced Analytics Charts Section */}
+                {analytics && (
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                        {/* Top 5 Combinations */}
+                        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-border shadow-sm">
+                            <h3 className="text-lg font-bold mb-4">Top Fabric & Size Combinations</h3>
+                            <div className="space-y-4">
+                                {sortedCombinations.length > 0 ? sortedCombinations.map(([combo, count], idx) => (
+                                    <div key={combo} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg border border-border/50">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 font-bold text-sm">
+                                                #{idx + 1}
+                                            </div>
+                                            <span className="font-medium">{combo}</span>
+                                        </div>
+                                        <Badge variant="secondary">{count} items</Badge>
+                                    </div>
+                                )) : <p className="text-sm text-muted-foreground">No data available</p>}
+                            </div>
+                        </div>
+
+                        {/* Usage Duration Distribution */}
+                        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-border shadow-sm">
+                            <h3 className="text-lg font-bold mb-4">Expected Usage Duration</h3>
+                            <div className="space-y-4">
+                                {sortedDurations.length > 0 ? sortedDurations.map(([duration, count]) => (
+                                    <div key={duration}>
+                                        <div className="flex justify-between text-sm mb-1">
+                                            <span className="font-medium text-muted-foreground">{duration} Months</span>
+                                            <span className="font-bold">{count} items</span>
+                                        </div>
+                                        <div className="w-full bg-muted rounded-full h-2">
+                                            <div 
+                                                className="bg-purple-500 h-2 rounded-full" 
+                                                style={{ width: `${Math.min((count / Math.max(totalItems, 1)) * 100, 100)}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                )) : <p className="text-sm text-muted-foreground">No data available</p>}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Basic Analytics Charts Section */}
+                {analytics && (
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                        {/* Fabric Distribution */}
+                        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-border shadow-sm">
+                            <h3 className="text-lg font-bold mb-4">Fabric Distribution</h3>
+                            <div className="space-y-4">
+                                {sortedFabrics.length > 0 ? sortedFabrics.map(([fabric, count]) => (
+                                    <div key={fabric}>
+                                        <div className="flex justify-between text-sm mb-1">
+                                            <span className="font-medium text-muted-foreground">{fabric}</span>
+                                            <span className="font-bold">{count}</span>
+                                        </div>
+                                        <div className="w-full bg-muted rounded-full h-2">
+                                            <div 
+                                                className="bg-blue-500 h-2 rounded-full" 
+                                                style={{ width: `${Math.min((count / Math.max(totalItems, 1)) * 100, 100)}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                )) : <p className="text-sm text-muted-foreground">No data available</p>}
+                            </div>
+                        </div>
+
+                        {/* Size Distribution */}
+                        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-border shadow-sm">
+                            <h3 className="text-lg font-bold mb-4">Size Distribution</h3>
+                            <div className="space-y-4">
+                                {sortedSizes.length > 0 ? sortedSizes.map(([size, count]) => (
+                                    <div key={size}>
+                                        <div className="flex justify-between text-sm mb-1">
+                                            <span className="font-medium text-muted-foreground">{size}</span>
+                                            <span className="font-bold">{count}</span>
+                                        </div>
+                                        <div className="w-full bg-muted rounded-full h-2">
+                                            <div 
+                                                className="bg-cyan-500 h-2 rounded-full" 
+                                                style={{ width: `${Math.min((count / Math.max(totalItems, 1)) * 100, 100)}%` }}
+                                            />
+                                        </div>
+                                    </div>
+                                )) : <p className="text-sm text-muted-foreground">No data available</p>}
+                            </div>
+                        </div>
+
+                        {/* Monthly Spend */}
+                        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-border shadow-sm">
+                            <h3 className="text-lg font-bold mb-4">Monthly Spend Trend</h3>
+                            <div className="space-y-4">
+                                {sortedMonths.length > 0 ? sortedMonths.map(([month, amount]) => {
+                                    // Calculate percentage relative to max month for bar width
+                                    const maxAmount = Math.max(...sortedMonths.map(m => m[1]));
+                                    return (
+                                        <div key={month}>
+                                            <div className="flex justify-between text-sm mb-1">
+                                                <span className="font-medium text-muted-foreground">
+                                                    {new Date(month + '-01').toLocaleDateString('default', { month: 'short', year: 'numeric' })}
+                                                </span>
+                                                <span className="font-bold text-green-600 dark:text-green-500">₹{amount.toLocaleString()}</span>
+                                            </div>
+                                            <div className="w-full bg-muted rounded-full h-2">
+                                                <div 
+                                                    className="bg-green-500 h-2 rounded-full" 
+                                                    style={{ width: `${Math.min((amount / Math.max(maxAmount, 1)) * 100, 100)}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    )
+                                }) : <p className="text-sm text-muted-foreground">No data available</p>}
+                            </div>
+                        </div>
+                    </div>
+                )}
 
                 {/* Orders List */}
                 <div className="bg-white dark:bg-gray-800 rounded-xl border border-border shadow-sm">
