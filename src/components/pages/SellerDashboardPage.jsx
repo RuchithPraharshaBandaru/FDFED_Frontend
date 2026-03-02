@@ -6,6 +6,7 @@ import { fetchSellerProfile, fetchSellerProducts, fetchSellerOrders } from '../.
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
+import { DashboardShimmer, DashboardStatShimmer, RecentItemShimmer } from '../ui/Shimmer';
 
 export const SellerDashboardPage = () => {
     const dispatch = useDispatch();
@@ -14,7 +15,8 @@ export const SellerDashboardPage = () => {
         products, 
         orders, 
         productsLoading, 
-        ordersLoading 
+        ordersLoading,
+        loading 
     } = useSelector((state) => state.seller);
 
     useEffect(() => {
@@ -22,6 +24,13 @@ export const SellerDashboardPage = () => {
         dispatch(fetchSellerProducts());
         dispatch(fetchSellerOrders());
     }, [dispatch]);
+
+    // Show full page shimmer on initial load
+    const isInitialLoading = loading && !seller;
+    
+    if (isInitialLoading) {
+        return <DashboardShimmer />;
+    }
 
     // Calculate statistics
     const safeOrders = Array.isArray(orders) ? orders : [];
@@ -144,7 +153,11 @@ export const SellerDashboardPage = () => {
                             </Link>
                         </div>
                         {productsLoading ? (
-                            <p className="text-muted-foreground">Loading products...</p>
+                            <div className="space-y-3">
+                                {[...Array(5)].map((_, i) => (
+                                    <RecentItemShimmer key={i} />
+                                ))}
+                            </div>
                         ) : recentProducts.length === 0 ? (
                             <p className="text-muted-foreground">No products yet. Create your first product!</p>
                         ) : (
@@ -180,7 +193,11 @@ export const SellerDashboardPage = () => {
                             </Link>
                         </div>
                         {ordersLoading ? (
-                            <p className="text-muted-foreground">Loading orders...</p>
+                            <div className="space-y-3">
+                                {[...Array(5)].map((_, i) => (
+                                    <RecentItemShimmer key={i} />
+                                ))}
+                            </div>
                         ) : recentOrders.length === 0 ? (
                             <p className="text-muted-foreground">No orders yet.</p>
                         ) : (

@@ -117,6 +117,13 @@ const sellerSlice = createSlice({
         addProduct: (state, action) => {
             state.products.push(action.payload);
         },
+        updateOrderStatus: (state, action) => {
+            const { orderId, status } = action.payload;
+            const order = state.orders.find(o => o.orderId === orderId);
+            if (order) {
+                order.status = status;
+            }
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -196,5 +203,5 @@ const sellerSlice = createSlice({
     },
 });
 
-export const { clearError, clearSeller, updateProduct, removeProduct, addProduct } = sellerSlice.actions;
+export const { clearError, clearSeller, updateProduct, removeProduct, addProduct, updateOrderStatus } = sellerSlice.actions;
 export default sellerSlice.reducer;

@@ -1,13 +1,14 @@
 // src/components/pages/SellerOrdersPage.jsx
 import { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchSellerOrders } from '../../store/slices/sellerSlice';
+import { fetchSellerOrders, updateOrderStatus } from '../../store/slices/sellerSlice';
 import { apiUpdateOrderStatus } from '../../services/sellerApi';
 import { useToast } from '../../context/ToastContext';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { Input } from '../ui/Input';
 import { Search, SlidersHorizontal, X } from 'lucide-react';
+import { OrdersPageShimmer } from '../ui/Shimmer';
 
 export const SellerOrdersPage = () => {
     const dispatch = useDispatch();
@@ -46,8 +47,10 @@ export const SellerOrdersPage = () => {
         try {
             setUpdatingOrder(orderId);
             await apiUpdateOrderStatus(orderId, newStatus);
+            // Optimistically update local state so the order stays visible
+            dispatch(updateOrderStatus({ orderId, status: newStatus }));
             showSuccess(`Order status updated to ${newStatus}`);
-            // Refresh orders to get updated data
+            // Also refresh from server for consistency
             dispatch(fetchSellerOrders());
         } catch (error) {
             console.error('Failed to update order status:', error);
@@ -158,15 +161,7 @@ export const SellerOrdersPage = () => {
     );
 
     if (ordersLoading) {
-        return (
-            <div className="min-h-screen bg-background py-8">
-                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-center items-center h-64">
-                        <p className="text-muted-foreground">Loading orders...</p>
-                    </div>
-                </div>
-            </div>
-        );
+        return <OrdersPageShimmer />;
     }
 
     return (

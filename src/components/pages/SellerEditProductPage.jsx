@@ -11,6 +11,7 @@ import { Select } from '../ui/Select';
 import { Button } from '../ui/Button';
 import { Alert } from '../ui/Alert';
 import { Card } from '../ui/Card';
+import { EditProductPageShimmer } from '../ui/Shimmer';
 
 const categories = [
     'Cotton',
@@ -151,15 +152,7 @@ export const SellerEditProductPage = () => {
     };
 
     if (fetchLoading) {
-        return (
-            <div className="min-h-screen bg-background py-8">
-                <div className="container max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-center items-center h-64">
-                        <p className="text-muted-foreground">Loading product...</p>
-                    </div>
-                </div>
-            </div>
-        );
+        return <EditProductPageShimmer />;
     }
 
     return (

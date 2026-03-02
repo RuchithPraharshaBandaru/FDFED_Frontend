@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Card from '../ui/Card';
 import Button from '../ui/Button';
-import { ShieldCheck, User as UserIcon, Store, Factory } from 'lucide-react';
+import { ShieldCheck, User as UserIcon, Store, Factory, Bike } from 'lucide-react';
 
 const ChoiceCard = ({ icon: Icon, title, description, actions }) => (
   <Card className="flex flex-col gap-4">
@@ -71,6 +71,17 @@ const AuthChoicePage = () => {
             <>
               <Button variant="secondary" onClick={() => navigate('/industry/login')}>Login</Button>
               <Button onClick={() => navigate('/industry/signup')}>Sign Up</Button>
+            </>
+          }
+        />
+        <ChoiceCard
+          icon={Bike}
+          title="Rider"
+          description="Deliver orders and earn money"
+          actions={
+            <>
+              <Button variant="secondary" onClick={() => navigate('/rider/login')}>Login</Button>
+              <Button onClick={() => navigate('/rider/signup')}>Sign Up</Button>
             </>
           }
         />

@@ -1,16 +1,18 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { fetchCustomers, removeCustomer, selectAdminCustomers } from '../../../store/slices/adminSlice';
 import Button from '../../ui/Button';
 import Input from '../../ui/Input';
 import Select from '../../ui/Select';
 import Card from '../../ui/Card';
 import Modal from '../../ui/Modal';
-import { Trash2, Eye, User as UserIcon, ArrowUp, ArrowDown, ArrowUpDown, Search, MapPin, Mail, Calendar, Package, ShoppingBag, Star } from 'lucide-react';
+import { Trash2, Eye, User as UserIcon, ArrowUp, ArrowDown, ArrowUpDown, Search, MapPin, Mail, Calendar, Package, ShoppingBag, Star, BarChart3 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const CustomersPage = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { items, loading } = useSelector(selectAdminCustomers);
   const [viewUser, setViewUser] = useState(null);
   const [confirmUser, setConfirmUser] = useState(null);
@@ -116,9 +118,9 @@ const CustomersPage = () => {
           <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-              <input 
-                type="text" 
-                placeholder="Search name or email..." 
+              <input
+                type="text"
+                placeholder="Search name or email..."
                 className="pl-10 pr-4 py-2 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 outline-none transition-all w-full sm:w-64"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
@@ -171,7 +173,7 @@ const CustomersPage = () => {
                     <td className="py-3 px-4">
                       <div className="flex items-center gap-3">
                         <img
-                          src={u.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent((u.firstname||'') + ' ' + (u.lastname||''))}&background=random`}
+                          src={u.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent((u.firstname || '') + ' ' + (u.lastname || ''))}&background=random`}
                           alt={u.firstname}
                           className="h-10 w-10 rounded-full object-cover ring-2 ring-white dark:ring-gray-900 shadow-sm"
                         />
@@ -193,6 +195,9 @@ const CustomersPage = () => {
                     </td>
                     <td className="py-3 px-4 text-right">
                       <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button variant="ghost" size="sm" onClick={() => navigate(`/admin/user-analytics/${u._id}`)} title="View Purchase Analytics">
+                          <BarChart3 size={16} className="text-emerald-600" />
+                        </Button>
                         <Button variant="ghost" size="sm" onClick={() => setViewUser(u)} title="View Details">
                           <Eye size={16} className="text-blue-600" />
                         </Button>
@@ -224,20 +229,20 @@ const CustomersPage = () => {
               Showing <span className="font-medium">{start + 1}</span> to <span className="font-medium">{Math.min(end, total)}</span> of <span className="font-medium">{total}</span> results
             </div>
             <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setPage(p => Math.max(1, p - 1))} 
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={currentPage === 1}
                 className="disabled:opacity-50"
               >
                 Previous
               </Button>
               <div className="text-sm font-medium px-2">Page {currentPage} of {totalPages}</div>
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={() => setPage(p => Math.min(totalPages, p + 1))} 
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                 disabled={currentPage === totalPages}
                 className="disabled:opacity-50"
               >
@@ -258,7 +263,7 @@ const CustomersPage = () => {
           <div className="space-y-6">
             <div className="flex items-center gap-4 p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl">
               <img
-                src={viewUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent((viewUser.firstname||'') + ' ' + (viewUser.lastname||''))}&background=random`}
+                src={viewUser.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent((viewUser.firstname || '') + ' ' + (viewUser.lastname || ''))}&background=random`}
                 alt={viewUser.firstname}
                 className="h-16 w-16 rounded-full object-cover ring-4 ring-white dark:ring-gray-900"
               />
