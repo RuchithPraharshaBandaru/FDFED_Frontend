@@ -3,10 +3,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { fetchManagersThunk, createManagerThunk, deleteManagerThunk, selectAdminManagers } from '../../../store/slices/adminSlice';
+import { fetchManagersThunk, createManagerThunk, deleteManagerThunk, updateManagerPasswordThunk, selectAdminManagers } from '../../../store/slices/adminSlice';
 import Input from '../../ui/Input';
 import Button from '../../ui/Button';
-import { Trash2 } from 'lucide-react';
+import { KeyRound, Trash2 } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 
 const schema = z.object({
@@ -36,6 +36,18 @@ const ManagersPage = () => {
     else toast.error(res.payload || 'Failed to delete');
   };
 
+  const onChangePassword = async (id) => {
+    const password = window.prompt('Enter a new password (min 6 characters)');
+    if (!password) return;
+    if (String(password).length < 6) {
+      toast.error('Password must be at least 6 characters');
+      return;
+    }
+    const res = await dispatch(updateManagerPasswordThunk({ id, password }));
+    if (res.meta.requestStatus === 'fulfilled') toast.success('Password updated');
+    else toast.error(res.payload || 'Failed to update password');
+  };
+
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-bold">Managers</h1>
@@ -59,16 +71,27 @@ const ManagersPage = () => {
             <thead>
               <tr className="text-left text-muted-foreground">
                 <th className="py-2 px-3">Email</th>
+                <th>Assigned Users</th>
+                <th>Assigned Sellers</th>
+                <th>Pending Users</th>
+                <th>Pending Sellers</th>
                 <th>Created</th>
-                <th></th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
               {(items || []).map(m => (
                 <tr key={m._id} className="border-t">
                   <td className="py-2 px-3">{m.email}</td>
+                  <td>{m.assignedUserCount ?? 0}</td>
+                  <td>{m.assignedSellerCount ?? 0}</td>
+                  <td>{m.pendingUserQuota ?? 0}</td>
+                  <td>{m.pendingSellerQuota ?? 0}</td>
                   <td>{new Date(m.createdAt).toLocaleDateString()}</td>
                   <td className="text-right pr-3">
+                    <Button variant="outline" size="sm" onClick={() => onChangePassword(m._id)}>
+                      <KeyRound size={16} />
+                    </Button>
                     <Button variant="destructive" size="sm" onClick={() => onDelete(m._id)}><Trash2 size={16} /></Button>
                   </td>
                 </tr>
