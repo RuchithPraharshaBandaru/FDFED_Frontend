@@ -19,52 +19,59 @@ const AccountLayout = () => {
             <div className="relative container mx-auto px-6 py-8">
                 <h1 className="text-3xl font-bold mb-2 bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-100 dark:to-white bg-clip-text text-transparent">My Account</h1>
                 <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">Welcome, {user?.firstname}!</p>
-            
+
                 <div className="flex flex-col md:flex-row gap-8">
                     {/* --- Sidebar Navigation --- */}
                     <aside className="w-full md:w-1/4">
                         <nav className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl p-4 rounded-2xl shadow-xl border-2 border-gray-200/50 dark:border-gray-700/50 hover:border-green-500/30 transition-all flex flex-col space-y-2">
-                        
-                        {/* --- NEW LINKS ADDED HERE --- */}
-                        <NavLink
-                            to="/account/orders"
-                            style={({ isActive }) => isActive ? activeStyle : undefined}
-                            className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                        >
-                            Order History
-                        </NavLink>
-                        <NavLink
-                            to="/account/donations"
-                            style={({ isActive }) => isActive ? activeStyle : undefined}
-                            className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                        >
-                            Sold Products
-                        </NavLink>
-                        {/* --- END OF NEW LINKS --- */}
 
-                        <NavLink
-                            to="/account"
-                            end 
-                            style={({ isActive }) => isActive ? activeStyle : undefined}
-                            className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                        >
-                            Profile Details
-                        </NavLink>
-                        <NavLink
-                            to="/account/address"
-                            style={({ isActive }) => isActive ? activeStyle : undefined}
-                            className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                        >
-                            Address
-                        </NavLink>
+                            {/* --- NEW LINKS ADDED HERE --- */}
+                            <NavLink
+                                to="/account/dashboard"
+                                style={({ isActive }) => isActive ? activeStyle : undefined}
+                                className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            >
+                                Dashboard
+                            </NavLink>
+                            <NavLink
+                                to="/account/orders"
+                                style={({ isActive }) => isActive ? activeStyle : undefined}
+                                className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            >
+                                Order History
+                            </NavLink>
+                            <NavLink
+                                to="/account/donations"
+                                style={({ isActive }) => isActive ? activeStyle : undefined}
+                                className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            >
+                                Sold Products
+                            </NavLink>
+                            {/* --- END OF NEW LINKS --- */}
+
+                            <NavLink
+                                to="/account"
+                                end
+                                style={({ isActive }) => isActive ? activeStyle : undefined}
+                                className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            >
+                                Profile Details
+                            </NavLink>
+                            <NavLink
+                                to="/account/address"
+                                style={({ isActive }) => isActive ? activeStyle : undefined}
+                                className="px-4 py-3 rounded-md text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            >
+                                Address
+                            </NavLink>
                         </nav>
                     </aside>
 
                     {/* --- Page Content (Profile, Address, Orders, etc.) --- */}
                     <main className="w-full md:w-3/4">
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
-                        <Outlet /> 
-                    </div>
+                        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+                            <Outlet />
+                        </div>
                     </main>
                 </div>
             </div>

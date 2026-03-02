@@ -29,8 +29,26 @@ export const adminLogin = async ({ email, password }) => {
   return handleJson(res);
 };
 
+export const managerLogin = async ({ email, password }) => {
+  const res = await fetch('http://localhost:8000/api/v1/manager/login', {
+    method: 'POST',
+    headers: jsonHeaders,
+    body: JSON.stringify({ email, password }),
+    credentials: 'include',
+  });
+  return handleJson(res);
+};
+
 export const adminLogout = async () => {
   const res = await fetch(`${ADMIN_BASE}/logout`, {
+    method: 'POST',
+    credentials: 'include',
+  });
+  return handleJson(res);
+};
+
+export const managerLogout = async () => {
+  const res = await fetch('http://localhost:8000/api/v1/manager/logout', {
     method: 'POST',
     credentials: 'include',
   });
@@ -214,6 +232,16 @@ export const createManager = async ({ email, password }) => {
 
 export const deleteManager = async (id) => {
   const res = await fetch(`${ADMIN_BASE}/managers/${id}`, { method: 'DELETE', credentials: 'include' });
+  return handleJson(res);
+};
+
+export const updateManagerPassword = async ({ id, password }) => {
+  const res = await fetch(`${ADMIN_BASE}/managers/${id}/password`, {
+    method: 'PUT',
+    headers: jsonHeaders,
+    body: JSON.stringify({ password }),
+    credentials: 'include',
+  });
   return handleJson(res);
 };
 

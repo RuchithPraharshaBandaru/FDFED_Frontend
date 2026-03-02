@@ -23,6 +23,7 @@ import AccountPage from './components/pages/AccountPage';
 import AccountAddressPage from './components/pages/AccountAddressPage';
 import OrderHistoryPage from './components/pages/OrderHistoryPage';
 import MyDonationsPage from './components/pages/MyDonationsPage';
+import UserDashboardStats from './components/pages/UserDashboardStats';
 import CheckoutPage from './components/pages/CheckoutPage';
 import CheckoutSuccess from './components/pages/CheckoutSuccess';
 import CheckoutCancel from './components/pages/CheckoutCancel';
@@ -213,10 +214,11 @@ function App() {
 
                         <Route path="/checkout/success" element={<CheckoutSuccess />} />
                         <Route path="/checkout/cancel" element={<CheckoutCancel />} />
-                        
+
                         {/* --- Account & Dashboard Routes --- */}
                         <Route path="/account" element={<AccountLayout />}>
                             <Route index element={<AccountPage />} />
+                            <Route path="dashboard" element={<UserDashboardStats />} />
                             <Route path="address" element={<AccountAddressPage />} />
                             <Route path="orders" element={<OrderHistoryPage />} />
                             <Route path="donations" element={<MyDonationsPage />} />

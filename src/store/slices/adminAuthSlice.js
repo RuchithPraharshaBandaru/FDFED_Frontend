@@ -1,18 +1,25 @@
 // src/store/slices/adminAuthSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { adminLogin as apiAdminLogin, adminLogout as apiAdminLogout, checkAuth } from '../../services/adminApi';
+import {
+  adminLogin as apiAdminLogin,
+  adminLogout as apiAdminLogout,
+  managerLogin as apiManagerLogin,
+  managerLogout as apiManagerLogout,
+  checkAuth
+} from '../../services/adminApi';
 
 const initialState = {
   isAuthenticated: false,
   isLoading: false,
   error: null,
   initialized: false,
+  role: null,
 };
 
 export const checkAdminAuth = createAsyncThunk('adminAuth/check', async (_, { rejectWithValue }) => {
   try {
     const res = await checkAuth();
-    if (res) return true;
+    if (res) return { role: 'admin' };
     return rejectWithValue('Not authenticated');
   } catch (e) {
     return rejectWithValue(e.message || 'Not authenticated');
@@ -22,16 +29,27 @@ export const checkAdminAuth = createAsyncThunk('adminAuth/check', async (_, { re
 export const adminLogin = createAsyncThunk('adminAuth/login', async ({ email, password }, { rejectWithValue }) => {
   try {
     const res = await apiAdminLogin({ email, password });
-    if (res?.success) return true;
+    if (res?.success) return { role: 'admin' };
     return rejectWithValue(res?.message || 'Login failed');
   } catch (e) {
     return rejectWithValue(e?.data?.message || e.message || 'Login failed');
   }
 });
 
-export const adminLogout = createAsyncThunk('adminAuth/logout', async (_, { rejectWithValue }) => {
+export const managerLogin = createAsyncThunk('adminAuth/managerLogin', async ({ email, password }, { rejectWithValue }) => {
   try {
-    const res = await apiAdminLogout();
+    const res = await apiManagerLogin({ email, password });
+    if (res?.success) return { role: 'manager' };
+    return rejectWithValue(res?.message || 'Login failed');
+  } catch (e) {
+    return rejectWithValue(e?.data?.message || e.message || 'Login failed');
+  }
+});
+
+export const adminLogout = createAsyncThunk('adminAuth/logout', async (_, { rejectWithValue, getState }) => {
+  try {
+    const role = getState()?.adminAuth?.role;
+    const res = role === 'manager' ? await apiManagerLogout() : await apiAdminLogout();
     if (!res?.success) {
       // Even if server responds non-success, proceed with local cleanup
       console.warn('Server logout did not return success:', res?.message);
@@ -74,6 +92,7 @@ const adminAuthSlice = createSlice({
         state.isLoading = false;
         state.initialized = true;
         state.isAuthenticated = true;
+        state.role = 'admin';
         state.error = null;
       })
       .addCase(checkAdminAuth.rejected, (state) => {
@@ -88,7 +107,24 @@ const adminAuthSlice = createSlice({
       .addCase(adminLogin.fulfilled, (state) => {
         state.isLoading = false;
         state.isAuthenticated = true;
+        state.role = 'admin';
         state.error = null;
+      })
+      .addCase(managerLogin.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(managerLogin.fulfilled, (state) => {
+        state.isLoading = false;
+        state.isAuthenticated = true;
+        state.role = 'manager';
+        state.error = null;
+      })
+      .addCase(managerLogin.rejected, (state, action) => {
+        state.isLoading = false;
+        state.isAuthenticated = false;
+        state.role = null;
+        state.error = action.payload || 'Login failed';
       })
       .addCase(adminLogin.rejected, (state, action) => {
         state.isLoading = false;
@@ -101,11 +137,13 @@ const adminAuthSlice = createSlice({
       .addCase(adminLogout.fulfilled, (state) => {
         state.isLoading = false;
         state.isAuthenticated = false;
+        state.role = null;
         state.error = null;
       })
       .addCase(adminLogout.rejected, (state) => {
         state.isLoading = false;
         state.isAuthenticated = false;
+        state.role = null;
       });
   },
 });
@@ -118,3 +156,4 @@ export const selectIsAdminAuthenticated = (state) => state.adminAuth.isAuthentic
 export const selectAdminAuthLoading = (state) => state.adminAuth.isLoading;
 export const selectAdminAuthInitialized = (state) => state.adminAuth.initialized;
 export const selectAdminAuthError = (state) => state.adminAuth.error;
+export const selectAdminRole = (state) => state.adminAuth.role;

@@ -24,6 +24,7 @@ import {
   getManagers,
   createManager,
   deleteManager,
+  updateManagerPassword,
   getAnalytics,
 } from '../../services/adminApi';
 
@@ -194,6 +195,10 @@ export const createManagerThunk = createAsyncThunk('admin/managers/create', asyn
 
 export const deleteManagerThunk = createAsyncThunk('admin/managers/delete', async (id, { rejectWithValue }) => {
   try { await deleteManager(id); return id; } catch (e) { return rejectWithValue(e?.data?.message || e.message); }
+});
+
+export const updateManagerPasswordThunk = createAsyncThunk('admin/managers/updatePassword', async ({ id, password }, { rejectWithValue }) => {
+  try { await updateManagerPassword({ id, password }); return { id }; } catch (e) { return rejectWithValue(e?.data?.message || e.message); }
 });
 
 export const fetchAnalyticsThunk = createAsyncThunk('admin/analytics', async (params, { rejectWithValue }) => {

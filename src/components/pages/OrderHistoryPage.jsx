@@ -1,17 +1,18 @@
 // src/components/pages/OrderHistoryPage.jsx
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { apiGetOrderHistory } from '../../services/api';
 import { Link } from 'react-router-dom';
 import { useFetchData } from '../../hooks';
 
 const OrderHistoryPage = () => {
-    const { data, loading, error } = useFetchData(apiGetOrderHistory, []);
+    const [timePeriod, setTimePeriod] = useState('all');
+    const { data, loading, error } = useFetchData(() => apiGetOrderHistory(timePeriod), [timePeriod]);
     const allOrders = data?.orders || [];
-    
+
     // Process orders: Filter valid ones and Sort by date (Latest first)
     const orders = useMemo(() => {
         // 1. Filter out orders where product data might be missing
-        const validOrders = allOrders.filter(order => 
+        const validOrders = allOrders.filter(order =>
             order.products && order.products.some(item => item.productId !== null)
         );
 
@@ -39,8 +40,26 @@ const OrderHistoryPage = () => {
     if (error) return <div className="text-red-600 dark:text-red-400 font-semibold">{error}</div>;
 
     return (
-        <div className="space-y-6">
-            <h2 className="text-3xl font-bold mb-6 bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-100 dark:to-white bg-clip-text text-transparent">Order History</h2>
+        <div className="space-y-6 animate-fade-in">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-800 to-gray-900 dark:from-gray-100 dark:to-white bg-clip-text text-transparent">Order History</h2>
+
+                <div className="flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                    {['week', 'month', 'year', 'all'].map((period) => (
+                        <button
+                            key={period}
+                            onClick={() => setTimePeriod(period)}
+                            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors ${timePeriod === period
+                                    ? 'bg-white dark:bg-gray-700 text-green-600 dark:text-green-400 shadow-sm'
+                                    : 'text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-600'
+                                }`}
+                        >
+                            {period.charAt(0).toUpperCase() + period.slice(1)}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             {orders.length === 0 ? (
                 <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-xl p-8 rounded-2xl shadow-xl border-2 border-gray-200/50 dark:border-gray-700/50 text-center">
                     <p className="dark:text-gray-300 font-medium">You have not placed any orders yet.</p>
@@ -59,17 +78,16 @@ const OrderHistoryPage = () => {
                             </div>
                             <div className="mb-4 flex gap-4 text-sm">
                                 <p className="dark:text-gray-300">
-                                    Status: <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${
-                                        order.status === 'Delivered' ? 'bg-green-100 text-green-800' : 
-                                        order.status === 'Cancelled' ? 'bg-red-100 text-red-800' : 
-                                        'bg-blue-100 text-blue-800'
-                                    }`}>{order.status}</span>
+                                    Status: <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' :
+                                            order.status === 'Cancelled' ? 'bg-red-100 text-red-800' :
+                                                'bg-blue-100 text-blue-800'
+                                        }`}>{order.status}</span>
                                 </p>
                                 <p className="dark:text-gray-300 font-semibold">
                                     Total: <span className="text-green-600 dark:text-green-400">₹{order.totalAmount?.toFixed(2)}</span>
                                 </p>
                             </div>
-                            
+
                             <div className="mt-4 bg-white/30 dark:bg-gray-700/30 backdrop-blur-sm rounded-xl p-4 border border-gray-200/30 dark:border-gray-600/30">
                                 <h4 className="font-bold mb-3 text-gray-700 dark:text-gray-200">Items:</h4>
                                 <ul className="space-y-3">
@@ -77,9 +95,9 @@ const OrderHistoryPage = () => {
                                         <li key={item.productId._id || index} className="flex items-center gap-4 py-3 border-b border-gray-200/30 dark:border-gray-600/30 last:border-0">
                                             {/* Image Handling */}
                                             {(item.productId.image || item.productId.imageSrc) ? (
-                                                <img 
-                                                    src={item.productId.image || item.productId.imageSrc} 
-                                                    alt={item.productId.title} 
+                                                <img
+                                                    src={item.productId.image || item.productId.imageSrc}
+                                                    alt={item.productId.title}
                                                     className="w-16 h-16 object-cover rounded-lg shadow-sm bg-gray-100 dark:bg-gray-800"
                                                 />
                                             ) : (
@@ -87,7 +105,7 @@ const OrderHistoryPage = () => {
                                                     No Img
                                                 </div>
                                             )}
-                                            
+
                                             <div className="flex-1">
                                                 <Link to={`/product/${item.productId._id}`} className="text-green-600 dark:text-green-400 hover:underline font-semibold line-clamp-1">
                                                     {item.productId.title}
