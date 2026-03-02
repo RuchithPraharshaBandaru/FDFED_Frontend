@@ -75,7 +75,7 @@ export const apiSignup = async (userData) => {
         body: JSON.stringify(userData),
         credentials: 'include',
     });
-    
+
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({ message: 'Signup failed' }));
         throw new Error(errorData.message || 'Signup failed');
@@ -94,7 +94,7 @@ export const apiSignup = async (userData) => {
 
 export const fetchProducts = async () => {
     const response = await fetch(`${API_BASE_URL}/products`, {
-        credentials: 'include' 
+        credentials: 'include'
     });
     if (!response.ok) {
         throw new Error('Failed to fetch products');
@@ -123,12 +123,12 @@ export const fetchProductById = async (productId) => {
 
 export const fetchFilteredProducts = async (filters) => {
     const params = new URLSearchParams();
-    
+
     // Handle multiple categories as array
     if (filters.categories && filters.categories.length > 0) {
         filters.categories.forEach(cat => params.append('category', cat));
     }
-    
+
     if (filters.minPrice) params.append('minPrice', filters.minPrice);
     if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
     if (filters.search) params.append('search', filters.search);
@@ -137,7 +137,7 @@ export const fetchFilteredProducts = async (filters) => {
     const response = await fetch(`${API_BASE_URL}/products/filter?${params.toString()}`, {
         credentials: 'include'
     });
-    
+
     if (!response.ok) {
         throw new Error('Failed to fetch filtered products');
     }
@@ -151,7 +151,7 @@ export const fetchFilteredProducts = async (filters) => {
 
 export const searchProducts = async (query) => {
     if (!query || query.trim().length === 0) return [];
-    
+
     const params = new URLSearchParams();
     params.append('search', query.trim());
     params.append('t', new Date().getTime());
@@ -159,7 +159,7 @@ export const searchProducts = async (query) => {
     const response = await fetch(`${API_BASE_URL}/products/filter?${params.toString()}`, {
         credentials: 'include'
     });
-    
+
     if (!response.ok) {
         throw new Error('Failed to search products');
     }
@@ -169,7 +169,7 @@ export const searchProducts = async (query) => {
     }
     const data = await response.json();
     return data.products || [];
-};  
+};
 
 export const submitDonation = async (formData) => {
     const response = await fetch(`${API_BASE_URL}/sell`, {
@@ -241,8 +241,8 @@ export const apiUpdateAccountAddress = async (addressData) => {
 
 // --- DASHBOARD FUNCTIONS ---
 
-export const apiGetOrderHistory = async () => {
-    const response = await fetch(`${API_BASE_URL}/order-history`, {
+export const apiGetOrderHistory = async (timePeriod = 'all') => {
+    const response = await fetch(`${API_BASE_URL}/order-history?timePeriod=${timePeriod}`, {
         credentials: 'include',
     });
     if (!response.ok) {
@@ -252,13 +252,24 @@ export const apiGetOrderHistory = async () => {
     return response.json();
 };
 
-export const apiGetDonatedProducts = async () => {
-    const response = await fetch(`${API_BASE_URL}/donated-products`, {
+export const apiGetDonatedProducts = async (timePeriod = 'all') => {
+    const response = await fetch(`${API_BASE_URL}/donated-products?timePeriod=${timePeriod}`, {
         credentials: 'include',
     });
     if (!response.ok) {
         const err = await response.json();
         throw new Error(err.message || 'Failed to fetch donated products');
+    }
+    return response.json();
+};
+
+export const apiGetDashboardStats = async (timePeriod = 'all') => {
+    const response = await fetch(`${API_BASE_URL}/dashboard-stats?timePeriod=${timePeriod}`, {
+        credentials: 'include',
+    });
+    if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || 'Failed to fetch dashboard stats');
     }
     return response.json();
 };
@@ -447,7 +458,7 @@ export const fetchBlogs = async () => {
     const response = await fetch(`${API_BASE_URL}/blogs`, {
         credentials: 'include'
     });
-    
+
     if (!response.ok) {
         throw new Error('Failed to fetch blogs');
     }
@@ -457,7 +468,7 @@ export const fetchBlogs = async () => {
     }
     const data = await response.json();
     console.log('Blogs API response:', data);
-    
+
     // Handle multiple response formats
     if (Array.isArray(data)) {
         return data;
@@ -468,7 +479,7 @@ export const fetchBlogs = async () => {
     if (data.data?.blogs) {
         return data.data.blogs;
     }
-    
+
     return [];
 };
 
@@ -483,7 +494,7 @@ export const industryLogin = async (credentials) => {
         body: JSON.stringify(credentials),
         credentials: 'include',
     });
-    
+
     if (!response.ok) {
         // Check if response is JSON for error message
         const contentType = response.headers.get('content-type');
@@ -493,7 +504,7 @@ export const industryLogin = async (credentials) => {
         }
         throw new Error('Invalid credentials');
     }
-    
+
     // Try to parse response
     let data;
     try {
@@ -501,12 +512,12 @@ export const industryLogin = async (credentials) => {
     } catch (e) {
         throw new Error('Invalid server response');
     }
-    
+
     // Accept response if it has user data (be flexible with structure)
     if (!data || (typeof data === 'object' && Object.keys(data).length === 0)) {
         throw new Error('Invalid credentials');
     }
-    
+
     return data;
 };
 
@@ -517,7 +528,7 @@ export const industrySignup = async (data) => {
         body: JSON.stringify(data),
         credentials: 'include',
     });
-    
+
     if (!response.ok) {
         // Check if response is JSON for error message
         const contentType = response.headers.get('content-type');
@@ -527,7 +538,7 @@ export const industrySignup = async (data) => {
         }
         throw new Error('Signup failed');
     }
-    
+
     // Try to parse response
     let result;
     try {
@@ -535,12 +546,12 @@ export const industrySignup = async (data) => {
     } catch (e) {
         throw new Error('Invalid server response');
     }
-    
+
     // Accept response if it has user data (be flexible with structure)
     if (!result || (typeof result === 'object' && Object.keys(result).length === 0)) {
         throw new Error('Signup failed - invalid response');
     }
-    
+
     return result;
 };
 
