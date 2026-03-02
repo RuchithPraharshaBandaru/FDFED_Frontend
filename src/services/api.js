@@ -649,3 +649,13 @@ export const postIndustryCheckout = async () => {
     if (!response.ok) throw new Error('Checkout failed');
     return response.json();
 };
+
+export const postIndustryStripeSession = async () => {
+    const response = await fetch(`${INDUSTRY_API_URL}/create-checkout-session`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+    });
+    if (!response.ok) throw new Error('Failed to create Stripe session');
+    return response.json();
+};
