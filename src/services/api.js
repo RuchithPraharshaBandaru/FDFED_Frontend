@@ -670,3 +670,14 @@ export const postIndustryStripeSession = async () => {
     if (!response.ok) throw new Error('Failed to create Stripe session');
     return response.json();
 };
+
+export const getIndustryStripeSuccess = async (sessionId) => {
+    const response = await fetch(`${INDUSTRY_API_URL}/stripe/success?session_id=${encodeURIComponent(sessionId)}`, {
+        credentials: 'include',
+    });
+    if (!response.ok) {
+        const err = await response.json().catch(() => ({ message: 'Failed to finalize order' }));
+        throw new Error(err.message || 'Failed to finalize order');
+    }
+    return response.json();
+};
