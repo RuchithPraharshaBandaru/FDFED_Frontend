@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Button from '../ui/Button';
 import Badge from '../ui/Badge';
 import { useNavigate, Link } from 'react-router-dom';
-import { getIndustryCheckout, postIndustryCheckout } from '../../services/api';
+import { getIndustryCheckout, postIndustryStripeSession, getIndustryStripeSuccess } from '../../services/api';
 import { CheckCircle, Package, Mail, MapPin, Loader, CreditCard } from 'lucide-react';
 
 const IndustryCheckoutPage = () => {
@@ -14,6 +14,20 @@ const IndustryCheckoutPage = () => {
     const navigate = useNavigate();
     
     useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const isSuccess = params.get('success') === 'true';
+        const sessionId = params.get('session_id');
+        if (isSuccess) {
+            setSuccess(true);
+            setLoading(false);
+            if (sessionId) {
+                getIndustryStripeSuccess(sessionId).catch((err) => {
+                    setError(err.message || 'Failed to finalize order');
+                });
+            }
+            return;
+        }
+
         let mounted = true;
         const load = async () => {
             setLoading(true);
@@ -29,19 +43,18 @@ const IndustryCheckoutPage = () => {
         };
         load();
         return () => { mounted = false };
-    }, [navigate]);
+    }, []);
 
     const handleCheckout = async () => {
         setProcessing(true);
         setError(null);
         try {
-            // Mimic the User payment flow directly
-            const res = await postIndustryCheckout();
-            
-            // Assuming successful completion
-            setSuccess(true);
-            setTimeout(() => navigate('/industry/dashboard'), 2000);
-            
+            const res = await postIndustryStripeSession();
+            if (res?.checkoutUrl) {
+                window.location.href = res.checkoutUrl;
+                return;
+            }
+            throw new Error('Stripe checkout URL missing');
         } catch (err) {
             setError(err.message || 'Checkout failed');
             setProcessing(false);
