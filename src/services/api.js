@@ -1,7 +1,7 @@
 // src/services/api.js
 
 // const API_BASE_URL = 'http://localhost:8000/api/v1/user';
-const API_BASE_URL = import.meta.env.VITE_USER_URL;
+const API_BASE_URL = `${import.meta.env.VITE_API_URL}/api/v1/user`;
 
 // --- AUTH FUNCTIONS ---
 
@@ -108,7 +108,7 @@ export const fetchProducts = async () => {
     return data;
 };
 
-const product_base=import.meta.env.VITE_PRODUCT_URL;
+const product_base=`${import.meta.env.VITE_API_URL}/api/v1/product`;
 
 export const fetchProductById = async (productId) => {
     const response = await fetch(`${product_base}/details/${productId}`, {
@@ -489,7 +489,7 @@ export const fetchBlogs = async () => {
 // --- INDUSTRY FUNCTIONS ---
 
 // const INDUSTRY_API_URL = 'http://localhost:8000/api/v1/industry';
-const INDUSTRY_API_URL = import.meta.env.VITE_INDUSTRY_BASE;
+const INDUSTRY_API_URL = `${import.meta.env.VITE_API_URL}/api/v1/industry`;
 
 export const industryLogin = async (credentials) => {
     const response = await fetch(`${INDUSTRY_API_URL}/login`, {
