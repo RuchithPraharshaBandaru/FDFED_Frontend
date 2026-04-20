@@ -6,7 +6,7 @@ import {
 
 // --- API HELPERS (Internal for stability) ---
 // const INDUSTRY_BASE = 'http://localhost:8000/api/v1/industry';
-const INDUSTRY_BASE = import.meta.env.VITE_INDUSTRY_BASE;
+const INDUSTRY_BASE = `${import.meta.env.VITE_API_URL || ''}/api/v1/industry`;
 
 
 const fetchIndustryHome = async () => {
