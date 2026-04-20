@@ -30,7 +30,7 @@ export const adminLogin = async ({ email, password }) => {
 };
 
 export const managerLogin = async ({ email, password }) => {
-  const res = await fetch('http://localhost:8000/api/v1/manager/login', {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/manager/login`, {
     method: 'POST',
     headers: jsonHeaders,
     body: JSON.stringify({ email, password }),
@@ -48,7 +48,7 @@ export const adminLogout = async () => {
 };
 
 export const managerLogout = async () => {
-  const res = await fetch('http://localhost:8000/api/v1/manager/logout', {
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/v1/manager/logout`, {
     method: 'POST',
     credentials: 'include',
   });
@@ -309,7 +309,7 @@ export const getIndustryTimeseries = async (industryId, period = '3m', interval 
 
 // --- RIDER MANAGEMENT (ADMIN) ---
 
-const ADMIN_RIDER_BASE = 'http://localhost:8000/api/v1/admin/rider';
+const ADMIN_RIDER_BASE = `${import.meta.env.VITE_API_URL}/api/v1/admin/rider`;
 
 export const getAdminRiders = async (status) => {
   const url = new URL(`${ADMIN_RIDER_BASE}/riders`, window.location.origin);
